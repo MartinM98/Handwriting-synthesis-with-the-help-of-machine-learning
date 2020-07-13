@@ -9,4 +9,4 @@ Authors: <br/>
 Rules:
 1. Use only English language in project and repository.
 2. Do not push code without core review.
-3. Write code according to PEP 8.
+3. Write code according to [PEP 8](https://www.python.org/dev/peps/pep-0008/).
