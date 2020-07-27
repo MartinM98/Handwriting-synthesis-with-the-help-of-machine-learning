@@ -17,3 +17,7 @@ To run our application you have to install:
 - [pillow (python package)](https://pypi.org/project/Pillow/)
 - [pytesseract (python package)](https://pypi.org/project/pytesseract/)
 - [openCV (python package)](https://pypi.org/project/opencv-python/)
+
+
+Training dataset:
+http://www.fki.inf.unibe.ch/databases/iam-handwriting-database
