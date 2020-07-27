@@ -20,4 +20,4 @@ To run our application you have to install:
 
 
 Training dataset:
-http://www.fki.inf.unibe.ch/databases/iam-handwriting-database
+- [fki IAM Handwriting Database](http://www.fki.inf.unibe.ch/databases/iam-handwriting-database)
