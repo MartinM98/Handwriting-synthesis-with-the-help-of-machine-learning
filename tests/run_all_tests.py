@@ -1,9 +1,12 @@
 import unittest
 
 from test_handwriting_recognition import TestHandwritingRecognition
+from test_file_handler import TestFileHandler
 
-def run_all_tests(): # run all test lited below
-    test_classes_to_run = [TestHandwritingRecognition] # set of test classes
+def run_listed_tests():
+    """ run all test lited below """
+
+    test_classes_to_run = [TestHandwritingRecognition, TestFileHandler] # set of test classes
 
     loader = unittest.TestLoader()
 
@@ -17,6 +20,17 @@ def run_all_tests(): # run all test lited below
     runner = unittest.TextTestRunner()
     runner.run(test_suite)
 
+
+def run_all_tests(): # run all test  
+    """ run all test """
+
+    loader = unittest.TestLoader()
+    test_suite = loader.discover('tests', pattern='test_*.py')     
+    runner = unittest.TextTestRunner()
+    runner.run(test_suite)
+
+
 if __name__ == '__main__':
     run_all_tests() 
+    # run_listed_tests() 
     
