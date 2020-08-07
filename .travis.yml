@@ -1,0 +1,11 @@
+language: python    
+
+jobs:
+  include:
+    - name: "Python 3.8.0 on Linux"
+      python: 3.8           
+      
+install: pip3 install .  
+
+
+script: python3 my_app.py || python my_app.py

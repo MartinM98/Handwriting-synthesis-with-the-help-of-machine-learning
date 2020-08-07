@@ -8,5 +8,13 @@
     ],
     "python.testing.pytestEnabled": false,
     "python.testing.nosetestsEnabled": false,
-    "python.testing.unittestEnabled": true
+    "python.testing.unittestEnabled": true,
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.autoComplete.addBrackets": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.pylamaEnabled": true,
+    "python.linting.lintOnSave": true,
+    "python.linting.pylintCategorySeverity.convention": "Information",
+    "python.linting.pylintArgs": ["--load-plugins"]
 }
