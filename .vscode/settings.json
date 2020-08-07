@@ -14,11 +14,11 @@
     "python.autoComplete.addBrackets": true,
     "python.linting.flake8Enabled": true,
     "python.linting.flake8Args": [
-        "--ignore=E501 $PWD/setup.py",
+        "--ignore=E501 $PWD/setup.py"
     ],
     "python.linting.pylamaEnabled": true,
     "python.linting.pylamaArgs": [
-        "--ignore E501 $PWD/setup.py",
+        "--ignore E501 $PWD/setup.py"
     ],
     "python.linting.lintOnSave": true,
     "python.linting.pylintCategorySeverity.convention": "Information",
