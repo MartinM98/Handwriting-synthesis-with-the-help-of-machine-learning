@@ -1,3 +1,4 @@
+freeze==3.0
 Handwriting-Synthesis==0.0.1
 numpy==1.19.1
 opencv-python==4.2.0.34
