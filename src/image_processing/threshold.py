@@ -11,7 +11,7 @@ def nothing():
 if __name__ == '__main__':
     root = tk.Tk()
     root.withdraw()
-    root.filename = filedialog.askopenfilename(initialdir="./", title="Select file", \
+    root.filename = filedialog.askopenfilename(initialdir='./', title='Select file', \
         filetypes=[('png files', '.png')])
     if root.filename == '':
         print('No file has been selected')
@@ -47,21 +47,21 @@ if __name__ == '__main__':
         else:
             ret, img2 = cv2.threshold(img, t, 255, cv2.THRESH_BINARY)
         if s2 == 1:
-            name = file[:-4] + "_new.png"
+            name = file[:-4] + '_new.png'
             cv2.imwrite(path + '/' + name, img2)
 
     cv2.destroyAllWindows()
     im = Image.open(path + '/' + name)
     width, height = im.size
 
-    command = "tesseract " + path +'/' + name +" " + path + '/' + name[:-4]+" -l eng wordstrbox"
+    command = 'tesseract ' + path + '/' + name + ' ' + path + '/' + name[:-4]+ ' -l eng wordstrbox'
     os.system(command)
 
     # Shows the image in image viewer
     im.show()
-    boxfilename = path + '/' +name[:-3]+"box"
+    boxfilename = path + '/' +name[:-3]+'box'
     file1 = open(boxfilename, "r")
-    print("Output of Readlines after appending")
+    print('Output of Readlines after appending')
     lines = file1.readlines()
     for line in lines:
         words = line.split()
