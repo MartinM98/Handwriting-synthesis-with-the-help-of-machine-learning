@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
     # Shows the image in image viewer
     im.show()
-    boxfilename = path + '/' +name[:-3]+'box'
+    boxfilename = path + '/' + name[:-3] + 'box'
     file1 = open(boxfilename, "r")
     print('Output of Readlines after appending')
     lines = file1.readlines()
