@@ -8,18 +8,18 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 setup(
     name='Handwriting Synthesis',
     version='0.0.1',
-    description='The handwriting synthesis application.', 
+    description='The handwriting synthesis application.',
     long_description=long_description,
     url='https://github.com/MartinM98/Handwriting-synthesis-with-the-help-of-machine-learning',
     author='Martin Mrugala, Patryk Walczak, Bartlomiej Zyla',
-    classifiers=[  
+    classifiers=[
         'Development Status :: 3 - Alpha',
         'Programming Language :: Python :: 3.8'
     ],
-    packages=find_packages(), 
+    packages=find_packages(),
     python_requires='>=3.8',
-    install_requires=['pytesseract', 'Pillow', 'opencv-python', 'wheel'], 
-    project_urls={  
+    install_requires=['wheel', 'pytesseract', 'Pillow', 'opencv-python'],
+    project_urls={
         'Bug Reports': 'https://github.com/MartinM98/Handwriting-synthesis-with-the-help-of-machine-learning/issues',
         'Source': 'https://github.com/MartinM98/Handwriting-synthesis-with-the-help-of-machine-learning',
     },
