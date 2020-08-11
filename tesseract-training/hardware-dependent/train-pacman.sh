@@ -1,12 +1,13 @@
 #!/bin/bash
 
-sudo pacman -S tesseract-ocr # install tesseract
+sudo pacman -Sy tesseract # install tesseract
+sudo pacman -Sy tesseract-data-eng # install english language
 
 cd $1 # change direcotry to the direcotry with images for training
 
 path=$(pwd)
 listfile="listfile.txt" # name of the file listing training data files
-tessdatapath="/usr/share/tesseract-ocr/4.00/tessdata" # absoulte path to the directory containing traineddata's
+tessdatapath="/usr/share/tessdata" # absoulte path to the directory containing traineddata's
 
 if [ -f "$listfile" ]; then # check if a file with filename listfile exists
     rm "$listfile"
