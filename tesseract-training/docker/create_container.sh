@@ -10,4 +10,4 @@ docker cp train1.sh ubuntu-container:/root/train1.sh # copy train script from th
 
 docker cp train2.sh ubuntu-container:/root/train2.sh # copy train script from the host to the container
 
- docker exec -it ubuntu-container bash # access container's shell. Go to the home directory and run the training scripts
+docker exec -it ubuntu-container bash # access container's shell. Go to the home directory and run the training scripts
