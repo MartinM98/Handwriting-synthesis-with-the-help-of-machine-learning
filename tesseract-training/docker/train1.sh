@@ -1,8 +1,5 @@
 #!/bin/bash
 
-apt-get update
-apt-get install tesseract-ocr # install tesseract
-
 cd /root/tesstrain # change direcotry to the direcotry with images for training
 
 path=$(pwd)

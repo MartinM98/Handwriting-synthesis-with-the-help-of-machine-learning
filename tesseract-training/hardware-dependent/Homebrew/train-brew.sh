@@ -1,18 +1,17 @@
 #!/bin/bash
 
-sudo apt-get install tesseract-ocr # install tesseract
 
 cd $1 # change direcotry to the direcotry with images for training
 
 path=$(pwd)
 listfile="listfile.txt" # name of the file listing training data files
-tessdatapath="/usr/share/tesseract-ocr/4.00/tessdata" # absoulte path to the directory containing traineddata's
+tessdatapath="/usr/local/share/tessdata" # absoulte path to the directory containing traineddata's
 
 if [ -f "$listfile" ]; then # check if a file with filename listfile exists
     rm "$listfile"
 fi
 
-touch "$listfile" 
+touch "$listfile"
 
 for filename in *.tif; do # iterate trough all files with the tif extension
 filename2="${filename%.*}" # extract filename without extension
