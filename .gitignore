@@ -1,4 +1,5 @@
-/data
+data/
+!data/download_database.sh
 
 ### OpenCV ###
 #OpenCV for Mac and Linux
