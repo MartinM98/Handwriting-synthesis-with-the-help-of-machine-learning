@@ -1,5 +1,6 @@
 import wx
 
+
 class Frame(wx.Frame):
     """
     This is MyFrame.  It just shows a few controls on a wxPanel,
@@ -44,7 +45,8 @@ class Panel(wx.Panel):
         grid = wx.GridBagSizer(hgap=2, vgap=2)
         hSizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.button_render = wx.Button(self, label="Render", pos=(200, 325), style=wx.EXPAND)
+        self.button_render = wx.Button(
+            self, label="Render", pos=(200, 325), style=wx.EXPAND)
         self.Bind(wx.EVT_BUTTON, self.OnRenderClick, self.button_render)
         grid.Add(self.button_render, pos=(0, 0), span=(0, 1))
 
