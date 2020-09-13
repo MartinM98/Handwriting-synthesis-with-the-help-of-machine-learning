@@ -5,14 +5,16 @@ from tkinter import filedialog
 import cv2
 from PIL import Image
 
+
 def nothing():
     """ Empty function for createTrackbar """
+
 
 if __name__ == '__main__':
     root = tk.Tk()
     root.withdraw()
-    root.filename = filedialog.askopenfilename(initialdir='./', title='Select file', \
-        filetypes=[('png files', '.png')])
+    root.filename = filedialog.askopenfilename(initialdir='./', title='Select file',
+                                               filetypes=[('png files', '.png')])
     if root.filename == '':
         print('No file has been selected')
         exit()
@@ -54,27 +56,29 @@ if __name__ == '__main__':
     im = Image.open(path + '/' + name)
     width, height = im.size
 
-    command = 'tesseract ' + path + '/' + name + ' ' + path + '/' + name[:-4]+ ' -l eng wordstrbox'
+    command = 'tesseract ' + path + '/' + name + ' ' + path + '/' + name[:-4] + ' -l eng wordstrbox'
     os.system(command)
 
     # Shows the image in image viewer
     im.show()
     boxfilename = path + '/' + name[:-3] + 'box'
     file1 = open(boxfilename, "r")
+    file2 = open(path + '/' + name[:-3] + 'txt', "w")
     print('Output of Readlines after appending')
     lines = file1.readlines()
     for line in lines:
         words = line.split()
         if words[0] == 'WordStr':
             i = 1
+            file2.write(line[line.find('#') + 1:])
         else:
             i = 0
         left = int(words[i])
-        bottom = height - int(words[i+1])
-        right = int(words[i+2])
-        top = height - int(words[i+3])
+        bottom = height - int(words[i + 1])
+        right = int(words[i + 2])
+        top = height - int(words[i + 3])
         im1 = im.crop((left, top, right, bottom))
         im1.show()
 
-
     file1.close()
+    file2.close()
