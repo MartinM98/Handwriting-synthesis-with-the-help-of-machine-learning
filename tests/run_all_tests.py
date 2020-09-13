@@ -1,6 +1,5 @@
 import unittest
 
-from tests.test_handwriting_recognition import TestHandwritingRecognition
 from tests.test_file_handler import TestFileHandler
 
 
@@ -10,7 +9,7 @@ def run_listed_tests():
     """
 
     # set of test classes
-    test_classes_to_run = [TestHandwritingRecognition, TestFileHandler]
+    test_classes_to_run = [TestFileHandler]
 
     loader = unittest.TestLoader()
 
