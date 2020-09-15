@@ -1,11 +1,6 @@
 #!/bin/bash
-
-<<<<<<< HEAD:tesseract-training/hardware-dependent/pacman/train-pacman.sh
-=======
-
-
 echo $1
-cd "$1" # change direcotry to the direcotry with images for training
+cd $1 # change direcotry to the direcotry with images for training
 
 path=$(pwd)
 listfile="listfile.txt" # name of the file listing training data files
