@@ -1,40 +1,17 @@
 #!/bin/bash
 
-#brew install automake autoconf libtool
-#brew install pkgconfig
-#brew install icu4c
-#brew install leptonica
-#brew install pango
-#brew install libarchive
-#brew install gcc
-
-#git clone https://github.com/tesseract-ocr/tesseract/
-#cd tesseract
-#./autogen.sh
-#mkdir build
-#cd build
-# Optionally add CXX=g++-8 to the configure command if you really want to use a different compiler.
-#../configure PKG_CONFIG_PATH=/usr/local/opt/icu4c/lib/pkgconfig:/usr/local/opt/libarchive/lib/pkgconfig:/usr/local/opt/libffi/lib/pkgconfig
-#make -j
-# Optionally install Tesseract.
-#sudo make install
-# Optionally build and install training tools.
-#make training
-#sudo make training-install
-
-#brew install tesseract --all-languages # install tesseract
 
 cd $1 # change direcotry to the direcotry with images for training
 
 path=$(pwd)
 listfile="listfile.txt" # name of the file listing training data files
-tessdatapath="/usr/local/share/tessdata" # absoulte path to the directory containing traineddata's
+tessdatapath="/usr/share/tesseract-ocr/4.00/tessdata" # absoulte path to the directory containing traineddata's
 
 if [ -f "$listfile" ]; then # check if a file with filename listfile exists
     rm "$listfile"
 fi
 
-touch "$listfile"
+touch "$listfile" 
 
 for filename in *.tif; do # iterate trough all files with the tif extension
 filename2="${filename%.*}" # extract filename without extension

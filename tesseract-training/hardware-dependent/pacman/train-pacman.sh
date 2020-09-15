@@ -1,10 +1,6 @@
 #!/bin/bash
-
-# sudo pacman -Sy tesseract # install tesseract
-# sudo pacman -Sy tesseract-data-eng # install english language
-
 echo $1
-cd "$1" # change direcotry to the direcotry with images for training
+cd $1 # change direcotry to the direcotry with images for training
 
 path=$(pwd)
 listfile="listfile.txt" # name of the file listing training data files
