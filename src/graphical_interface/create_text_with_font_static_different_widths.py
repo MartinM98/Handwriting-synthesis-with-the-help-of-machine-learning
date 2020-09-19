@@ -57,6 +57,7 @@ class TextImageRenderAllDifferentWidths:
         line_height = math.floor(self.list[counter + 1][1] / self.width) * self.line_height_cefficeint
         if (math.floor(self.list[counter][1] / self.width) != math.floor(self.list[counter + 1][1] / self.width)):
             line_width = 0
+            self.list.insert(counter + 1, (self.list[counter + 1][0], self.list[counter + 1][1] + self.list[counter + 1][0] - (self.list[counter + 1][1] % self.width)))
         else:
             line_width = self.list[counter][1] % self.width
         letter_width = self.list[counter + 1][0]
@@ -81,7 +82,7 @@ class TextImageRenderAllDifferentWidths:
 directory_path = './letters_dataset/'
 width = 300
 height = 300
-font_size = 17
+font_size = 60
 text_to_render = 'Hey guys I am Martin and I am a student'
 text_renderer = TextImageRenderAllDifferentWidths(directory_path, width, height, font_size, text_to_render)
 text_renderer.create_image_static_different_widths()
