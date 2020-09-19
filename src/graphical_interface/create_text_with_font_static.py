@@ -31,7 +31,8 @@ class TextImageRenderAllConstantWidths:
             self.concatenate_vertical(result_image, img, letter_to_int, counter)
             counter = counter + 1
 
-        result_image.show()
+        # result_image.show()
+        return result_image
         # result_image.save('~/testimage.png')
 
     def get_size_coefficients(self, letter):
@@ -61,12 +62,12 @@ class TextImageRenderAllConstantWidths:
             letter_image = letter_image.resize((self.font_width, self.font_size))
             result_image.paste(letter_image, (line_width, self.font_width + line_height))
 
-    # this method is currently not used at all, but it may be
-    def concatenate_horizontal(img1, img2):
-        result_image = Image.new('RGB', (img1.width, img1.height + img2.height))  # this example uses color images - one may use mode='L' for monochrome images
-        result_image.paste(img1, (0, 0))
-        result_image.paste(img2, (0, img1.height))
-        return result_image
+    # # this method is currently not used at all, but it may be
+    # def concatenate_horizontal(img1, img2):
+    #    result_image = Image.new('RGB', (img1.width, img1.height + img2.height))  # this example uses color images - one may use mode='L' for monochrome images
+    #    result_image.paste(img1, (0, 0))
+    #    result_image.paste(img2, (0, img1.height))
+    #    return result_image
 
 
 directory_path = './letters_dataset/'

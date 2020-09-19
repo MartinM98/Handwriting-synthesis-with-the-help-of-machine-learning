@@ -1,5 +1,9 @@
+# https://stackoverflow.com/questions/46606283/converting-a-pil-image-to-wxpython-bitmap-image
+# https://python-forum.io/Thread-WxPython-wx-StaticBitmap-change-image
+# https://www.tutorialspoint.com/wxpython/wx_textctrl_class.htm
 import wx
-
+from create_text_with_font_static_different_widths import TextImageRenderAllDifferentWidths
+from create_text_with_font_static import TextImageRenderAllConstantWidths
 
 class Frame(wx.Frame):
     """
@@ -51,7 +55,7 @@ class Panel(wx.Panel):
         grid.Add(self.button_render, pos=(0, 0), span=(0, 1))
 
         self.editname = wx.TextCtrl(
-            self, value="Example text.", size=(290, 250), style=wx.TE_MULTILINE)
+            self, value="Example text", size=(290, 250), style=wx.TE_MULTILINE)
         grid.Add(self.editname, pos=(1, 0))
 
         img = wx.Image(290, 250)
@@ -64,7 +68,15 @@ class Panel(wx.Panel):
         self.SetSizerAndFit(mainSizer)
 
     def OnRenderClick(self, event):
-        print("Render")
+        # print("Render")
+        text_renderer = TextImageRenderAllDifferentWidths('./letters_dataset/', 290, 250, 30, self.editname.GetValue())
+        img = text_renderer.create_image_static_different_widths()
+
+        self.imageCtrl.SetBitmap(PIL2wx(img))
+
+def PIL2wx(image):
+    width, height = image.size
+    return wx.Bitmap.FromBuffer(width, height, image.tobytes())
 
 
 class Application(wx.App):
