@@ -5,6 +5,7 @@ import wx
 from create_text_with_font_static_different_widths import TextImageRenderAllDifferentWidths
 # from create_text_with_font_static import TextImageRenderAllConstantWidths
 
+
 class Frame(wx.Frame):
     """
     This is MyFrame.  It just shows a few controls on a wxPanel,
@@ -73,6 +74,7 @@ class Panel(wx.Panel):
         img = text_renderer.create_image_static_different_widths()
 
         self.imageCtrl.SetBitmap(PIL2wx(img))
+
 
 def PIL2wx(image):
     width, height = image.size
