@@ -3,7 +3,7 @@
 # https://www.tutorialspoint.com/wxpython/wx_textctrl_class.htm
 import wx
 from create_text_with_font_static_different_widths import TextImageRenderAllDifferentWidths
-from create_text_with_font_static import TextImageRenderAllConstantWidths
+# from create_text_with_font_static import TextImageRenderAllConstantWidths
 
 class Frame(wx.Frame):
     """
