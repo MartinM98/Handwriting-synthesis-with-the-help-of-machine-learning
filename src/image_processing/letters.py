@@ -5,6 +5,22 @@ from tkinter import filedialog
 from PIL import Image
 
 
+def check_char(path, char):
+    if char == ':':
+        return path + '/colon/'
+    elif char == '.':
+        return path + '/dot/'
+    elif char == '?':
+        return path + '/question/'
+    elif char == '*':
+        return path + '/asterisk/'
+    else:
+        if char.islower():
+            return path + '/' + char + '2/'
+        else:
+            return path + '/' + char + '/'
+
+
 if __name__ == '__main__':
     root = tk.Tk()
     root.withdraw()
@@ -34,19 +50,7 @@ if __name__ == '__main__':
                 right = int(words[3])
                 top = height - int(words[4])
                 im1 = im.crop((left, top, right, bottom))
-                if words[0] == ':':
-                    letterdir = letters + '/colon/'
-                elif words[0] == '.':
-                    letterdir = letters + '/dot/'
-                elif words[0] == '?':
-                    letterdir = letters + '/question/'
-                elif words[0] == '*':
-                    letterdir = letters + '/asterisk/'
-                else:
-                    if words[0].islower():
-                        letterdir = letters + '/' + words[0] + '2/'
-                    else:
-                        letterdir = letters + '/' + words[0] + '/'
+                letterdir = check_char(letters, words[0])
                 if os.path.exists(letterdir):
                     count = len([sample for sample in os.listdir(letterdir)])
                 else:
