@@ -7,7 +7,12 @@ from PIL import Image
 
 def check_char(path, char: str):
     """
-    Function for replacing problematic characters with their string description
+    Function for replacing problematic characters with their string description for folder creation
+    Args:
+        path (str): Parent directory of the new folder.
+        char (str): Character to check and replace.
+    Returns:
+        (str): Complete path for the new folder.
     """
     if char == ':':
         return path + '/colon/'
