@@ -5,7 +5,10 @@ from tkinter import filedialog
 from PIL import Image
 
 
-def check_char(path, char):
+def check_char(path, char: str):
+"""
+Function for replacing problematic characters with their string description
+"""
     if char == ':':
         return path + '/colon/'
     elif char == '.':
