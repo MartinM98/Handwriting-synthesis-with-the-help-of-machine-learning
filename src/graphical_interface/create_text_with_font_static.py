@@ -7,7 +7,7 @@ import math
 """ 
 How do I work? What am I? 
 """
-    def __init__(self, directory_path, width, height, font_size, text_to_render):
+    def __init__(self, directory_path:str, width:int, height:str, font_size:str, text_to_render:str):
         self.direcotry_path = directory_path
         self.width = width
         self.height = height
