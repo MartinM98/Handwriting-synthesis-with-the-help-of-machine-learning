@@ -4,8 +4,10 @@ from PIL import Image
 import math
 
 
-class TextImageRenderAllConstantWidths:
-    def __init__(self, directory_path, width, height, font_size, text_to_render):
+""" 
+How do I work? What am I? 
+"""
+    def __init__(self, directory_path:str, width:int, height:str, font_size:str, text_to_render:str):
         self.direcotry_path = directory_path
         self.width = width
         self.height = height
@@ -70,7 +72,14 @@ class TextImageRenderAllConstantWidths:
     #    return result_image
 
 
-directory_path = './letters_dataset/'
+ if '__name__' == '__main__'
+    directory_path = './letters_dataset/'
+    width = 300
+    height = 300
+    font_size = 30
+    text_to_render = 'Hey guys I am Martin and I am a student'
+    text_renderer = TextImageRenderAllConstantWidths(directory_path, width, height, font_size, text_to_render)
+    text_renderer.create_image_static_constant_widths()
 width = 300
 height = 300
 font_size = 30
