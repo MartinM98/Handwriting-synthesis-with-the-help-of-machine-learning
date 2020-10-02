@@ -70,7 +70,14 @@ class TextImageRenderAllConstantWidths:
     #    return result_image
 
 
-directory_path = './letters_dataset/'
+ if '__name__' == '__main__'
+    directory_path = './letters_dataset/'
+    width = 300
+    height = 300
+    font_size = 30
+    text_to_render = 'Hey guys I am Martin and I am a student'
+    text_renderer = TextImageRenderAllConstantWidths(directory_path, width, height, font_size, text_to_render)
+    text_renderer.create_image_static_constant_widths()
 width = 300
 height = 300
 font_size = 30
