@@ -14,7 +14,7 @@ touch "$listfile"
 
 for filename in *.png; do # iterate trough all files with the tif extension
 filename2="${filename%.*}" # extract filename without extension
-tesseract $filename $filename2 -l eng wordstrbox # make box file ( based on filename the box file with the name filename2 is created) the .box file structure is described here: https://tesseract-ocr.github.io/tessdoc/TrainingTesseract-4.00#making-box-files
+tesseract $filename $filename2 -l eng wordstrbox # make box file (based on filename the box file with the name filename2 is created) the .box file structure is described here: https://tesseract-ocr.github.io/tessdoc/TrainingTesseract-4.00#making-box-files
 done
 
 read -p "Correct the textboxes. After that press enter to continue the execution of the script
@@ -22,7 +22,7 @@ read -p "Correct the textboxes. After that press enter to continue the execution
 
 for filename in *.png; do # iterate trough all files with the tif extension
 filename2="${filename%.*}" # extract filename without extension
-tesseract $filename $filename2 --psm 7 lstm.train # create .lstm file ( based on filename the .lstm file with the name filename2 is created) the available --psm options are described here: https://github.com/tesseract-ocr/tesseract/issues/434
+tesseract $filename $filename2 --psm 7 lstm.train # create .lstm file (based on filename the .lstm file with the name filename2 is created) the available --psm options are described here: https://github.com/tesseract-ocr/tesseract/issues/434
 echo "$path"/"$filename2".lstmf >> "$listfile" # list the file absolute path in the listfile
 done
 
