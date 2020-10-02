@@ -76,6 +76,7 @@ class Panel(wx.Panel):
         self.imageCtrl.SetBitmap(PIL2wx(img))
 
 
+# This function converts PIL image to wx image
 def PIL2wx(image):
     width, height = image.size
     return wx.Bitmap.FromBuffer(width, height, image.tobytes())
