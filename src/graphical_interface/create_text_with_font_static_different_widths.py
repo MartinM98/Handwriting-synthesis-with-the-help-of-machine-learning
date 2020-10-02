@@ -80,7 +80,14 @@ class TextImageRenderAllDifferentWidths:
     #    return result_image
 
 
-directory_path = './letters_dataset/'
+ if '__name__' == '__main__'
+    directory_path = './letters_dataset/'
+    width = 300
+    height = 300
+    font_size = 60
+    text_to_render = 'Hey guys I am Martin and I am a student'
+    text_renderer = TextImageRenderAllDifferentWidths(directory_path, width, height, font_size, text_to_render)
+    text_renderer.create_image_static_different_widths()
 width = 300
 height = 300
 font_size = 60
