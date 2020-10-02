@@ -4,7 +4,9 @@ from PIL import Image
 import math
 
 
-class TextImageRenderAllConstantWidths:
+""" 
+How do I work? What am I? 
+"""
     def __init__(self, directory_path, width, height, font_size, text_to_render):
         self.direcotry_path = directory_path
         self.width = width
