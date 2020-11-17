@@ -1,23 +1,21 @@
 from skimage.morphology import skeletonize
-from skimage import morphology,filters
-from skimage import data
+from skimage import filters
 from skimage import io
 import matplotlib.pyplot as plt
 from skimage.util import invert
 import cv2
 import numpy as np
-from tkinter import filedialog
-from tkinter import *
+from tkinter import filedialog, Tk
 import os
 
 root = Tk()
-root.filename =  filedialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("png files","*.png"),("all files","*.*")))
+root.filename = filedialog.askopenfilename(initialdir="/", title="Select file", filetypes=(("png files", "*.png"), ("all files", "*.*")))
 path = root.filename
 path2 = os.path.splitext(os.path.split(root.filename)[1])[0]
 
-image2=io.imread(path)
-image2=invert(image2)
-image=image2 > filters.threshold_otsu(image2)
+image2 = io.imread(path)
+image2 = invert(image2)
+image = image2 > filters.threshold_otsu(image2)
 
 skeleton = skeletonize(image)
 skeleton = invert(skeleton)
@@ -36,13 +34,12 @@ ax[1].axis('off')
 ax[1].set_title('skeleton', fontsize=20)
 
 fig.tight_layout()
-plt.imsave('text_skel.png',skeleton,cmap=plt.cm.gray)
-image4=cv2.imread('text_skel.png')
+plt.imsave('text_skel.png', skeleton, cmap=plt.cm.gray)
+image4 = cv2.imread('text_skel.png')
 image4 = cv2.cvtColor(image4, cv2.COLOR_BGR2GRAY)
-for ix,iy in np.ndindex(image4.shape):
-    if(image4[ix,iy]!=255):
-        image4[ix,iy]=0
-_,img = cv2.threshold(image4,2,255,cv2.THRESH_BINARY)
-plt.imsave(path2+'_skel.png',img,cmap=plt.cm.gray)
+for ix, iy in np.ndindex(image4.shape):
+    if(image4[ix, iy] != 255):
+        image4[ix, iy] = 0
+_, img = cv2.threshold(image4, 2, 255, cv2.THRESH_BINARY)
+plt.imsave(path2 + '_skel.png', img, cmap=plt.cm.gray)
 plt.show()
-
