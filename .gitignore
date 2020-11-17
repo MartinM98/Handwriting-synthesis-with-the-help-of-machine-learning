@@ -1,5 +1,6 @@
 data/*
 !data/download_database.sh
+*.box
 
 ### OpenCV ###
 #OpenCV for Mac and Linux
