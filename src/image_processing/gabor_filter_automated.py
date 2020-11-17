@@ -32,4 +32,3 @@ for entry in os.scandir(directory):
             cv_image = invert(cv_image)
             result = np.bitwise_and(result, cv_image)
         cv2.imwrite(directory + '/' + path2 + '_control_points.png', result)
-        
