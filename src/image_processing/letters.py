@@ -29,7 +29,7 @@ def check_char(path, char: str):
             return path + '/' + char + '/'
 
 
-def Extract(self, path=None):
+def extract(self, path=None):
     root = tk.Tk()
     root.withdraw()
     directory = filedialog.askdirectory()
@@ -72,4 +72,4 @@ def Extract(self, path=None):
 
 
 if __name__ == '__main__':
-    Extract()
+    extract()
