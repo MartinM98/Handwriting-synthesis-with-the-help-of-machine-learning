@@ -29,15 +29,17 @@ def check_char(path, char: str):
             return path + '/' + char + '/'
 
 
-if __name__ == '__main__':
+def extract(self, path=None):
     root = tk.Tk()
     root.withdraw()
     directory = filedialog.askdirectory()
+    if path is None:
+        path = directory
     for filename in os.listdir(directory):
         ext = os.path.splitext(filename)[-1].lower()
         if ext == ".png":
             image = directory + '/' + filename
-            letters = directory + '/letters'
+            letters = path + '/letters_dataset'
 
             if not os.path.exists(letters):
                 os.mkdir(letters)
@@ -58,7 +60,7 @@ if __name__ == '__main__':
                 right = int(words[3])
                 top = height - int(words[4])
                 im1 = im.crop((left, top, right, bottom))
-                letterdir = check_char(letters, words[0])
+                letterdir = self.check_char(letters, words[0])
                 if os.path.exists(letterdir):
                     count = len([sample for sample in os.listdir(letterdir)])
                 else:
@@ -67,3 +69,7 @@ if __name__ == '__main__':
                 im1.save(letterdir + str(count) + '.png')
 
             file1.close()
+
+
+if __name__ == '__main__':
+    extract()
