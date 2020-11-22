@@ -29,20 +29,19 @@ def check_char(path, char: str):
             return path + '/' + char + '/'
 
 
-def extract(self, path=None):
+def extract(path=None):
     root = tk.Tk()
     root.withdraw()
     directory = filedialog.askdirectory()
     if path is None:
         path = directory
+    letters = path + '/letters_dataset'
+    if not os.path.exists(letters):
+        os.mkdir(letters)
     for filename in os.listdir(directory):
         ext = os.path.splitext(filename)[-1].lower()
         if ext == ".png":
             image = directory + '/' + filename
-            letters = path + '/letters_dataset'
-
-            if not os.path.exists(letters):
-                os.mkdir(letters)
 
             im = Image.open(image)
             width, height = im.size
@@ -60,7 +59,7 @@ def extract(self, path=None):
                 right = int(words[3])
                 top = height - int(words[4])
                 im1 = im.crop((left, top, right, bottom))
-                letterdir = self.check_char(letters, words[0])
+                letterdir = check_char(letters, words[0])
                 if os.path.exists(letterdir):
                     count = len([sample for sample in os.listdir(letterdir)])
                 else:
@@ -69,7 +68,28 @@ def extract(self, path=None):
                 im1.save(letterdir + str(count) + '.png')
 
             file1.close()
+            return letters
+
+
+def correct(path=None):
+    for r, d, f in os.walk(path):
+        for folder in d:
+            root = tk.Tk()
+            root.withdraw()
+            directory = os.path.join(r, folder)
+            filestring = filedialog.askopenfilenames(initialdir=directory, title='Select incorrectly recognized letters')
+            files = root.tk.splitlist(filestring)
+            for file in files:
+                os.remove(file)
+            if not os.listdir(directory):
+                os.rmdir(directory)
+            else:
+                i = 0
+                for filename in os.listdir(directory):
+                    os.rename(directory + '/' + filename, directory + '/' + str(i) + '.png')
+                    i += 1
 
 
 if __name__ == '__main__':
-    extract()
+    letters = extract()
+    correct(letters)
