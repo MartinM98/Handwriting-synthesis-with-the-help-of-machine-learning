@@ -1,5 +1,5 @@
 from create_text_different_widths_big_dataset import TextImageRenderAllDifferentWidths
-from src.image_processing.letters import extract
+from src.image_processing.letters import extract, correct
 import wx
 import os
 # from create_text_with_font_static import TextImageRenderAllConstantWidths
@@ -81,7 +81,8 @@ class Panel(wx.Panel):
         self.imageCtrl.SetBitmap(PIL2wx(img))
 
     def OnLoadClick(self, event):
-        extract(cwd=os.getcwd())
+        dir = extract(cwd=os.getcwd())
+        correct(dir)
 
 
 # This function converts PIL image to wx image
