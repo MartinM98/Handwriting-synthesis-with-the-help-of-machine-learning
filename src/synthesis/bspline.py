@@ -16,7 +16,7 @@ def draw_bspline(points):
     # x=np.append(x,x[0])
     # y=np.append(y,y[0])
 
-    tck, u = interpolate.splprep([x, y], k=2, s=0)
+    tck, u = interpolate.splprep([x, y], k=2, s=1)
     u = np.linspace(0, 1, num=50, endpoint=True)
     out = interpolate.splev(u, tck)
 
