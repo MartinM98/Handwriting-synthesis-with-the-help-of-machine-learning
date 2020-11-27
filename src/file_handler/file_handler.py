@@ -93,9 +93,8 @@ def ensure_create_dir(dir_path: str):
     Args:
         file_path (str): Path to new directory.
     """
-    directory = os.path.dirname(dir_path)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
 
 
 def get_absolute_path(realtive_path: str):
@@ -156,7 +155,17 @@ def get_file_name(file_path: str):
     Returns:
         str: File name.
     """
-    return os.path.splitext(os.path.basename(file_path))[0]
+    return os.path.basename(file_path)
+
+
+def get_dir_path(file_path: str):
+    """
+    Retrun directory path.
+
+    Returns:
+        str: Directory path.
+    """
+    return os.path.dirname(file_path)
 
 
 def get_path_without_extention(file_path: str):

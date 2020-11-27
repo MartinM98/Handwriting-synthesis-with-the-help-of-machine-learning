@@ -263,7 +263,6 @@ def show_lines(lines, path_to_letter):
     print(height, width)
     factor = 4
     img2 = image_resize(img2, width * factor, height * factor)
-
     cv2.imshow(str(lines), img2)
     cv2.waitKey()
 
