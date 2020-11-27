@@ -8,29 +8,35 @@ import numpy as np
 from tkinter import filedialog, Tk
 import os
 
-root = Tk()
-root.withdraw()
-root.directory = filedialog.askdirectory()
 
-directory = root.directory
+def skeletonize_automated():
+    root = Tk()
+    root.withdraw()
+    root.directory = filedialog.askdirectory(initialdir=".")
 
-root.destroy()
-for entry in os.scandir(directory):
-    if (entry.path.endswith(".png")):
-        path2 = os.path.splitext(os.path.split(entry.path)[1])[0]
-        path = entry.path
-        image2 = io.imread(path)
-        image2 = invert(image2)
-        image = image2 > filters.threshold_otsu(image2)
+    directory = root.directory
 
-        skeleton = skeletonize(image)
-        skeleton = invert(skeleton)
+    root.destroy()
+    for entry in os.scandir(directory):
+        if (entry.path.endswith(".png")):
+            path2 = os.path.splitext(os.path.split(entry.path)[1])[0]
+            path = entry.path
+            image2 = io.imread(path)
+            image2 = invert(image2)
+            image = image2 > filters.threshold_otsu(image2)
 
-        plt.imsave('/tmp/temp_skel.png', skeleton, cmap=plt.cm.gray)
-        image4 = cv2.imread('/tmp/temp_skel.png')
-        image4 = cv2.cvtColor(image4, cv2.COLOR_BGR2GRAY)
-        for ix, iy in np.ndindex(image4.shape):
-            if(image4[ix, iy] != 255):
-                image4[ix, iy] = 0
-        _, img = cv2.threshold(image4, 2, 255, cv2.THRESH_BINARY)
-        plt.imsave(directory + '/' + path2 + '_skel.png', img, cmap=plt.cm.gray)
+            skeleton = skeletonize(image)
+            skeleton = invert(skeleton)
+
+            plt.imsave('/tmp/temp_skel.png', skeleton, cmap=plt.cm.gray)
+            image4 = cv2.imread('/tmp/temp_skel.png')
+            image4 = cv2.cvtColor(image4, cv2.COLOR_BGR2GRAY)
+            for ix, iy in np.ndindex(image4.shape):
+                if(image4[ix, iy] != 255):
+                    image4[ix, iy] = 0
+            _, img = cv2.threshold(image4, 2, 255, cv2.THRESH_BINARY)
+            plt.imsave(directory + '/' + path2 + '_skel.png', img, cmap=plt.cm.gray)
+
+
+if __name__ == '__main__':
+    skeletonize_automated()
