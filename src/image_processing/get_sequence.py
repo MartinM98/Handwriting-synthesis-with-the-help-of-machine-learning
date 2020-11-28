@@ -29,7 +29,7 @@ def one_way_append(pairs, last_index, last, sequence, checked):
 
 
 def get_sequence():
-    pairs = get_sequence()
+    pairs = create_sequence()
     print(pairs)
     sequence = []
     sequence.append(pairs[0][0])
