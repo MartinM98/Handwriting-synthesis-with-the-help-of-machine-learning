@@ -97,32 +97,15 @@ def add_point(img2, tmp, halves, i, parts2, offset):
     parts2[halves[i] + mid].pop(rand_index)
 
 
-def binary_search_filter():
-    if len(sys.argv) == 1:
-        exit()
-    n = int(sys.argv[1])
-
-    directory, path2, path = get_dir_and_file()
-
-    img = get_image(path)
-
+def get_parts(img, n, parts):
     width, height, x_step, y_step = get_dimensions(img, n)
-
-    parts = []
-    i = 1
     for y in range(0, height, y_step):
         for x in range(0, width, x_step):
             x1, x2, y1, y2 = get_box(x, x_step, width, y, y_step, height)
             parts.append(processPart(img, x1, y1, x2, y2))
-            i += 1
 
-    if len(sys.argv) == 2:
-        exit()
 
-    n = int(sys.argv[2])
-
-    img2 = prepare_blank_image(img)
-
+def filter_points(img2, parts, n):
     parts2 = [part for part in parts if len(part) > 0]
     state = 2
     while(state < n):
@@ -144,6 +127,26 @@ def binary_search_filter():
             if(state == n):
                 break
 
+
+def binary_search_filter():
+    if len(sys.argv) == 1:
+        exit()
+    n = int(sys.argv[1])
+
+    directory, path2, path = get_dir_and_file()
+
+    img = get_image(path)
+
+    parts = []
+    get_parts(img, n, parts)
+
+    if len(sys.argv) == 2:
+        exit()
+
+    n = int(sys.argv[2])
+
+    img2 = prepare_blank_image(img)
+    filter_points(img2, parts, n)
     resize_and_show_images(img, img2)
     cv2.imwrite(directory + '/' + path2 + '_filtered.png', img2)
 
