@@ -15,6 +15,12 @@ def get_dir_and_file():
 
     Args:
         None
+
+    Returns:
+        directory (str): directory in which the selected file resides
+        path2 (str): selected filename without extension
+        root.filename (str): path to the selected file
+
     """
     root = Tk()
     root.withdraw()
@@ -32,6 +38,9 @@ def get_dir():
 
     Args:
         None
+
+    Returns:
+        directory (str): selected directory
     """
     root = Tk()
     root.withdraw()
@@ -53,6 +62,10 @@ def process_part(image: np.ndarray, x1: int, y1: int, x2: int, y2: int):
         y1 (int): height value of the upper edge of the selected part of the image.
         x2 (int): width value of the right edge of the selected part of the image.
         y2 (int): height value of the lower edge of the selected part of the image.
+
+    Returns:
+        points (list): list containing locations of points/pixels
+            which are black (have value 0).
     """
     points = []
     for y in range(y1, y2 + 1):
@@ -71,6 +84,9 @@ def get_image(path: str):
 
     Args:
         path (str): absoulte or relative path to the image.
+
+    Returns:
+        img (np.ndarray): read image
     """
     img = cv2.imread(path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -87,6 +103,14 @@ def get_dimensions(img: np.ndarray, n: int):
     Args:
        img (np.ndarray): cv2 image.
        n (int): the number of subparts in each direction.
+
+    Returns:
+        x_step (int): x step that is the horizontal
+            length of the subpart of the image.
+        width (int): The width of the image.
+        y_step (int): y step that is the vertical length
+            of the subpart of the image.
+        height (int): The height of the image.
     """
     width = img.shape[0]
     height = img.shape[1]
@@ -109,6 +133,12 @@ def get_box(x: int, x_step: int, width: int, y: int, y_step: int, height: int):
        y_step (int): y step that is the vertical length
            of the subpart of the image.
        height (int): The height of the image.
+
+    Returns:
+        x1 (int): width value of the left edge of the selected part of the image.
+        y1 (int): height value of the upper edge of the selected part of the image.
+        x2 (int): width value of the right edge of the selected part of the image.
+        y2 (int): height value of the lower edge of the selected part of the image.
     """
     x1 = x
     x2 = x + x_step - 1
@@ -127,6 +157,9 @@ def prepare_blank_image(img: np.ndarray):
     based on dimension of the passed image.
     Args:
        img (np.ndarray): cv2 image.
+
+    Returns:
+        img (np.ndarray): prepared cv2 blank image.
     """
     img2 = np.zeros(shape=img.shape)
     img2 = img_as_ubyte(img2)

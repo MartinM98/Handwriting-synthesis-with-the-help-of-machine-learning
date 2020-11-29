@@ -1,16 +1,44 @@
-def compare(p1, p2):
+def compare(p1: tuple, p2: tuple):
+    """
+    Compares two points.
+
+    Args:
+        p1 (tuple): First point.
+        p2 (tuple): Second point.
+
+    Returns:
+        bool: Evaluation if the points are equal.
+    """
     if p1[0] == p2[0] and p1[1] == p2[1]:
         return True
     return False
 
 
 def create_edges():
+    """
+    Creates sample list of edges.
+
+    Args:
+        None
+
+    Returns:
+        edges (list): Sample list of edges.
+    """
     edges = (((39, 3), (40, 3)), ((19, 12), (20, 12)), ((17, 14), (18, 13)), ((16, 14), (17, 14)), ((9, 19), (10, 19)), ((22, 11), (23, 10)), ((33, 5), (34, 4)), ((38, 3), (39, 3)), ((21, 11), (22, 11)), ((44, 2), (45, 2)), ((49, 6), (49, 7)), ((26, 8), (27, 8)), ((49, 7), (49, 8)), ((37, 3), (38, 3)), ((47, 3), (48, 4)), ((48, 15), (48, 16)), ((34, 4), (35, 4)), ((46, 19), (46, 20)), ((35, 4), (36, 4)), ((18, 13), (19, 12)), ((25, 9), (26, 8)), ((4, 24), (5, 23)), ((48, 4), (49, 5)), ((36, 4), (37, 3)), ((41, 3), (42, 2)), ((49, 9), (49, 10)), ((14, 16), (15, 15)), ((13, 17), (14, 16)), ((45, 2), (46, 3)), ((48, 12), (48, 13)), ((12, 17), (13, 17)), ((31, 6), (32, 5)), ((47, 17), (47, 18)), ((15, 15), (16, 14)), ((48, 12), (49, 11)), ((
         43, 2), (44, 2)), ((43, 25), (43, 26)), ((48, 13), (48, 14)), ((7, 21), (8, 20)), ((27, 8), (28, 8)), ((24, 9), (25, 9)), ((28, 8), (29, 7)), ((23, 10), (24, 9)), ((46, 19), (47, 18)), ((8, 20), (9, 19)), ((6, 22), (7, 21)), ((29, 7), (30, 6)), ((47, 17), (48, 16)), ((5, 23), (6, 22)), ((11, 18), (12, 17)), ((30, 6), (31, 6)), ((41, 28), (42, 27)), ((42, 27), (43, 26)), ((44, 23), (44, 24)), ((40, 3), (41, 3)), ((1, 26), (2, 25)), ((10, 19), (11, 18)), ((32, 5), (33, 5)), ((42, 2), (43, 2)), ((45, 21), (45, 22)), ((49, 5), (49, 6)), ((49, 8), (49, 9)), ((49, 10), (49, 11)), ((48, 14), (48, 15)), ((2, 25), (3, 24)), ((45, 21), (46, 20)), ((46, 3), (47, 3)), ((44, 23), (45, 22)), ((3, 24), (4, 24)), ((43, 25), (44, 24)), ((20, 12), (21, 11)))
     return edges
 
 
 def append_first(sequence, edges, last_index, last):
+    """
+    Appends first to points of the first edge.
+
+    Args:
+        sequence (list): The sequence of points.
+        edges (list): The list of edges.
+        last_index (int): The index of the last edge in the edges list.
+        last (tuple): The last inserted point to the sequence.
+    """
     if compare(edges[last_index][0], last):
         sequence.append(edges[last_index][0])
     elif compare(edges[last_index][1], last):
@@ -18,6 +46,17 @@ def append_first(sequence, edges, last_index, last):
 
 
 def one_way_append(edges, last_index, last):
+    """
+    Creates a sequence in one direction.
+
+    Args:
+        edges (list): The list of edges.
+        last_index (int): The index of the last edge in the edges list.
+        last (tuple): The last inserted point to the sequence.
+
+    Returns:
+        sequence (list): The created sequence.
+    """
     sequence = []
     append_first(sequence, edges, last_index, last)
 
@@ -40,6 +79,14 @@ def one_way_append(edges, last_index, last):
 
 
 def get_sequence():
+    """
+    Creates the sample list of edges.
+    Creates and concatenates sequences in two directions starting
+    with the first edge in the edges list.
+
+    Args:
+        None
+    """
     edges = create_edges()
     sequence1 = one_way_append(edges, 0, edges[0][0])
     sequence2 = one_way_append(edges, 0, edges[0][1])
