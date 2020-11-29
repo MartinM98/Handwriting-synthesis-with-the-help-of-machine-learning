@@ -5,16 +5,16 @@ import matplotlib.pyplot as plt
 from skimage.util import invert
 import cv2
 import numpy as np
-from tkinter import filedialog, Tk
-import os
+from src.image_processing.common_functions.common_functions import get_dir_and_file
 
 
 def skeletonize_function():
-    root = Tk()
-    root.filename = filedialog.askopenfilename(initialdir=".", title="Select file", filetypes=(
-        ("png files", "*.png"), ("all files", "*.*")))
-    path = root.filename
-    path2 = os.path.splitext(os.path.split(root.filename)[1])[0]
+    """
+    Sekeletonize the selected image, shows the result and saves it.
+    Args:
+       None
+    """
+    directory, path2, path = get_dir_and_file()
 
     image2 = io.imread(path)
     image2 = invert(image2)
@@ -44,7 +44,7 @@ def skeletonize_function():
         if(image4[ix, iy] != 255):
             image4[ix, iy] = 0
     _, img = cv2.threshold(image4, 2, 255, cv2.THRESH_BINARY)
-    plt.imsave(path2 + '_skel.png', img, cmap=plt.cm.gray)
+    plt.imsave(directory + '/' + path2 + '_skel.png', img, cmap=plt.cm.gray)
     plt.show()
 
 

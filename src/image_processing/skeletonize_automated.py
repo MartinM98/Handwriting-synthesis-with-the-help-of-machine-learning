@@ -5,21 +5,23 @@ import matplotlib.pyplot as plt
 from skimage.util import invert
 import cv2
 import numpy as np
-from tkinter import filedialog, Tk
 import os
+from src.file_handler.file_handler import get_file_name
+from src.image_processing.common_functions.common_functions import get_dir
 
 
 def skeletonize_automated():
-    root = Tk()
-    root.withdraw()
-    root.directory = filedialog.askdirectory(initialdir=".")
+    """
+    Skeletonizes all images with the extension png in the selected directory and
+    saves the results.
+    Args:
+       None
+    """
+    directory = get_dir()
 
-    directory = root.directory
-
-    root.destroy()
     for entry in os.scandir(directory):
         if (entry.path.endswith(".png")):
-            path2 = os.path.splitext(os.path.split(entry.path)[1])[0]
+            path2 = get_file_name(entry.path)
             path = entry.path
             image2 = io.imread(path)
             image2 = invert(image2)
