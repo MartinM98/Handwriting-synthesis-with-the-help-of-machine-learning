@@ -4,35 +4,44 @@ import matplotlib.pyplot as plt
 from skimage.filters import gabor
 from skimage import img_as_ubyte
 from skimage.util import invert
-from tkinter import filedialog, Tk
-import os
+from src.image_processing.common_functions.common_functions import get_dir_and_file
 
 
 def nothing(x):
+    """
+    Does nothing. It is used as sliders handler.
+    Args:
+       None - x is a surrogate argument.
+    """
     pass
 
 
-def nothing2(x1, x2):
+def save(x1, x2):
+    """
+    Saves current result of the filtering to the final result image.
+    The images are accessed as global variables.
+    Args:
+       None - x1 and x2 are surrogate arguments.
+    """
     global result
     global cv_image
     result = np.bitwise_and(result, cv_image)
 
 
 def gabor_filter():
+    """
+    Main function. Creates GUI for changing the filtering parmeters,
+    shows and saves the result.
+    Args:
+       None
+    """
     global result
     global cv_image
-    root = Tk()
-    root.withdraw()
-    root.filename = filedialog.askopenfilename(initialdir=".", title="Select file", filetypes=(
-        ("png files", "*.png"), ("all files", "*.*")))
-    path = root.filename
-    path2 = os.path.splitext(os.path.split(root.filename)[1])[0]
-    directory = os.path.dirname(root.filename)
-    root.destroy()
+    directory, path2, path = get_dir_and_file()
     img2 = np.zeros((300, 512, 3), np.uint8)
     cv2.namedWindow('trackbar')
 
-    img = cv2.imread(root.filename)
+    img = cv2.imread(path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     result = np.zeros(shape=img.shape)
     result = img_as_ubyte(result)
@@ -48,7 +57,7 @@ def gabor_filter():
     cv2.createTrackbar('cval', 'trackbar', 0, 300, nothing)
     cv2.createTrackbar('cval', 'trackbar', 0, 300, nothing)
     cv2.createTrackbar('n', 'trackbar', 1, 300, nothing)
-    cv2.createButton('save control points', nothing2, [''], cv2.QT_PUSH_BUTTON)
+    cv2.createButton('save control points', save, [''], cv2.QT_PUSH_BUTTON)
     while(1):
         cv2.imshow('trackbar', img2)
         k = cv2.waitKey(1) & 0xFF
