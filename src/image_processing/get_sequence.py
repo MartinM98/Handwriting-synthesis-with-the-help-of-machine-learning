@@ -14,9 +14,9 @@ def compare_points(p1: tuple, p2: tuple):
     return False
 
 
-def get_arr(edges: list):
+def get_unique_points(edges: list):
     """
-    Creates a list of all unique points that are an end
+    Creates a list of all unique points that are a part
     of at least one edge.
 
     Args:
@@ -38,6 +38,21 @@ def get_arr(edges: list):
             points_unique.append(edge[0])
         if add2:
             points_unique.append(edge[1])
+    return points_unique
+
+
+def get_points(edges: list):
+    """
+    Creates a list of all unique points and their number of occurences
+    for all points that are a part of at least one edge.
+
+    Args:
+        edges (list): The list of all edges.
+
+    Returns:
+        list: list of all unique points and their number of occurences.
+    """
+    points_unique = get_unique_points(edges)
     points = []
     for p in points_unique:
         elem = []
@@ -85,20 +100,20 @@ def decrement_point_occur(points: list, point: tuple):
             elem[1] -= 1
 
 
-def one_way_append(edges: list, points: list, index: int):
+def init_append(edges: list, points: list, index: int):
     """
-    Traverses the edges list creating a sequence of points
-    in one direction starting with the index'th point in the
-    points list.
+    Appends the vertices from the first edge to the seqeunce.
 
     Args:
         edges (list): The list of all edges.
         points (list): The list of all unique points and their number of
-        occurences.
+            occurences.
+        index (int): the index of the first edge in the edges list.
 
     Returns:
-        list: the sequence in one direction starting with
-        the index'th point in the points list.
+        list: the sequence in one direction with the first two appended points.
+        int: the index of the last processed edge.
+        tuple: the last processed point.
     """
     sequence = []
     x = -1
@@ -119,6 +134,25 @@ def one_way_append(edges: list, points: list, index: int):
     sequence.append(last)
     idx = get_point_index(points, last)
     points[idx][1] -= 1
+    return sequence, last_index, last
+
+
+def one_way_append(edges: list, points: list, index: int):
+    """
+    Traverses the edges list creating a sequence of points
+    in one direction starting with the index'th point in the
+    points list.
+
+    Args:
+        edges (list): The list of all edges.
+        points (list): The list of all unique points and their number of
+        occurences.
+
+    Returns:
+        list: the sequence in one direction starting with
+        the index'th point in the points list.
+    """
+    sequence, last_index, last = init_append(edges, points, index)
     for i in range(len(edges)):
         for index in range(len(edges)):
             if index != last_index:
@@ -158,7 +192,7 @@ def get_sequence(edges):
         list: the list of lists. It is the list of all sequences
         extracted based on the edges list.
     """
-    points = get_arr(edges)
+    points = get_points(edges)
     sequences = []
     while(True):
         index = -1
