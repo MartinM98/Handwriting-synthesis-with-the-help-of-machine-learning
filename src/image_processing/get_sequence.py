@@ -1,117 +1,181 @@
-def compare(p1: tuple, p2: tuple):
+def compare_points(p1: tuple, p2: tuple):
     """
-    Compares two points.
+    Comapres two points
 
     Args:
-        p1 (tuple): First point.
-        p2 (tuple): Second point.
+        p1 (tuple): The first point.
+        p2 (tuple): The second point.
 
     Returns:
-        bool: Evaluation if the points are equal.
+        bool: The outcome of the comparision.
     """
     if p1[0] == p2[0] and p1[1] == p2[1]:
         return True
     return False
 
 
-def create_edges():
+def get_arr(edges: list):
     """
-    Creates sample list of edges.
+    Creates a list of all unique points that are an end
+    of at least one edge.
 
     Args:
-        None
+        edges (list): The list of all edges.
 
     Returns:
-        edges (list): Sample list of edges.
+        list: list of all unique points.
     """
-    edges = (((39, 3), (40, 3)), ((19, 12), (20, 12)), ((17, 14), (18, 13)), ((16, 14), (17, 14)), ((9, 19), (10, 19)), ((22, 11), (23, 10)), ((33, 5), (34, 4)), ((38, 3), (39, 3)), ((21, 11), (22, 11)), ((44, 2), (45, 2)), ((49, 6), (49, 7)), ((26, 8), (27, 8)), ((49, 7), (49, 8)), ((37, 3), (38, 3)), ((47, 3), (48, 4)), ((48, 15), (48, 16)), ((34, 4), (35, 4)), ((46, 19), (46, 20)), ((35, 4), (36, 4)), ((18, 13), (19, 12)), ((25, 9), (26, 8)), ((4, 24), (5, 23)), ((48, 4), (49, 5)), ((36, 4), (37, 3)), ((41, 3), (42, 2)), ((49, 9), (49, 10)), ((14, 16), (15, 15)), ((13, 17), (14, 16)), ((45, 2), (46, 3)), ((48, 12), (48, 13)), ((12, 17), (13, 17)), ((31, 6), (32, 5)), ((47, 17), (47, 18)), ((15, 15), (16, 14)), ((48, 12), (49, 11)), ((
-        43, 2), (44, 2)), ((43, 25), (43, 26)), ((48, 13), (48, 14)), ((7, 21), (8, 20)), ((27, 8), (28, 8)), ((24, 9), (25, 9)), ((28, 8), (29, 7)), ((23, 10), (24, 9)), ((46, 19), (47, 18)), ((8, 20), (9, 19)), ((6, 22), (7, 21)), ((29, 7), (30, 6)), ((47, 17), (48, 16)), ((5, 23), (6, 22)), ((11, 18), (12, 17)), ((30, 6), (31, 6)), ((41, 28), (42, 27)), ((42, 27), (43, 26)), ((44, 23), (44, 24)), ((40, 3), (41, 3)), ((1, 26), (2, 25)), ((10, 19), (11, 18)), ((32, 5), (33, 5)), ((42, 2), (43, 2)), ((45, 21), (45, 22)), ((49, 5), (49, 6)), ((49, 8), (49, 9)), ((49, 10), (49, 11)), ((48, 14), (48, 15)), ((2, 25), (3, 24)), ((45, 21), (46, 20)), ((46, 3), (47, 3)), ((44, 23), (45, 22)), ((3, 24), (4, 24)), ((43, 25), (44, 24)), ((20, 12), (21, 11)))
-    return edges
+    points_unique = []
+    for edge in edges:
+        add1 = True
+        add2 = True
+        for p in points_unique:
+            if compare_points(edge[0], p):
+                add1 = False
+            elif compare_points(edge[1], p):
+                add2 = False
+        if add1:
+            points_unique.append(edge[0])
+        if add2:
+            points_unique.append(edge[1])
+    points = []
+    for p in points_unique:
+        elem = []
+        elem.append(p)
+        elem.append(0)
+        points.append(elem)
+    for i in range(len(points)):
+        for j in range(len(edges)):
+            first = compare_points(edges[j][0], points[i][0])
+            second = compare_points(edges[j][1], points[i][0])
+            if first or second:
+                points[i][1] += 1
+    return points
 
 
-def append_first(sequence, edges, last_index, last):
+def get_point_index(points: list, point: tuple):
     """
-    Appends first to points of the first edge.
+    Gets an index of a point in the list of all unique points
 
     Args:
-        sequence (list): The sequence of points.
-        edges (list): The list of edges.
-        last_index (int): The index of the last edge in the edges list.
-        last (tuple): The last inserted point to the sequence.
-    """
-    if compare(edges[last_index][0], last):
-        sequence.append(edges[last_index][0])
-    elif compare(edges[last_index][1], last):
-        sequence.append(edges[last_index][1])
-
-
-def one_way_append(edges, last_index, last):
-    """
-    Creates a sequence in one direction.
-
-    Args:
-        edges (list): The list of edges.
-        last_index (int): The index of the last edge in the edges list.
-        last (tuple): The last inserted point to the sequence.
+        points (list): The list of all unique points and their number of
+        occurences.
+        point (tuple): Point which index should be found.
 
     Returns:
-        sequence (list): The created sequence.
+        int: The index of the point in the points list.
+    """
+    for i in range(len(points)):
+        if compare_points(points[i][0], point):
+            return i
+
+
+def decrement_point_occur(points: list, point: tuple):
+    """
+    Decrements the number of occurences of the given point
+    in the points list.
+
+    Args:
+        points (list): The list of all unique points and their number of
+        occurences.
+        point (tuple): Point which index should be found.
+    """
+    for elem in points:
+        if compare_points(elem[0], point):
+            elem[1] -= 1
+
+
+def one_way_append(edges: list, points: list, index: int):
+    """
+    Traverses the edges list creating a sequence of points
+    in one direction starting with the index'th point in the
+    points list.
+
+    Args:
+        edges (list): The list of all edges.
+        points (list): The list of all unique points and their number of
+        occurences.
+
+    Returns:
+        list: the sequence in one direction starting with
+        the index'th point in the points list.
     """
     sequence = []
-    append_first(sequence, edges, last_index, last)
-
-    for i in range(0, len(edges)):
-        for index in range(1, len(edges)):
+    x = -1
+    y = -1
+    last_index = -1
+    for i in range(len(edges)):
+        if compare_points(edges[i][1], points[index][0]):
+            last_index = i
+            x = 0
+            y = 1
+        if compare_points(edges[i][0], points[index][0]):
+            last_index = i
+            x = 1
+            y = 0
+    points[index][1] -= 1
+    sequence.append(edges[last_index][y])
+    last = edges[last_index][x]
+    sequence.append(last)
+    idx = get_point_index(points, last)
+    points[idx][1] -= 1
+    for i in range(len(edges)):
+        for index in range(len(edges)):
             if index != last_index:
-                first = compare(edges[index][0], last)
-                second = compare(edges[index][1], last)
+                first = compare_points(edges[index][0], last)
+                second = compare_points(edges[index][1], last)
                 if first or second:
                     if first:
-                        sequence.append(edges[index][1])
-                        last = edges[index][1]
+                        x = 1
                     if second:
-                        sequence.append(edges[index][0])
-                        last = edges[index][0]
-                    last_index = index
-                    break
-
+                        x = 0
+                    idx = get_point_index(points, last)
+                    if points[idx][1] > 0:
+                        points[idx][1] -= 1
+                    idx = get_point_index(points, edges[index][x])
+                    if points[idx][1] > 0:
+                        sequence.append(edges[index][x])
+                        last = edges[index][x]
+                        last_index = index
+                        points[idx][1] -= 1
+                        break
+                    else:
+                        return sequence
     return sequence
 
 
-def get_sequence():
+def get_sequence(edges):
     """
-    Creates the sample list of edges.
-    Creates and concatenates sequences in two directions starting
-    with the first edge in the edges list.
+   Creates the list of all unique points and their number of
+   occurences. After that, the list of sequences that use all
+   edges is created.
+
 
     Args:
-        None
+        edges (list): The list of all edges.
+
+    Returns:
+        list: the list of lists. It is the list of all sequences
+        extracted based on the edges list.
     """
-    edges = create_edges()
-    sequence1 = one_way_append(edges, 0, edges[0][0])
-    sequence2 = one_way_append(edges, 0, edges[0][1])
-    sequence = sequence2.copy()
-    for elem in sequence1:
-        sequence.append(elem)
-    print(sequence)
-    print(f"{len(edges)} == {len(sequence)-1}")
-
-
-if __name__ == '__main__':
-    get_sequence()
-    # print('\n\n')
-    # print(checked)
-    # print(
-    #     f"edges len: {len(edges)}\nSequence len: {len(sequence)}\nChecked: {len(checked)}")
-    # diff = []
-    # for i in range(len(edges)):
-    #     add = True
-    #     for j in range(len(checked)):
-    #         if (compare(edges[i][0], checked[j][0]) and compare(edges[i][1], checked[j][1])) or (compare(edges[i][1], checked[j][0]) and compare(edges[i][0], checked[j][1])):
-    #             add = False
-    #             break
-    #     if add:
-    #         diff.append(edges[i])
-    # print('\n\n\n')
-    # print(diff)
-    # print(len(diff))
+    points = get_arr(edges)
+    sequences = []
+    while(True):
+        index = -1
+        for i in range(len(points)):
+            if points[i][1] == 1:
+                index = i
+                break
+        if index == -1:
+            min = len(points)
+            for i in range(len(points)):
+                if points[i][1] > 0 and points[i][1] < min:
+                    min = points[i][1]
+                    index = i
+        if index != -1:
+            sequence1 = one_way_append(edges, points, index)
+            sequences.append(sequence1)
+            print(sequence1)
+        else:
+            break
+    return sequences
