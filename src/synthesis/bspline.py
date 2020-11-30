@@ -2,6 +2,7 @@
 import numpy as np
 from scipy import interpolate
 import matplotlib.pyplot as plt
+from src.file_handler.file_handler import get_absolute_path
 
 
 def draw_bspline(points):
@@ -43,9 +44,10 @@ def save_bspline(points, path_to_save_file):
     plt.close(1)
 
 
-def draw_letter(letter, plt=None, offset_x=0, offset_y=0):
-    if plt is None:
-        plt.figure()
+def draw_letter(letter, plot=None, offset_x=0, offset_y=0, path_to_save_file=None):
+    if plot is None:
+        plot = plt
+        plot.figure(1)
     min_x, min_y = 9999, 9999
     max_x, max_y = 0, 0
     for line in letter:
@@ -69,12 +71,15 @@ def draw_letter(letter, plt=None, offset_x=0, offset_y=0):
         u = np.linspace(0, 1, num=50, endpoint=True)
         out = interpolate.splev(u, tck)
 
-        plt.plot(x, y, 'ro', out[0], out[1], 'b')
-    if plt is None:
-        plt.legend(['Points', 'Interpolated B-spline', 'True'], loc='best')
-        plt.axis([min_x - 1, max_x + 1, min_y - 1, max_y + 1])
-        plt.title('B-Spline interpolation')
-        plt.show()
+        plot.plot(x, y, 'ro', out[0], out[1], 'b')
+    if plot is None:
+        plot.legend(['Points', 'Interpolated B-spline', 'True'], loc='best')
+        plot.axis([min_x - 1, max_x + 1, min_y - 1, max_y + 1])
+        plot.title('B-Spline interpolation')
+        plot.show()
+    if path_to_save_file is not None:
+        plot.savefig(path_to_save_file)
+        plot.close(1)  
     return min_x, max_x, min_y, max_y
 
 
@@ -133,4 +138,6 @@ if __name__ == '__main__':
     letters.append(moved_letter_b)
     # letters.append(letter_b)
     # letters.append(moved_letter_b)
-    draw_word(letters)
+    # draw_word(letters)
+    path_to_save = get_absolute_path('./bspline.png')
+    draw_letter(letter_b, path_to_save_file=path_to_save)

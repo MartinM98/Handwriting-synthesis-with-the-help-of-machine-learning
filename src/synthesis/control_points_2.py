@@ -1,5 +1,6 @@
 from src.file_handler.file_handler import combine_paths, ensure_create_dir, get_absolute_path, get_dir_path, get_file_name
-from src.synthesis.bspline import draw_bspline, save_bspline
+from src.synthesis.bspline import draw_bspline, draw_letter, draw_word, save_bspline
+from src.synthesis.get_sequences import get_sequences
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
@@ -190,17 +191,18 @@ def sort_edges(edges):
 def produce_bsplain(path_to_skel):
     vertices, edges = skel_to_graph(path_to_skel)
     remove_cycles(vertices, edges)
-    result = sort_edges(edges)
+    result = get_sequences(list(edges))
+    result = [r for r in result if len(r) > 2]
     file_name = get_file_name(path_to_skel).replace('_skel', '_bspline')
     path_to_save = get_dir_path(get_dir_path(path_to_skel))
     path_to_save = combine_paths(path_to_save, 'bspline')
     path_to_save = combine_paths(path_to_save, file_name)
-    save_bspline(np.array(result), path_to_save)
+    draw_letter(result, path_to_save_file=path_to_save)
 
 
 def produce_bsplain_set(path_to_letters):
     paths_to_skels = [f for f in glob(
-        path_to_letters + '\\**\\*_skel.png', recursive=True)]
+        combine_paths(path_to_letters, '**', '*_skel.png'), recursive=True)]
 
     for path_to_skel in paths_to_skels:
         path_to_save = get_dir_path(get_dir_path(path_to_skel))
@@ -217,18 +219,20 @@ def produce_bsplain_set(path_to_letters):
 
 
 def test():
-    path_to_skel = 'D:\\Git Repositories\\Handwriting-synthesis-with-the-help-of-machine-learning\\src\\graphical_interface\\letters_dataset\\dot\\skel\\0_skel.png'
+    # path_to_skel = 'D:\\Git Repositories\\Handwriting-synthesis-with-the-help-of-machine-learning\\src\\graphical_interface\\letters_dataset\\dot\\skel\\0_skel.png'
+    mac_path_to_skel = '/Users/patryk/Documents/Repositories/Handwriting-synthesis-with-the-help-of-machine-learning/src/graphical_interface/letters_dataset/A/skel/0_skel.png'
     # path_to_line = 'C:\\Users\\Patryk\\Desktop\\line.png'
-    vertices, edges = skel_to_graph(path_to_skel)
+    vertices, edges = skel_to_graph(mac_path_to_skel)
     # draw_graph(vertices, edges)
     remove_cycles(vertices, edges)
 
     # sorted = sort_edges(vertices, edges)
-    draw_graph(vertices, edges)
+    # draw_graph(vertices, edges)
     # draw_bspline(np.array(sorted))
-    result = sort_edges(edges)
+    result = get_sequences(list(edges))
     # print(result)
-    draw_bspline(np.array(result))
+    res = [r for r in result if len(r) > 2]
+    draw_word([res])
 
 
 if __name__ == '__main__':
@@ -236,3 +240,4 @@ if __name__ == '__main__':
     path_to_letters = get_absolute_path(
         './src/graphical_interface/letters_dataset/')
     produce_bsplain_set(path_to_letters)
+    # produce_bsplain('/Users/patryk/Documents/Repositories/Handwriting-synthesis-with-the-help-of-machine-learning/src/graphical_interface/letters_dataset/A/skel/0_skel.png')

@@ -124,7 +124,7 @@ def get_relative_path(absolute_path: str):
     return os.path.relpath(absolute_path, current_dir)
 
 
-def combine_paths(first_path: str, second_path: str):
+def combine_paths(*args):
     """
     Retrun combined paths.
 
@@ -135,7 +135,7 @@ def combine_paths(first_path: str, second_path: str):
     Returns:
         str: Combined path.
     """
-    return os.path.join(first_path, second_path)
+    return os.path.join(*args)
 
 
 def get_current_path():
