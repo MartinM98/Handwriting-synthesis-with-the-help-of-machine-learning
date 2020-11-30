@@ -36,7 +36,7 @@ def read_from_file(file_path: str):
         file_path (str): Path to the file.
 
     Returns:
-        str: The data from the file.
+        data (str): The data from the file.
     """
     f = open(file_path, "r")
     data = f.read()
@@ -162,15 +162,6 @@ def get_dir_path(file_path: str):
     """
     Retrun directory path.
 
-    Returns:
-        str: Directory path.
-    """
-    return os.path.dirname(file_path)
-
-
-def get_dir_path(file_path: str):
-    """
-    Retrun directory path.
     Returns:
         str: Directory path.
     """

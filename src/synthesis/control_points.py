@@ -1,309 +1,243 @@
-import numpy as np
+from src.synthesis.handwriting_reconstruction import draw_letter
+from src.file_handler.file_handler import combine_paths, ensure_create_dir, get_absolute_path, get_dir_path, get_file_name
+from src.synthesis.get_sequences import get_sequences
 import cv2
+from matplotlib import pyplot as plt
+import numpy as np
 import math
-import random
+import multiprocessing
+from glob import glob
 
 
-def control_points(path_to_image: str):
-    """#TODO
+def is_neighbour_pixel(p1: tuple, p2: tuple):
+    """
+    Check if pixels are neighbours.
 
     Args:
-        path_to_image (str): [description]
+        p1 (tuple): First pixel.
+        p2 (tuple): Second pixel.
 
     Returns:
-        [type]: [description]
+        (bool): True if pixels are neighbours, False otherwise.
     """
-    img = cv2.imread(path_to_image)
-    imgray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    ret, thresh = cv2.threshold(imgray, 127, 255, 0)
-    contours = cv2.findContours(
-        thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)[0]
-    contours = sorted(contours, key=lambda x: cv2.contourArea(x))[:-1]
-    result = list()
-    for cnt in contours:
-        # compute the center of the contour
-        M = cv2.moments(cnt)
-        cX = int(M["m10"] / M["m00"])
-        cY = int(M["m01"] / M["m00"])
-        result.append((cX, cY))
-    return result
+    if abs(p1[0] - p2[0]) < 2 and abs(p1[1] - p2[1]) < 2:
+        return True
+    return False
 
 
-def is_point_between(a, b, points):
-    (x0, x1) = (a[0], b[0]) if a[0] < b[0] else (b[0], a[0])
-    (y0, y1) = (a[1], b[1]) if a[1] < b[1] else (b[1], a[1])
-    for point in points:
-        if point[0] > x0 and point[0] < x1 and point[1] > y0 and point[1] < y1:
-            return False
-    return True
+def points_distance(p1: tuple, p2: tuple):
+    """
+    Retrun distannce between points.
 
+    Args:
+        p1 (tuple): First point.
+        p2 (tuple): Second point.
 
-def points_distance(p1, p2):
+    Returns:
+        (int)): Distance between points
+    """
     return math.sqrt(
         ((p1[0] - p2[0])**2) + ((p1[1] - p2[1])**2))
 
 
-def line_coordinate(p1, p2):
+def find_neighbours(vertex: list, edges: set):
+    """
+    Find in edges all connected vertices with the vertex.
+
+    Args:
+        vertices (list): List of vertices.
+        edges (set): Set of edges as pairs of connected points.
+
+    Returns:
+        result (set): All connected vertices with the vertex.
+    """
     result = set()
-    result.add(p1)
-    for i in range(100):
-        result.add((int(p1[0] + i / 100 * (p2[0] - p1[0])),
-                    int(p1[1] + i / 100 * (p2[1] - p1[1]))))
-    result.add(p2)
+    for e in edges:
+        if e[0] == vertex:
+            result.add(e[1])
+        elif e[1] == vertex:
+            result.add(e[0])
     return result
 
 
-def is_point_in_shape(point, shape):
-    if cv2.pointPolygonTest(shape, point, True) <= 0:
-        return False
-    return True
+def remove_edge(edges: set, v1: tuple, v2: tuple):
+    """
+    Remove from set edges the edge between vertices v1 and v2.
+
+    Args:
+        edges (set): Set of edges as pairs of connected points.
+        v1 (tuple): First point.
+        v2 (tuple): Second point.
+    """
+    edges.discard((v1, v2))
+    edges.discard((v2, v1))
 
 
-def degree_between_points(origin, p1, p2):
-    vector_1 = [p1[0] - origin[0], p1[1] - origin[1]]
-    vector_2 = [p2[0] - origin[0], p2[1] - origin[1]]
+def skeleton_to_graph(image):
+    """
+    Produce graph from image of skeleton.
 
-    unit_vector_1 = vector_1 / np.linalg.norm(vector_1)
-    unit_vector_2 = vector_2 / np.linalg.norm(vector_2)
-    dot_product = np.dot(unit_vector_1, unit_vector_2)
-    return np.arccos(dot_product)
+    Args:
+        image: image of skeleton.
+
+    Returns:
+        vertices(list): List of vertices.
+        edges(set): Set of edges as pairs of connected points.
+    """
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    threshold_level = 50
+    vertices = np.column_stack(np.where(gray < threshold_level))
+    vertices = [(v[0], v[1]) for v in vertices]
+
+    edges = set()
+    for v in vertices:
+        for ver in vertices:
+            if ver is not v and is_neighbour_pixel(v, ver) and not (ver, v) in edges:
+                edges.add((v, ver))
+
+    return vertices, edges
 
 
-def degree_between_point_and_vector(p1, p2, vector_1):
-    vector_2 = [p2[0] - p1[0], p2[1] - p1[1]]
+def draw_graph(vertices: list, edges: set):
+    """
+    Drawing a graph
 
-    unit_vector_1 = vector_1 / np.linalg.norm(vector_1)
-    unit_vector_2 = vector_2 / np.linalg.norm(vector_2)
-    dot_product = np.dot(unit_vector_1, unit_vector_2)
-    return np.arccos(dot_product)
+    Args:
+        vertices(list): List of vertices.
+        edges(set): Set of edges as pairs of connected points.
+    """
+    x_number_list = [v[0] for v in vertices]
+    y_number_list = [v[1] for v in vertices]
+
+    plt.axis([min(x_number_list) - 1, max(x_number_list) + 1,
+              min(y_number_list) - 1, max(y_number_list) + 1])
+    plt.scatter(x_number_list, y_number_list, s=10)
+
+    for e in edges:
+        x = list()
+        y = list()
+        x.append(e[0][0])
+        x.append(e[1][0])
+        y.append(e[0][1])
+        y.append(e[1][1])
+        plt.plot(x, y)
+
+    plt.show()
 
 
-def connected_points(points, path_to_skel, path_to_letter):
-    image = cv2.imread(path_to_letter, cv2.IMREAD_COLOR)
+def find_cycles(vertices: list, edges: set):
+    """
+    Find all cycles in the graph (vertices, edges) and result the edges which create a cycle.
 
-    # for point in points:
-    #     image = cv2.circle(image, point, radius=1,
-    #                        color=(0, 0, 255), thickness=-1)
+    Args:
+        vertices(list): List of vertices.
+        edges(set): Set of edges as pairs of connected points.
 
-    # image = cv2.line(image, points[0], points[4],
-    #                  color=(0, 0, 255), thickness=1)
+    Returns:
+        result (set(frozenset)): Set includes cycles (set of edges).
+    """
+    result = set()
+    for vertex in vertices:
+        neighbours = find_neighbours(vertex, edges)
+        if len(neighbours) > 1:
+            all_neighbours = set()
+            for neighbour in neighbours:
+                neighbour_neighbours = find_neighbours(neighbour, edges)
+                common = neighbours.intersection(neighbour_neighbours)
+                all_neighbours = all_neighbours.union(common)
+            if len(all_neighbours) >= 2:
+                all_neighbours.add(vertex)
+                result.add(frozenset(all_neighbours))
+    to_remove = set()
+    for res in result:
+        for r in result:
+            if res is not r and res.issubset(r):
+                to_remove.add(res)
+    result = result - to_remove
+    return result
+
+
+def remove_cycles(vertices: list, edges: set):
+    """
+    Remove all cycles from graph(vertices, edges) and return graph(vertices, edges) without cycles.
+
+    Args:
+        vertices(list): List of vertices.
+        edges(set): Set of edges as pairs of connected points.
+
+    Returns:
+        vertices(list): List of vertices.
+        edges(set): Set of edges as pairs of connected points.
+    """
+    cycles = find_cycles(vertices, edges)
+    for cycle in cycles:
+        for c1 in cycle:
+            for c2 in cycle:
+                if c1 is not c2 and points_distance(c1, c2) > 1:
+                    remove_edge(edges, c1, c2)
+
+    return vertices, edges
+
+
+def produce_imitation(path_to_skeleton: str):
+    """
+    Produce imitation of the letter form the skeleton.
+
+    Args:
+        path_to_skel (str): Path to skeleton of letter.
+    """
+    image = cv2.imread(path_to_skeleton)
     height, width, _ = image.shape
-    factor = 2
-    img2 = image
-    img = image_resize(img2, width * factor, height * factor)
-    img[:] = [255, 255, 255]
-    img[int(height / 2):int(height / 2 + height),
-        int(width / 2): int(width / 2 + width)] = image
-
-    points_rescale = list()
-    for i in range(len(points)):
-        points_rescale.append((points[i][0] + int(width / 2),
-                               points[i][1] + int(height / 2)))
-
-    # cv2.imshow("t1", img)
-    # cv2.waitKey()
-    image = img
-
-    imgray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    ret, thresh = cv2.threshold(imgray, 127, 255, 0)
-    contours, hierarchy = cv2.findContours(
-        thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    contours = sorted(contours, key=lambda x: cv2.contourArea(x))[:-1]
-
-    lenght = len(points)
-    biggest_cnt = contours[-1]
-    contours = contours[:-1]
-    result = set()
-    for i in range(lenght - 1):
-        point_a = points_rescale[i]
-
-        for j in range(i, lenght):
-            point_b = points_rescale[j]
-
-            r = True
-            for point in line_coordinate(point_a, point_b):
-                if not is_point_in_shape(point, biggest_cnt):
-                    r = False
-                    break
-                for cnt in contours:
-                    if is_point_in_shape(point, cnt):
-                        r = False
-                        break
-                if not r:
-                    break
-            if r:
-                result.add((points[i], points[j]))
-                # img2 = cv2.line(image, point_a, point_b,
-                #                 color=(0, 0, 255), thickness=1)
-    # cv2.imshow("t", img2)
-    # cv2.waitKey()
-
-    # for cnt in contours:
-    #     cv2.drawContours(image, [cnt], 0, (0, 255, 0), 3)
-
-    # height, width, _ = img2.shape
-    # factor = 4
-    # img2 = image_resize(img2, width * factor, height * factor)
-
-    # cv2.imshow("t", img2)
-    # cv2.waitKey()
-    p = points[7]
-    show_lines_for_point(p, result, path_to_letter)
-
-    f = 6
-    degree = 2 * np.pi / f
-    len_before = len(result)
-    for point in points:
-        lines = list()
-        for item in result:
-            if item[0] == point:
-                lines.append((item, points_distance(
-                    item[0], item[1]), False))
-            elif item[1] == point:
-                lines.append(((item[1], item[0]), points_distance(
-                    item[0], item[1]), True))
-        for i in range(f):
-            deg = degree * i
-            vector = (math.sin(deg), math.cos(deg))
-            lines_deg = [line for line in lines if degree_between_point_and_vector(
-                line[0][0], line[0][1], vector) < degree]
-            lenght = len(lines_deg)
-            if point is p and lenght > 0:
-                tmp = [lin[0] for lin in lines_deg]
-                img2 = cv2.imread(path_to_letter, cv2.IMREAD_COLOR)
-                color = (0, 255, 0)  # random_color()
-                for line in tmp:
-                    img2 = cv2.line(img2, line[0], line[1],
-                                    color, thickness=1)
-
-                height, width, _ = img2.shape
-                img2 = cv2.line(img2, (height / 2, width / 2), (height / 2 + vector[0] * 5, width / 2 + vector[1] * 5),
-                                (0, 255, 255), thickness=1)
-                print(height, width)
-                factor = 4
-                img2 = image_resize(img2, width * factor, height * factor)
-
-                cv2.imshow(str(lines), img2)
-                cv2.waitKey()
-            delete_set = set()
-            if lenght > 1:
-                for i in range(lenght - 1):
-                    line_a = lines_deg[i]
-                    for j in range(i, lenght):
-                        line_b = lines_deg[j]
-                        if line_a[1] > line_b[1]:
-                            del_line = line_a
-                        else:
-                            del_line = line_b
-                        if del_line[2]:
-                            delete_set.add((del_line[0][1], del_line[0][0]))
-                        else:
-                            delete_set.add((del_line[0]))
-                result.difference_update(delete_set)
-
-    print(len_before, len(result))
-    show_lines_for_point(p, result, path_to_letter)
-    return result
+    vertices, edges = skeleton_to_graph(image)
+    remove_cycles(vertices, edges)
+    result = list()
+    result = get_sequences(list(edges))
+    result = list(r for r in result if len(r) > 2)
+    file_name = get_file_name(path_to_skeleton).replace('_skel', '_bspline')
+    path_to_save = get_dir_path(get_dir_path(path_to_skeleton))
+    path_to_save = combine_paths(path_to_save, 'bspline')
+    path_to_save = combine_paths(path_to_save, file_name)
+    draw_letter(result, path_to_save_file=path_to_save)
 
 
-def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA):
-    # initialize the dimensions of the image to be resized and
-    # grab the image size
-    dim = None
-    (h, w) = image.shape[:2]
+def produce_imitation_set(path_to_letters: str):
+    """
+    Generate imitation for all skeletons in the path.
 
-    # if both the width and height are None, then return the
-    # original image
-    if width is None and height is None:
-        return image
+    Args:
+        path_to_letters (str): Path to directory containing skeletons.
+    """
+    paths_to_skeletons = [f for f in glob(
+        combine_paths(path_to_letters, '**', '*_skel.png'), recursive=True)]
 
-    # check to see if the width is None
-    if width is None:
-        # calculate the ratio of the height and construct the
-        # dimensions
-        r = height / float(h)
-        dim = (int(w * r), height)
+    for path_to_skeleton in paths_to_skeletons:
+        path_to_save = get_dir_path(get_dir_path(path_to_skeleton))
+        path_to_save = combine_paths(path_to_save, 'bspline')
+        ensure_create_dir(path_to_save)
 
-    # otherwise, the height is None
-    else:
-        # calculate the ratio of the width and construct the
-        # dimensions
-        r = width / float(w)
-        dim = (width, int(h * r))
+    iterable = [(path) for path in paths_to_skeletons]
 
-    # resize the image
-    resized = cv2.resize(image, dim, interpolation=inter)
+    p = multiprocessing.Pool()
+    p.map_async(produce_imitation, iterable)
 
-    # return the resized image
-    return resized
+    p.close()
+    p.join()  # Wait for all child processes to close.
 
 
-def random_color():
-    rgbl = [255, 0, 0]
-    random.shuffle(rgbl)
-    return tuple(rgbl)
-
-
-def show_lines_for_point(point, connections, path_to_letter):
-    lines = set()
-    for item in connections:
-        if item[0] == point or item[1] == point:
-            lines.add(item)
-    show_lines(lines, path_to_letter)
-
-
-def show_lines(lines, path_to_letter):
-    img2 = cv2.imread(path_to_letter, cv2.IMREAD_COLOR)
-    color = (0, 255, 0)  # random_color()
-    for line in lines:
-        img2 = cv2.line(img2, line[0], line[1],
-                        color, thickness=1)
-
-    height, width, _ = img2.shape
-    print(height, width)
-    factor = 4
-    img2 = image_resize(img2, width * factor, height * factor)
-    cv2.imshow(str(lines), img2)
-    cv2.waitKey()
+def test():
+    path_to_skeleton = get_absolute_path(
+        './src/graphical_interface/letters_dataset/A/skel/0_skel.png')
+    vertices, edges = skeleton_to_graph(path_to_skeleton)
+    draw_graph(vertices, edges)
+    remove_cycles(vertices, edges)
+    draw_graph(vertices, edges)
+    result = get_sequences(list(edges))
+    res = [r for r in result if len(r) > 2]
+    draw_letter(res)
 
 
 if __name__ == '__main__':
-    path_to_control_points = 'D:\\Git Repositories\\Handwriting-synthesis-with-the-help-of-machine-learning\\src\\graphical_interface\\letters_dataset\\A\\skel\\0_skel_control_points.png'
-    path_to_skel = 'D:\\Git Repositories\\Handwriting-synthesis-with-the-help-of-machine-learning\\src\\graphical_interface\\letters_dataset\\A\\skel\\0_skel.png'
-    path_to_letter = 'D:\\Git Repositories\\Handwriting-synthesis-with-the-help-of-machine-learning\\src\\graphical_interface\\letters_dataset\\A\\0.png'
-    points = control_points(path_to_control_points)
-    print(points)
-    connections = connected_points(points, path_to_skel, path_to_letter)
-    # print(connections)
-    image = cv2.imread(path_to_letter, cv2.IMREAD_COLOR)
-    # print(connections)
-    # for point in points:
-    #     lines = set()
-    #     for item in connections:
-    #         if item[0] == point or item[1] == point:
-    #             lines.add(item)
-    #     img2 = cv2.imread(path_to_letter, cv2.IMREAD_COLOR)
-    #     print(point, lines)
-    #     color = random_color()
-    #     for line in lines:
-    #         img2 = cv2.line(img2, line[0], line[1],
-    #                         color, thickness=1)
-
-    #     height, width, _ = img2.shape
-    #     print(height, width)
-    #     factor = 4
-    #     img2 = image_resize(img2, width * factor, height * factor)
-
-    #     cv2.imshow(str(point), img2)
-    # cv2.waitKey()
-
-    for line in connections:
-        image = cv2.line(image, line[0], line[1],
-                         color=(0, 0, 255), thickness=1)
-
-    height, width, _ = image.shape
-    factor = 4
-    image = image_resize(image, width * factor, height * factor)
-
-    cv2.imshow("result", image)
-    cv2.waitKey()
+    # test()
+    path_to_letters = get_absolute_path(
+        './src/graphical_interface/letters_dataset/')
+    produce_imitation_set(path_to_letters)
