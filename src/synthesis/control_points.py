@@ -197,7 +197,8 @@ def produce_imitation(path_to_skeleton: str):
     path_to_save = get_dir_path(get_dir_path(path_to_skeleton))
     path_to_save = combine_paths(path_to_save, 'bspline')
     path_to_save = combine_paths(path_to_save, file_name)
-    draw_letter(result, path_to_save_file=path_to_save)
+    draw_letter(result, path_to_save_file=path_to_save,
+                image_size=(height, width))
 
 
 def produce_imitation_set(path_to_letters: str):
