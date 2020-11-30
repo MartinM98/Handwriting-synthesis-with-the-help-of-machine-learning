@@ -159,6 +159,15 @@ def get_file_name(file_path: str):
     return os.path.splitext(os.path.basename(file_path))[0]
 
 
+def get_dir_path(file_path: str):
+    """
+    Retrun directory path.
+    Returns:
+        str: Directory path.
+    """
+    return os.path.dirname(file_path)
+
+
 def get_path_without_extention(file_path: str):
     """
     Retrun path without extention of the file.
