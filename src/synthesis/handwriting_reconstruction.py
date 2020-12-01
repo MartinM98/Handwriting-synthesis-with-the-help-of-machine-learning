@@ -7,7 +7,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import copy
 
 
-def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_to_save_file: str = None, image_size: tuple = None):
+def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_to_save_file: str = None, image_size: tuple = None, show_points_flag: bool = False):
     """
     Create image with input letter, using the B spline the imitation of is made. Function has many parameters to define all imporatant features.
 
@@ -34,16 +34,24 @@ def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_
         if offset_x != 0 or offset_y != 0:
             line = [(point[0] + offset_x, point[1] + offset_y)
                     for point in line]
-        line = np.array(line)
-        x = line[:, 0]
-        y = line[:, 1]
+        line_length = len(line)
+        if line_length > 2:
+            line = np.array(line)
+            x = line[:, 0]
+            y = line[:, 1]
 
-        tck, u = interpolate.splprep([x, y], k=2, s=1)
-        u = np.linspace(0, 1, num=50, endpoint=True)
-        out = interpolate.splev(u, tck)
+            tck, u = interpolate.splprep([x, y], k=2, s=1)
+            u = np.linspace(0, 1, num=50, endpoint=True)
+            out = interpolate.splev(u, tck)
 
-        # plot.plot(x, y, 'ro', out[0], out[1], 'b')
-        plot.plot(out[0], out[1], 'black')
+            if show_points_flag:
+                plot.plot(x, y, 'ro', out[0], out[1], 'b')
+            else:
+                plot.plot(out[0], out[1], 'black')
+        elif line_length == 2:
+            plot.plot(line[0], line[1], 'black')
+        elif line_length == 1:
+            plot.plot(line[0][0], line[0][1], 'o', color='black')
     plot.axis('off')
     if path_to_save_file is None:
         plot.show()
@@ -68,8 +76,9 @@ def test():
     letter_x = [[(11, -11), (20, -22), (25, -28), (29, -34)],
                 [(29, -11), (25, -18), (20, -24), (11, -34)]]
     path_to_save = get_absolute_path('./bspline.png')
-    draw_letter(letter_x)
-    draw_letter(letter_b, path_to_save_file=path_to_save, image_size=(30, 40))
+    draw_letter(letter_x, show_points_flag=True)
+    draw_letter(letter_b, path_to_save_file=path_to_save,
+                image_size=(30, 40))
 
 
 if __name__ == '__main__':
