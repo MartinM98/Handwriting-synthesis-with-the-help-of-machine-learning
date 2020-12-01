@@ -216,10 +216,6 @@ def left_only_control_points(letter: list, control_points: list):
     return new_letter
 
 
-def rotate_letter(letter):
-    pass
-
-
 def produce_imitation(path_to_skeleton: str):
     """
     Produce imitation of the letter form the skeleton.
@@ -240,7 +236,7 @@ def produce_imitation(path_to_skeleton: str):
     path_to_save = combine_paths(path_to_save, 'bspline')
     path_to_save = combine_paths(path_to_save, file_name)
     draw_letter(result, path_to_save_file=path_to_save,
-                image_size=(height, width))
+                image_size=(height, width), skeleton_flag=True)
 
 
 def produce_imitation_set(path_to_letters: str):
@@ -272,28 +268,28 @@ def test():
     Testing
     """
     path_to_skeleton = get_absolute_path(
-        './src/graphical_interface/letters_dataset/dot/skel/0_skel.png')
-    # path_to_control_points = get_absolute_path(
-    #     './src/graphical_interface/letters_dataset/A/skel/0_skel_control_points.png')
+        './src/graphical_interface/letters_dataset/A/skel/0_skel.png')
+    path_to_control_points = get_absolute_path(
+        './src/graphical_interface/letters_dataset/A/skel/0_skel_control_points.png')
     image_skeleton = cv2.imread(path_to_skeleton)
     image_skeleton = cv2.rotate(image_skeleton, cv2.cv2.ROTATE_90_CLOCKWISE)
-    # image_control_points = cv2.imread(path_to_control_points)
+    image_control_points = cv2.imread(path_to_control_points)
     vertices, edges = skeleton_to_graph(image_skeleton)
-    # control_points = find_control_points(image_control_points)
+    control_points = find_control_points(image_control_points)
     # draw_graph(vertices, edges)
     remove_cycles(vertices, edges)
     draw_graph(vertices, edges)
     result = get_sequences(list(edges))
     # res = [r for r in result if len(r) > 2]
-    # print("control points", control_points)
-    # print("res", res)
-    # letter = left_only_control_points(res, control_points)
-    # print("letter", letter)
-    draw_letter(result, path_to_save_file='./test.png')
+    print("control points", control_points, '\n')
+    print("res", result, '\n')
+    letter = left_only_control_points(result, control_points)
+    print("letter", letter, '\n')
+    draw_letter(letter, path_to_save_file='./test.png')
 
 
 if __name__ == '__main__':
-    # test()
-    path_to_letters = get_absolute_path(
-        './src/graphical_interface/letters_dataset/')
-    produce_imitation_set(path_to_letters)
+    test()
+    # path_to_letters = get_absolute_path(
+    #     './src/graphical_interface/letters_dataset/')
+    # produce_imitation_set(path_to_letters)

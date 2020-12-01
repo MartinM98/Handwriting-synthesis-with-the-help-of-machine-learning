@@ -1,3 +1,4 @@
+from src.image_processing.skeletonize import skeletonize_image
 import cv2
 import numpy as np
 from scipy import interpolate
@@ -7,7 +8,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import copy
 
 
-def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_to_save_file: str = None, image_size: tuple = None, show_points_flag: bool = False):
+def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_to_save_file: str = None, image_size: tuple = None, show_points_flag: bool = False, skeleton_flag: bool = False):
     """
     Create image with input letter, using the B spline the imitation of is made. Function has many parameters to define all imporatant features.
 
@@ -17,7 +18,8 @@ def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_
         offset_y (int, optional): Offset in second points cooridante. Defaults to 0.
         path_to_save_file (str, optional): If the path is provided then the image is saved in the location. Defaults to None.
         image_size (tuple, optional): If provided the output image is in the size. Defaults to None.
-
+        show_points_flag (bool, optional): If true show points on image.  Defaults to False.
+        skeleton_flag (bool, optional): If true generate skeleton.  Defaults to False.
     Returns:
         image (image): Image with the created letter.
     """
@@ -61,6 +63,10 @@ def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_
     image = np.frombuffer(canvas.tostring_rgb(), dtype='uint8')
     image = image.reshape(int(height), int(width), 3)
     plot.close()
+    if skeleton_flag:
+        image = skeletonize_image(image)
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        _, image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
     if path_to_save_file is not None:
         cv2.imwrite(path_to_save_file, image)
 
@@ -76,9 +82,9 @@ def test():
     letter_x = [[(11, -11), (20, -22), (25, -28), (29, -34)],
                 [(29, -11), (25, -18), (20, -24), (11, -34)]]
     path_to_save = get_absolute_path('./bspline.png')
-    draw_letter(letter_x, show_points_flag=True)
-    draw_letter(letter_b, path_to_save_file=path_to_save,
-                image_size=(30, 40))
+    draw_letter(letter_x, show_points_flag=True, skeleton_flag=False,
+                path_to_save_file=path_to_save)
+    draw_letter(letter_b, path_to_save_file=path_to_save)
 
 
 if __name__ == '__main__':
