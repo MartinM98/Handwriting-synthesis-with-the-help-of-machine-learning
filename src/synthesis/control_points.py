@@ -268,6 +268,9 @@ def produce_imitation_set(path_to_letters: str):
 
 
 def test():
+    """
+    Testing
+    """
     path_to_skeleton = get_absolute_path(
         './src/graphical_interface/letters_dataset/dot/skel/0_skel.png')
     # path_to_control_points = get_absolute_path(
