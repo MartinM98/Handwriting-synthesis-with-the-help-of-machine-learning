@@ -8,24 +8,26 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import copy
 
 
-def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_to_save_file: str = None, image_size: tuple = None, show_points_flag: bool = False, skeleton_flag: bool = False):
+def generate_bsplain(letter: list = None, plot: plt = None, offset_x: int = 0, offset_y: int = 0, path_to_save_file: str = None, image_size: tuple = None, show_points_flag: bool = False):
     """
-    Create image with input letter, using the B spline the imitation of is made. Function has many parameters to define all imporatant features.
+    Generate B splain for input letter.
 
     Args:
         letter (list): List of lines (list of points) for which the B splain is computed and printed.
+        plot (plt, optional): If provided then the new figure is the part of plot. Defaults to None.
         offset_x (int, optional): Offset in first points cooridante. Defaults to 0.
         offset_y (int, optional): Offset in second points cooridante. Defaults to 0.
         path_to_save_file (str, optional): If the path is provided then the image is saved in the location. Defaults to None.
         image_size (tuple, optional): If provided the output image is in the size. Defaults to None.
         show_points_flag (bool, optional): If true show points on image.  Defaults to False.
-        skeleton_flag (bool, optional): If true generate skeleton.  Defaults to False.
+
     Returns:
-        image (image): Image with the created letter.
+        fig : New figure with the B splain.
     """
     letter = letter if letter else []
     fig = None
-    plot = plt
+    if plot is None:
+        plot = plt
     letter = copy.deepcopy(letter)
     if image_size is not None:
         fig = plot.figure(1, figsize=(
@@ -54,6 +56,30 @@ def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_
             plot.plot(line[0], line[1], 'black')
         elif line_length == 1:
             plot.plot(line[0][0], line[0][1], 'o', color='black')
+    return fig
+
+
+def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_to_save_file: str = None, image_size: tuple = None, show_points_flag: bool = False, skeleton_flag: bool = False):
+    """
+    Create image with input letter, using the B spline the imitation of is made. Function has many parameters to define all imporatant features.
+
+    Args:
+        letter (list): List of lines (list of points) for which the B splain is computed and printed.
+        offset_x (int, optional): Offset in first points cooridante. Defaults to 0.
+        offset_y (int, optional): Offset in second points cooridante. Defaults to 0.
+        path_to_save_file (str, optional): If the path is provided then the image is saved in the location. Defaults to None.
+        image_size (tuple, optional): If provided the output image is in the size. Defaults to None.
+        show_points_flag (bool, optional): If true show points on image.  Defaults to False.
+        skeleton_flag (bool, optional): If true generate skeleton.  Defaults to False.
+    Returns:
+        image (image): Image with the created letter.
+    """
+    letter = letter if letter else []
+    fig = None
+    plot = plt
+    letter = copy.deepcopy(letter)
+    fig = generate_bsplain(letter, plot, offset_x, offset_y,
+                           path_to_save_file, image_size, show_points_flag)
     plot.axis('off')
     if path_to_save_file is None:
         plot.show()
