@@ -226,6 +226,9 @@ def produce_imitation_set(path_to_letters: str):
 
 
 def test():
+    """
+    Testing
+    """
     path_to_skeleton = get_absolute_path(
         './src/graphical_interface/letters_dataset/A/skel/0_skel.png')
     vertices, edges = skeleton_to_graph(path_to_skeleton)
