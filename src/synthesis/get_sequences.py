@@ -178,7 +178,7 @@ def one_way_append(edges: list, points: list, index: int):
     return sequence
 
 
-def get_sequence(edges):
+def get_sequences(edges: list):
     """
    Creates the list of all unique points and their number of
    occurences. After that, the list of sequences that use all
@@ -209,7 +209,6 @@ def get_sequence(edges):
         if index != -1:
             sequence1 = one_way_append(edges, points, index)
             sequences.append(sequence1)
-            print(sequence1)
         else:
             break
     return sequences

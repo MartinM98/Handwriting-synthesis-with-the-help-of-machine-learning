@@ -22,5 +22,8 @@
     ],
     "python.linting.lintOnSave": true,
     "python.linting.pylintCategorySeverity.convention": "Information",
-    "python.linting.pylintArgs": ["--load-plugins"]  
+    "python.linting.pylintArgs": [
+        "--load-plugins"
+    ],
+    "python.analysis.completeFunctionParens": true
 }

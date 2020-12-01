@@ -7,7 +7,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='Handwriting Synthesis',
-    version='0.0.1',
+    version='0.1.5',
     description='The handwriting synthesis application.',
     long_description=long_description,
     url='https://github.com/MartinM98/Handwriting-synthesis-with-the-help-of-machine-learning',

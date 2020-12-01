@@ -1,3 +1,4 @@
+from typing import Tuple
 import src.file_handler.file_handler as fh
 import src.recognition.printed_text_recognition as pth
 import multiprocessing
@@ -34,7 +35,7 @@ def crop_image(image):
     return crop_image1, crop_image2
 
 
-def preproduce(args: (str, str, str, bool)):
+def preproduce(args: Tuple[str, str, str, bool]):
     """
     Divide and crop the dataset image to two images.
     One with the handwritten part and second with
