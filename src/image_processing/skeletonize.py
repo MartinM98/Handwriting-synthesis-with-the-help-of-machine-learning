@@ -8,6 +8,24 @@ import numpy as np
 from src.image_processing.common_functions.common_functions import get_dir_and_file
 
 
+def skeletonize_image(image):
+    """
+    Generate skeleton from image.
+
+    Args:
+        image (image): Input image.
+
+    Returns:
+        image: Output image with skeleton
+    """
+    image = invert(image)
+    image = image > filters.threshold_otsu(image)
+
+    skeleton = skeletonize(image)
+    skeleton = invert(skeleton)
+    return skeleton
+
+
 def skeletonize_function():
     """
     Sekeletonize the selected image, shows the result and saves it.
@@ -17,11 +35,7 @@ def skeletonize_function():
     directory, path2, path = get_dir_and_file()
 
     image2 = io.imread(path)
-    image2 = invert(image2)
-    image = image2 > filters.threshold_otsu(image2)
-
-    skeleton = skeletonize(image)
-    skeleton = invert(skeleton)
+    skeleton = skeletonize_image(image2)
 
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(8, 4),
                              sharex=True, sharey=True)

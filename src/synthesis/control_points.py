@@ -73,6 +73,22 @@ def remove_edge(edges: set, v1: tuple, v2: tuple):
     edges.discard((v2, v1))
 
 
+def find_control_points(image_with_control_points):
+    """
+    Search control points from the input image and return the list of the points.
+
+    Args:
+        image_with_control_points (image): Image with control points.
+
+    Returns:
+        list: List of control points
+    """
+    gray = cv2.cvtColor(image_with_control_points, cv2.COLOR_BGR2GRAY)
+    threshold_level = 50
+    vertices = np.column_stack(np.where(gray < threshold_level))
+    return [(v[0], v[1]) for v in vertices]
+
+
 def skeleton_to_graph(image):
     """
     Produce graph from image of skeleton.
@@ -179,6 +195,27 @@ def remove_cycles(vertices: list, edges: set):
     return vertices, edges
 
 
+def left_only_control_points(letter: list, control_points: list):
+    """
+    Remove all points from letter if the point is not in the list control_points.
+
+    Args:
+        letter (list): Letter in form of list
+        control_points (list): List of control points.
+
+    Returns:
+        list: New letter in form of list.
+    """
+    new_letter = list()
+    for line in letter:
+        new_line = list()
+        for point in line:
+            if point in control_points or (point[1], point[0]) in line:
+                new_line.append(point)
+        new_letter.append(new_line)
+    return new_letter
+
+
 def produce_imitation(path_to_skeleton: str):
     """
     Produce imitation of the letter form the skeleton.
@@ -187,18 +224,19 @@ def produce_imitation(path_to_skeleton: str):
         path_to_skel (str): Path to skeleton of letter.
     """
     image = cv2.imread(path_to_skeleton)
+    image = cv2.rotate(image, cv2.cv2.ROTATE_90_CLOCKWISE)
     height, width, _ = image.shape
     vertices, edges = skeleton_to_graph(image)
     remove_cycles(vertices, edges)
     result = list()
     result = get_sequences(list(edges))
-    result = list(r for r in result if len(r) > 2)
+    # result = list(r for r in result if len(r) > 2)
     file_name = get_file_name(path_to_skeleton).replace('_skel', '_bspline')
     path_to_save = get_dir_path(get_dir_path(path_to_skeleton))
     path_to_save = combine_paths(path_to_save, 'bspline')
     path_to_save = combine_paths(path_to_save, file_name)
     draw_letter(result, path_to_save_file=path_to_save,
-                image_size=(height, width))
+                image_size=(height, width), skeleton_flag=True)
 
 
 def produce_imitation_set(path_to_letters: str):
@@ -231,17 +269,27 @@ def test():
     """
     path_to_skeleton = get_absolute_path(
         './src/graphical_interface/letters_dataset/A/skel/0_skel.png')
-    vertices, edges = skeleton_to_graph(path_to_skeleton)
-    draw_graph(vertices, edges)
+    path_to_control_points = get_absolute_path(
+        './src/graphical_interface/letters_dataset/A/skel/0_skel_control_points.png')
+    image_skeleton = cv2.imread(path_to_skeleton)
+    image_skeleton = cv2.rotate(image_skeleton, cv2.cv2.ROTATE_90_CLOCKWISE)
+    image_control_points = cv2.imread(path_to_control_points)
+    vertices, edges = skeleton_to_graph(image_skeleton)
+    control_points = find_control_points(image_control_points)
+    # draw_graph(vertices, edges)
     remove_cycles(vertices, edges)
     draw_graph(vertices, edges)
     result = get_sequences(list(edges))
-    res = [r for r in result if len(r) > 2]
-    draw_letter(res)
+    # res = [r for r in result if len(r) > 2]
+    print("control points", control_points, '\n')
+    print("res", result, '\n')
+    letter = left_only_control_points(result, control_points)
+    print("letter", letter, '\n')
+    draw_letter(letter, path_to_save_file='./test.png')
 
 
 if __name__ == '__main__':
-    # test()
-    path_to_letters = get_absolute_path(
-        './src/graphical_interface/letters_dataset/')
-    produce_imitation_set(path_to_letters)
+    test()
+    # path_to_letters = get_absolute_path(
+    #     './src/graphical_interface/letters_dataset/')
+    # produce_imitation_set(path_to_letters)
