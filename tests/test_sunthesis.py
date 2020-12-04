@@ -12,7 +12,7 @@ class SynthesisTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ before all tests """
-        print('[START]  Synthesis Tests')
+        print('\n[START]  Synthesis Tests')
         cls.p1 = (0, 0)
         cls.p2 = (0, 1)
         cls.p3 = (3, 0)
@@ -23,7 +23,7 @@ class SynthesisTests(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """ after all tests """
-        print('[END]    Synthesis Tests')
+        print('\n[END]    Synthesis Tests')
 
     @classmethod
     def setUp(cls):
@@ -59,7 +59,6 @@ class SynthesisTests(unittest.TestCase):
     def test_find_control_points(self):
         path_to_image = get_absolute_path(
             './tests/data/control_points.png')
-        print(path_to_image)
         image = cv2.imread(path_to_image)
         self.assertIsNotNone(image)
         result = find_control_points(image)

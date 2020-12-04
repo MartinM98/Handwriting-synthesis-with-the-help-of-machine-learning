@@ -4,3 +4,4 @@ opencv-python==4.2.0.34
 Pillow==7.2.0
 pytesseract==0.3.4
 six==1.15.0
+coverage==5.3

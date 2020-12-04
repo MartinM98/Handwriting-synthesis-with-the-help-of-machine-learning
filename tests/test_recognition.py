@@ -9,12 +9,12 @@ class RecognitionTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ before all tests """
-        print('[START]  Recognition Tests')
+        print('\n[START]  Recognition Tests')
 
     @classmethod
     def tearDownClass(cls):
         """ after all tests """
-        print('[END]    Recognition tests')
+        print('\n[END]    Recognition tests')
 
     @classmethod
     def setUp(cls):
