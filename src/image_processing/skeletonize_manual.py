@@ -57,8 +57,8 @@ def skeletonize_function():
     for ix, iy in np.ndindex(image4.shape):
         if(image4[ix, iy] != 255):
             image4[ix, iy] = 0
-    _, img = cv2.threshold(image4, 2, 255, cv2.THRESH_BINARY)
-    plt.imsave(directory + '/' + path2 + '_skel.png', img, cmap=plt.cm.gray)
+    # _, img = cv2.threshold(image4, 2, 255, cv2.THRESH_BINARY)
+    plt.imsave(directory + '/' + path2 + '_skel.png', image4, cmap=plt.cm.gray)
     plt.show()
 
 
