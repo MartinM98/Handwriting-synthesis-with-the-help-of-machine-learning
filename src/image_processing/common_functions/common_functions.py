@@ -4,7 +4,7 @@ import math
 import numpy as np
 from skimage import img_as_ubyte
 from skimage.util import invert
-from src.file_handler.file_handler import get_dir_path, get_file_name
+from src.file_handler.file_handler import get_dir_path, get_filename_without_extention
 
 
 def get_dir_and_file():
@@ -27,7 +27,7 @@ def get_dir_and_file():
     root.filename = filedialog.askopenfilename(initialdir=".", title="Select file", filetypes=(
         ("png files", "*.png"), ("all files", "*.*")))
     directory = get_dir_path(root.filename)
-    path2 = get_file_name(root.filename)
+    path2 = get_filename_without_extention(root.filename)
     root.destroy()
     return directory, path2, root.filename
 
@@ -90,7 +90,6 @@ def get_image(path: str):
     """
     img = cv2.imread(path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    print(f"Size: {img.shape}")
     return img
 
 
@@ -151,17 +150,17 @@ def get_box(x: int, x_step: int, width: int, y: int, y_step: int, height: int):
     return x1, x2, y1, y2
 
 
-def prepare_blank_image(img: np.ndarray):
+def prepare_blank_image(shape: tuple):
     """
     Creates and returns blank image (with all white pixels)
     based on dimension of the passed image.
     Args:
-       img (np.ndarray): cv2 image.
+       shape (tuple): The shape of the original cv2 image.
 
     Returns:
         img (np.ndarray): prepared cv2 blank image.
     """
-    img2 = np.zeros(shape=img.shape)
+    img2 = np.zeros(shape=shape)
     img2 = img_as_ubyte(img2)
     img2 = invert(img2)
     return img2
