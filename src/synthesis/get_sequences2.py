@@ -209,7 +209,6 @@ def get_sequence(edges):
         if index != -1:
             sequence1 = one_way_append(edges, points, index)
             sequences.append(sequence1)
-            print(sequence1)
         else:
             break
     return sequences
