@@ -56,16 +56,16 @@ def process():
     points = []
     left = True
     right = True
-    top = True
-    bottom = True
+    # top = True
+    # bottom = True
     for ix, iy in np.ndindex(cv_image.shape):
         if cv_image[ix, iy] == 0:
             points.append((ix, iy))
-    c = 0
-    for point in points:
-        if img[point[0], point[1]] == 0:
-            c += 1
-    print(f"INIT\t {len(points)} = {c}")
+    # c = 0
+    # for point in points:
+    #     if img[point[0], point[1]] == 0:
+    #         c += 1
+    # print(f"INIT\t {len(points)} = {c}")
     x_max = img.shape[0]
     y_max = img.shape[1]
     for point in points:
@@ -73,14 +73,14 @@ def process():
             left = False
         if not check_point(point, 2, x_max, y_max):
             right = False
-        if not check_point(point, 3, x_max, y_max):
-            top = False
-        if not check_point(point, 4, x_max, y_max):
-            bottom = False
+        # if not check_point(point, 3, x_max, y_max):
+        #     top = False
+        # if not check_point(point, 4, x_max, y_max):
+        #     bottom = False
     x = 0
     y = 0
-    top = False
-    bottom = False
+    # top = False
+    # bottom = False
     if left:
         # if right or top or bottom:
         #     print('Left error')
@@ -89,14 +89,14 @@ def process():
         # if left or top or bottom:
         #     print('Right error')
         x = 1
-    if top:
-        # if left or right or bottom:
-        #     print('Top error')
-        y = -1
-    if bottom:
-        # if left or top or right:
-        #     print('Bottom error')
-        y = 1
+    # if top:
+    #     # if left or right or bottom:
+    #     #     print('Top error')
+    #     y = -1
+    # if bottom:
+    #     # if left or top or right:
+    #     #     print('Bottom error')
+    #     y = 1
     # print(f"L: {left}\nR: {right}\nT: {top}\nB: {bottom}")
     for point in points:
         update(point, x, y, x_max, y_max)
@@ -105,11 +105,11 @@ def process():
     for ix, iy in np.ndindex(cv_image.shape):
         if cv_image[ix, iy] == 0:
             points2.append((ix, iy))
-    c = 0
-    for point in points2:
-        if img[point[0], point[1]] == 0:
-            c += 1
-    print(f"END\t {len(points)} = {c}")
+    # c = 0
+    # for point in points2:
+    #     if img[point[0], point[1]] == 0:
+    #         c += 1
+    # print(f"END\t {len(points)} = {c}")
 
 
 def update(point: tuple, x: int, y: int, x_max: int, y_max: int):
