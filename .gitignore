@@ -1,6 +1,7 @@
 data/*
 !data/download_database.sh
 *.box
+tests_report/*
 
 ### OpenCV ###
 #OpenCV for Mac and Linux
@@ -156,3 +157,5 @@ dmypy.json
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
+
+

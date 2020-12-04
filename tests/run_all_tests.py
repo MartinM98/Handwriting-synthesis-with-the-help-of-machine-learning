@@ -1,6 +1,9 @@
 import unittest
 
-from tests.test_file_handler import TestFileHandler
+from tests.test_file_handler import FileHandlerTests
+from tests.test_recognition import RecognitionTests
+from tests.test_sunthesis import SynthesisTests
+from tests.test_image_processing import ImageProcessingTests
 
 
 def run_listed_tests():
@@ -9,7 +12,8 @@ def run_listed_tests():
     """
 
     # set of test classes
-    test_classes_to_run = [TestFileHandler]
+    test_classes_to_run = [FileHandlerTests, ImageProcessingTests,
+                           SynthesisTests, RecognitionTests]
 
     loader = unittest.TestLoader()
 
