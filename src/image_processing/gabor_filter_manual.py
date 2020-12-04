@@ -16,6 +16,119 @@ def nothing(x):
     pass
 
 
+def check_point(point: tuple, i: int, x_max: int, y_max: int):
+    """
+    Checks if the point has a neighbour in the skeleton in the
+    given direction
+    Args:
+       point (tuple): Point that has to be chcked.
+       i (int): integer determining direction.
+       x_max (int): maximal value of the width coordiante.
+       y_max (int): maximal value of the height coordiante.
+    Returns:
+        bool: determines if there is a neighbour in the skeleton
+        in the given direction.
+    """
+    global cv_image
+    global img
+    result = True
+    if i == 1:
+        if point[0] != 0:
+            result = img[point[0] - 1, point[1]] == 0
+    if i == 2:
+        if point[0] != (x_max - 1):
+            result = img[point[0] + 1, point[1]] == 0
+    if i == 3:
+        if point[1] != 0:
+            result = img[point[0], point[1] - 1] == 0
+    if i == 4:
+        if point[1] != (y_max - 1):
+            result = img[point[0], point[1] + 1] == 0
+    return result
+
+
+def process():
+    """
+    Improves the filtered points so that they would fit to the skeleton.
+    """
+    global cv_image
+    global img
+    points = []
+    left = True
+    right = True
+    top = True
+    bottom = True
+    for ix, iy in np.ndindex(cv_image.shape):
+        if cv_image[ix, iy] == 0:
+            points.append((ix, iy))
+    c = 0
+    for point in points:
+        if img[point[0], point[1]] == 0:
+            c += 1
+    print(f"INIT\t {len(points)} = {c}")
+    x_max = img.shape[0]
+    y_max = img.shape[1]
+    for point in points:
+        if not check_point(point, 1, x_max, y_max):
+            left = False
+        if not check_point(point, 2, x_max, y_max):
+            right = False
+        if not check_point(point, 3, x_max, y_max):
+            top = False
+        if not check_point(point, 4, x_max, y_max):
+            bottom = False
+    x = 0
+    y = 0
+    top = False
+    bottom = False
+    if left:
+        # if right or top or bottom:
+        #     print('Left error')
+        x = -1
+    if right:
+        # if left or top or bottom:
+        #     print('Right error')
+        x = 1
+    if top:
+        # if left or right or bottom:
+        #     print('Top error')
+        y = -1
+    if bottom:
+        # if left or top or right:
+        #     print('Bottom error')
+        y = 1
+    # print(f"L: {left}\nR: {right}\nT: {top}\nB: {bottom}")
+    for point in points:
+        update(point, x, y, x_max, y_max)
+
+    points2 = []
+    for ix, iy in np.ndindex(cv_image.shape):
+        if cv_image[ix, iy] == 0:
+            points2.append((ix, iy))
+    c = 0
+    for point in points2:
+        if img[point[0], point[1]] == 0:
+            c += 1
+    print(f"END\t {len(points)} = {c}")
+
+
+def update(point: tuple, x: int, y: int, x_max: int, y_max: int):
+    """
+    Saves current result of the filtering to the final result image.
+    The images are accessed as global variables.
+    Args:
+       point (tuple): Point that has to be updated.
+       x (int): The shift in the horizontal direction.
+       y (int): The shift in the vertical direction.
+       x_max (int): maximal value of the width coordiante.
+       y_max (int): maximal value of the height coordiante.
+    """
+    global cv_image
+    if (point[0] != 0) and (point[0] < x_max):
+        cv_image[point[0], point[1]] = 255
+        cv_image[point[0] + x, point[1]] = 0
+
+
 def save(x1, x2):
     """
     Saves current result of the filtering to the final result image.
@@ -24,8 +137,47 @@ def save(x1, x2):
        None - x1 and x2 are surrogate arguments.
     """
     global result
+    global img
     global cv_image
     result = np.bitwise_and(result, cv_image)
+
+
+def save_shifted(x1, x2):
+    """
+    Saves current result of the filtering to the final result image.
+    The images are accessed as global variables.
+    Args:
+       None - x1 and x2 are surrogate arguments.
+    """
+    global result
+    global img
+    global cv_image
+    process()
+    result = np.bitwise_and(result, cv_image)
+
+
+def reset(x1, x2):
+    """
+    Clear the result image.
+    """
+    global result
+    global img
+    result = np.zeros(shape=img.shape)
+    result = img_as_ubyte(result)
+    result = invert(result)
+
+
+def reset_skel(x1, x2):
+    """
+    Clear the result image with the skeleton included
+    in the result image.
+    """
+    global result
+    global img
+    result = np.zeros(shape=img.shape)
+    result = img_as_ubyte(result)
+    result = invert(result)
+    result = np.bitwise_and(result, img)
 
 
 def gabor_filter():
@@ -40,12 +192,13 @@ def gabor_filter():
     directory, path2, path = get_dir_and_file()
     img2 = np.zeros((300, 512, 3), np.uint8)
     cv2.namedWindow('trackbar')
-
+    global img
     img = cv2.imread(path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     result = np.zeros(shape=img.shape)
     result = img_as_ubyte(result)
     result = invert(result)
+    # result = np.bitwise_and(result, img)
 
     cv2.createTrackbar('theta', 'trackbar', 25, 300, nothing)
     cv2.createTrackbar('lamda', 'trackbar', 16, 300, nothing)
@@ -56,8 +209,10 @@ def gabor_filter():
     cv2.createTrackbar('sigma_y', 'trackbar', 0, 300, nothing)
     cv2.createTrackbar('cval', 'trackbar', 0, 300, nothing)
     cv2.createTrackbar('cval', 'trackbar', 0, 300, nothing)
-    cv2.createTrackbar('n', 'trackbar', 1, 300, nothing)
-    cv2.createButton('save control points', save, [''], cv2.QT_PUSH_BUTTON)
+    cv2.createButton('save crl points', save, [''], cv2.QT_PUSH_BUTTON)
+    cv2.createButton('save crl points in skel', save_shifted, [''], cv2.QT_PUSH_BUTTON)
+    cv2.createButton('reset', reset, [''], cv2.QT_PUSH_BUTTON)
+    cv2.createButton('reset skel', reset_skel, [''], cv2.QT_PUSH_BUTTON)
     while(1):
         cv2.imshow('trackbar', img2)
         k = cv2.waitKey(1) & 0xFF
@@ -97,10 +252,10 @@ def gabor_filter():
 
         cv2.imshow('Filtered imag', cv_image2)
         cv2.imshow('Filtered real', cv_image4)
+        result2 = cv2.resize(result, (300, 300))
+        cv2.imshow('Result', result2)
 
     cv2.destroyAllWindows()
-
-    cv2.imshow('Result', result)
     cv2.waitKey()
     cv2.imwrite(directory + '/' + path2 + '_control_points.png', result)
 
