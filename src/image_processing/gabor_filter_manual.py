@@ -47,18 +47,23 @@ def check_point(point: tuple, i: int, x_max: int, y_max: int):
     return result
 
 
-def process():
+def check_points(points: list):
     """
-    Improves the filtered points so that they would fit to the skeleton.
+    Checks for all points if they has neighbours in the skeleton
+    in every direction
+    Args:
+       points (list): The list with points filtered.
+    Returns:
+        bool: Determines if every point has a neighbour on the LHS.
+        bool: Determines if every point has a neighbour on the RHS.
+        bool: Determines if every point has a neighbour above.
+        bool: Determines if every point has a neighbour on the under.
     """
-    global cv_image
     global img
-    points = []
     left = True
     right = True
-    for ix, iy in np.ndindex(cv_image.shape):
-        if cv_image[ix, iy] == 0:
-            points.append((ix, iy))
+    top = True
+    bottom = True
     x_max = img.shape[0]
     y_max = img.shape[1]
     for point in points:
@@ -66,23 +71,62 @@ def process():
             left = False
         if not check_point(point, 2, x_max, y_max):
             right = False
+        if not check_point(point, 3, x_max, y_max):
+            top = False
+        if not check_point(point, 4, x_max, y_max):
+            bottom = False
+    return left, right, top, bottom
+
+
+def print_summary(points: list):
+    """
+    Prints a summary how many filtered points are on the skeleton
+    Args:
+        points (list): The list with points filtered.
+    """
+    global img
+    c = 0
+    for point in points:
+        if img[point[0], point[1]] == 0:
+            c += 1
+    print(f"SUMMARY\t {len(points)} = {c}")
+
+
+def process():
+    """
+    Improves the filtered points so that they would fit to the skeleton.
+    """
+    global cv_image
+    global img
+    points = []
+    for ix, iy in np.ndindex(cv_image.shape):
+        if cv_image[ix, iy] == 0:
+            points.append((ix, iy))
+    print_summary(points)
+    left, right, top, bottom = check_points(points)
     x = 0
     y = 0
+    top = False
+    bottom = False
     if left:
         x = -1
     if right:
         x = 1
-
+    if top:
+        y = -1
+    if bottom:
+        y = 1
     for point in points:
-        update(point, x, y, x_max, y_max)
+        update(point, x, y)
 
     points2 = []
     for ix, iy in np.ndindex(cv_image.shape):
         if cv_image[ix, iy] == 0:
             points2.append((ix, iy))
+    print_summary(points)
 
 
-def update(point: tuple, x: int, y: int, x_max: int, y_max: int):
+def update(point: tuple, x: int, y: int):
     """
     Saves current result of the filtering to the final result image.
     The images are accessed as global variables.
@@ -90,11 +134,9 @@ def update(point: tuple, x: int, y: int, x_max: int, y_max: int):
        point (tuple): Point that has to be updated.
        x (int): The shift in the horizontal direction.
        y (int): The shift in the vertical direction.
-       x_max (int): maximal value of the width coordiante.
-       y_max (int): maximal value of the height coordiante.
     """
     global cv_image
-    if (point[0] != 0) and (point[0] < x_max):
+    if (point[0] != 0) and (point[0] < cv_image.shape[0]):
         cv_image[point[0], point[1]] = 255
         cv_image[point[0] + x, point[1]] = 0
 
