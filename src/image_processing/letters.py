@@ -46,7 +46,7 @@ def extract(path=None):
             im = Image.open(image)
             width, height = im.size
 
-            command = 'tesseract ' + image + ' ' + image[:-4] + ' -l eng makebox'
+            command = 'tesseract ' + image + ' ' + image[:-4] + ' -l engnew makebox'
             os.system(command)
 
             boxfilename = image[:-3] + 'box'
@@ -85,7 +85,7 @@ def correct(path=None):
                 os.rmdir(directory)
             else:
                 i = 0
-                for filename in os.listdir(directory):
+                for filename in sorted(os.listdir(directory), key=lambda x: int(x[:-4])):
                     os.rename(directory + '/' + filename, directory + '/' + str(i) + '.png')
                     i += 1
 
