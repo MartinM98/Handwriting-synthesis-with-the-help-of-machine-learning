@@ -2,7 +2,7 @@ import unittest
 
 from tests.test_file_handler import FileHandlerTests
 from tests.test_recognition import RecognitionTests
-from tests.test_sunthesis import SynthesisTests
+from tests.test_synthesis import SynthesisTests
 from tests.test_image_processing import ImageProcessingTests
 
 

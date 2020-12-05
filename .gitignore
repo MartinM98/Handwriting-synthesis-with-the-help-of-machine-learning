@@ -1,7 +1,7 @@
 data/*
 !data/download_database.sh
 *.box
-tests_report/*
+tests/report/*
 
 ### OpenCV ###
 #OpenCV for Mac and Linux
