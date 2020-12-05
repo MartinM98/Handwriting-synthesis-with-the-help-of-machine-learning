@@ -97,10 +97,16 @@ class Panel(wx.Panel):
         self.imageCtrl.SetBitmap(PIL2wx(img))
 
     def OnLoadClick(self, event):
+        ```
+        Creates new dataset from pictures from selected directory
+        ```
         dir = extract(os.getcwd())
         correct(dir)
 
     def OnSaveClick(self, event):
+        ```
+        Saves created image
+        ```
         root = tk.Tk()
         root.withdraw()
         filename = filedialog.asksaveasfilename(filetypes=[("PNG file", "*.png")], defaultextension=[("PNG file", "*.png")])
@@ -108,6 +114,9 @@ class Panel(wx.Panel):
         img.SaveFile(filename, wx.BITMAP_TYPE_PNG)
 
     def OnReadClick(self, event):
+        ```
+        Reads text from picrute and writes it to the textbox
+        ```
         root = tk.Tk()
         root.withdraw()
         filename = filedialog.askopenfilename(filetypes=[("PNG file", "*.png")], defaultextension=[("PNG file", "*.png")])
