@@ -11,6 +11,7 @@ omit =
 exclude_lines =
     # Have to re-enable the standard pragma
     pragma: no cover
+    test
 
 
     # Don't complain about missing debug-only code:
