@@ -1,4 +1,5 @@
 import os
+from src.image_processing.resize import crop_image
 
 
 def create_from_skeletons(model: str, input: str, output: str, text_to_render: str):
@@ -30,6 +31,7 @@ def create_from_skeletons(model: str, input: str, output: str, text_to_render: s
                 output_path = output_path + str(len([name for name in os.listdir(letter_path)]) - 1) + '.png'
                 command = 'python ../synthesis/process-local.py --model_dir ' + model + ' --input_file ' + input_path + ' --output_file ' + output_path
                 os.system(command)
+                crop_image(output_path, output_path)
 
 
 if __name__ == '__main__':

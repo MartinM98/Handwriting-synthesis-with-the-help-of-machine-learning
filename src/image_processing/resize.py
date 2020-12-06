@@ -54,6 +54,21 @@ def combine(path_a: str, path_b: str):
     return np.concatenate([im_a, im_b], axis=1)
 
 
+def crop_image(image_path: str, output_path: str):
+    """
+    Cropps the image to the smallest possible rectangle
+
+    Args:
+        image_path (str): Path to image
+        output_path (str): Output path
+    """
+    img = cv2.imread(image_path, 0)
+    points = np.column_stack(np.where(img == 0))
+    cropped = img[np.min(points[:, 0]): np.max(points[:, 0]), np.min(points[:, 1]): np.max(points[:, 0])]
+
+    cv2.imwrite(output_path, cropped)
+
+
 def resize_directory(input_path: str, output_path: str):
     """
     Resizes all images in given directory to given output directory
