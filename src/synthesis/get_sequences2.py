@@ -198,6 +198,46 @@ def one_way_append(edges: list, points: list, index: int, checked: list):
     return sequence
 
 
+def find_non_zero_occurence_point(points: list):
+    """
+   Looks for a point that has the number of occurences
+   greater than 0.
+
+    Args:
+        points (list): The list of all unique points and their number of
+        occurences.
+
+    Returns:
+        (int): The index of the point that was found.
+    """
+    index = -1
+    for i in range(len(points)):
+        if points[i][1] > 0:
+            index = i
+            break
+    return index
+
+
+def find_single_occurence_point(points: list):
+    """
+   Looks for a point that has the number of occurences
+   is equal to 1.
+
+    Args:
+        points (list): The list of all unique points and their number of
+        occurences.
+
+    Returns:
+        (int): The index of the point that was found.
+    """
+    index = -1
+    for i in range(len(points)):
+        if points[i][1] == 1:
+            index = i
+            break
+    return index
+
+
 def get_sequences2(edges):
     """
    Creates the list of all unique points and their number of
@@ -216,11 +256,7 @@ def get_sequences2(edges):
     sequences = []
     checked = np.zeros(len(edges))
     while(True):
-        index = -1
-        for i in range(len(points)):
-            if points[i][1] == 1:
-                index = i
-                break
+        index = find_single_occurence_point(points)
         if index == -1:
             min = len(points)
             for i in range(len(points)):
@@ -231,10 +267,7 @@ def get_sequences2(edges):
             sequence1 = one_way_append(edges, points, index, checked)
             sequences.append(sequence1)
         else:
-            for i in range(len(points)):
-                if points[i][1] > 0:
-                    index = i
-                    break
+            index = find_non_zero_occurence_point(points)
             if index != -1:
                 sequence1 = one_way_append(edges, points, index, checked)
                 sequences.append(sequence1)
