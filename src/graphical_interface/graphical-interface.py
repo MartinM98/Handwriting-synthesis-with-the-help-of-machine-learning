@@ -1,5 +1,6 @@
 from create_text_different_widths_big_dataset import TextImageRenderAllDifferentWidths
 from src.image_processing.letters import extract, correct
+from src.image_processing.resize import resize_directory
 from src.synthesis.synthesize import create_from_skeletons
 from tkinter import filedialog
 from PIL import Image
@@ -108,8 +109,10 @@ class Panel(wx.Panel):
         """
         Creates new dataset from pictures from selected directory
         """
-        dir = extract(os.getcwd())
+        path = os.getcwd()
+        dir = extract(path)
         correct(dir)
+        resize_directory(path + '/letters_dataset', path + '/training_dataset/letters')
 
     def OnSaveClick(self, event):
         """
