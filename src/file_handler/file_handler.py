@@ -176,3 +176,13 @@ def get_path_without_extention(file_path: str):
         str: Path without extention.
     """
     return os.path.splitext(file_path)[0]
+
+
+def get_filename_without_extention(file_path: str):
+    """
+    Retruns base filename without extention.
+
+    Returns:
+        str: Filename without extention.
+    """
+    return get_file_name(get_path_without_extention(file_path))
