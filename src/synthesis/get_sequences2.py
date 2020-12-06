@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def compare_points(p1: tuple, p2: tuple):
     """
     Comapres two points
@@ -43,8 +46,9 @@ def get_unique_points(edges: list):
 
 def get_points(edges: list):
     """
-    Creates a list of all unique points and their number of occurences
-    for all points that are a part of at least one edge.
+    Creates a list of all unique points, their number of occurences
+    for all points that are a part of at least one edge, and the flag which
+    gets information if the point is a vertex connecting different paths.
 
     Args:
         edges (list): The list of all edges.
@@ -58,6 +62,7 @@ def get_points(edges: list):
         elem = []
         elem.append(p)
         elem.append(0)
+        elem.append(0)
         points.append(elem)
     for i in range(len(points)):
         for j in range(len(edges)):
@@ -65,6 +70,14 @@ def get_points(edges: list):
             second = compare_points(edges[j][1], points[i][0])
             if first or second:
                 points[i][1] += 1
+    exists = False
+    for i in range(len(points)):
+        if points[i][1] > 2 or points[i][1] == 1:
+            points[i][2] = 1
+            exists = True
+    if not exists:
+        points[0][2] = 1
+
     return points
 
 
@@ -100,14 +113,14 @@ def decrement_point_occur(points: list, point: tuple):
             elem[1] -= 1
 
 
-def init_append(edges: list, points: list, index: int):
+def init_append(edges: list, points: list, index: int, checked: list):
     """
     Appends the vertices from the first edge to the seqeunce.
 
     Args:
         edges (list): The list of all edges.
-        points (list): The list of all unique points and their number of
-            occurences.
+        points (list): The list of all unique points, their number of
+            occurences and flags indicating if the vertex connects many paths.
         index (int): the index of the first edge in the edges list.
 
     Returns:
@@ -120,24 +133,26 @@ def init_append(edges: list, points: list, index: int):
     y = -1
     last_index = -1
     for i in range(len(edges)):
-        if compare_points(edges[i][1], points[index][0]):
-            last_index = i
-            x = 0
-            y = 1
-        if compare_points(edges[i][0], points[index][0]):
-            last_index = i
-            x = 1
-            y = 0
+        if checked[i] == 0:
+            if compare_points(edges[i][1], points[index][0]):
+                last_index = i
+                x = 0
+                y = 1
+            if compare_points(edges[i][0], points[index][0]):
+                last_index = i
+                x = 1
+                y = 0
     points[index][1] -= 1
     sequence.append(edges[last_index][y])
     last = edges[last_index][x]
     sequence.append(last)
     idx = get_point_index(points, last)
     points[idx][1] -= 1
+    checked[last_index] = 1
     return sequence, last_index, last
 
 
-def one_way_append(edges: list, points: list, index: int):
+def one_way_append(edges: list, points: list, index: int, checked: list):
     """
     Traverses the edges list creating a sequence of points
     in one direction starting with the index'th point in the
@@ -152,33 +167,78 @@ def one_way_append(edges: list, points: list, index: int):
         list: the sequence in one direction starting with
         the index'th point in the points list.
     """
-    sequence, last_index, last = init_append(edges, points, index)
+    sequence, last_index, last = init_append(edges, points, index, checked)
     for i in range(len(edges)):
         for index in range(len(edges)):
             if index != last_index:
                 first = compare_points(edges[index][0], last)
                 second = compare_points(edges[index][1], last)
-                if first or second:
+                if (first or second) and checked[index] == 0:
                     if first:
                         x = 1
                     if second:
                         x = 0
                     idx = get_point_index(points, last)
-                    if points[idx][1] > 0:
-                        points[idx][1] -= 1
+                    points[idx][1] -= 1
                     idx = get_point_index(points, edges[index][x])
-                    if points[idx][1] > 0:
+                    checked[index] = 1
+                    if points[idx][1] == 2 and points[idx][2] == 0:
                         sequence.append(edges[index][x])
                         last = edges[index][x]
                         last_index = index
                         points[idx][1] -= 1
                         break
                     else:
+                        sequence.append(edges[index][x])
+                        last = edges[index][x]
+                        last_index = index
+                        points[idx][1] -= 1
                         return sequence
+
     return sequence
 
 
-def get_sequence(edges):
+def find_non_zero_occurence_point(points: list):
+    """
+   Looks for a point that has the number of occurences
+   greater than 0.
+
+    Args:
+        points (list): The list of all unique points and their number of
+        occurences.
+
+    Returns:
+        (int): The index of the point that was found.
+    """
+    index = -1
+    for i in range(len(points)):
+        if points[i][1] > 0:
+            index = i
+            break
+    return index
+
+
+def find_single_occurence_point(points: list):
+    """
+   Looks for a point that has the number of occurences
+   is equal to 1.
+
+    Args:
+        points (list): The list of all unique points and their number of
+        occurences.
+
+    Returns:
+        (int): The index of the point that was found.
+    """
+    index = -1
+    for i in range(len(points)):
+        if points[i][1] == 1:
+            index = i
+            break
+    return index
+
+
+def get_sequences2(edges):
     """
    Creates the list of all unique points and their number of
    occurences. After that, the list of sequences that use all
@@ -194,21 +254,23 @@ def get_sequence(edges):
     """
     points = get_points(edges)
     sequences = []
+    checked = np.zeros(len(edges))
     while(True):
-        index = -1
-        for i in range(len(points)):
-            if points[i][1] == 1:
-                index = i
-                break
+        index = find_single_occurence_point(points)
         if index == -1:
             min = len(points)
             for i in range(len(points)):
-                if points[i][1] > 0 and points[i][1] < min:
+                if points[i][1] > 0 and points[i][1] < min and points[i][2] == 1:
                     min = points[i][1]
                     index = i
         if index != -1:
-            sequence1 = one_way_append(edges, points, index)
+            sequence1 = one_way_append(edges, points, index, checked)
             sequences.append(sequence1)
         else:
-            break
+            index = find_non_zero_occurence_point(points)
+            if index != -1:
+                sequence1 = one_way_append(edges, points, index, checked)
+                sequences.append(sequence1)
+            else:
+                break
     return sequences

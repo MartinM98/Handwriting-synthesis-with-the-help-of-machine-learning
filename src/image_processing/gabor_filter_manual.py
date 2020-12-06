@@ -123,7 +123,7 @@ def process():
     for ix, iy in np.ndindex(cv_image.shape):
         if cv_image[ix, iy] == 0:
             points2.append((ix, iy))
-    print_summary(points)
+    print_summary(points2)
 
 
 def update(point: tuple, x: int, y: int):
