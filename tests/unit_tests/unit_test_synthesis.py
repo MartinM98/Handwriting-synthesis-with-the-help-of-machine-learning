@@ -1,10 +1,9 @@
-from src.file_handler.file_handler import get_absolute_path
-import cv2
-from src.synthesis.control_points import find_control_points, find_neighbours, is_neighbour_pixel, points_distance, remove_edge
+from src.synthesis.handwriting_reconstruction import generate_bsplain
+from src.synthesis.control_points import find_neighbours, is_neighbour_pixel, points_distance, remove_edge
 import unittest
 
 
-class SynthesisTests(unittest.TestCase):
+class SynthesisUnitTests(unittest.TestCase):
     """
     The class tests methods from image processing functions.
     """
@@ -12,7 +11,7 @@ class SynthesisTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ before all tests """
-        print('\n[START]  Synthesis Tests')
+        print('\n[START]  Synthesis Unit Tests')
         cls.p1 = (0, 0)
         cls.p2 = (0, 1)
         cls.p3 = (3, 0)
@@ -23,7 +22,7 @@ class SynthesisTests(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """ after all tests """
-        print('\n[END]    Synthesis Tests')
+        print('\n[END]    Synthesis Unit Tests')
 
     @classmethod
     def setUp(cls):
@@ -56,16 +55,12 @@ class SynthesisTests(unittest.TestCase):
         remove_edge(self.edges, self.p1, self.p2)
         self.assertTrue(len(self.edges) == 1)
 
-    def test_find_control_points(self):
-        path_to_image = get_absolute_path(
-            './tests/data/control_points.png')
-        image = cv2.imread(path_to_image)
-        self.assertIsNotNone(image)
-        result = find_control_points(image)
-        self.assertTrue(len(result) == 5)
-
-    def test_find_cycles(self):
-        pass
+    def test_generate_bsplain(self):
+        x = [1, 2, 3]
+        y = [3, 4, 5]
+        result = generate_bsplain(x, y)
+        self.assertIsNotNone(result)
+        self.assertTrue(len(result) == 2)
 
 
 if __name__ == '__main__':

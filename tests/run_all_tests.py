@@ -1,9 +1,13 @@
 import unittest
 
-from tests.test_file_handler import FileHandlerTests
-from tests.test_recognition import RecognitionTests
-from tests.test_synthesis import SynthesisTests
-from tests.test_image_processing import ImageProcessingTests
+from tests.unit_tests.unit_test_file_handler import FileHandlerUnitTests
+from tests.unit_tests.unit_test_recognition import RecognitionUnitTests
+from tests.unit_tests.unit_test_synthesis import SynthesisUnitTests
+from tests.unit_tests.unit_test_image_processing import ImageProcessingUnitTests
+from tests.integration_tests.integration_test_file_handler import FileHandlerIntegrationTests
+from tests.integration_tests.integration_test_synthesis import SynthesisIntegrationTests
+from tests.integration_tests.integration_test_recognition import RecognitionIntegrationTests
+from tests.integration_tests.integration_test_image_processing import ImageProcessingIntegrationTests
 
 
 def run_listed_tests():
@@ -12,8 +16,10 @@ def run_listed_tests():
     """
 
     # set of test classes
-    test_classes_to_run = [FileHandlerTests, ImageProcessingTests,
-                           SynthesisTests, RecognitionTests]
+    test_classes_to_run = [FileHandlerUnitTests, ImageProcessingUnitTests,
+                           SynthesisUnitTests, RecognitionUnitTests,
+                           FileHandlerIntegrationTests, ImageProcessingIntegrationTests,
+                           SynthesisIntegrationTests, RecognitionIntegrationTests]
 
     loader = unittest.TestLoader()
 
@@ -34,9 +40,12 @@ def run_all_tests():  # run all test
     """
 
     loader = unittest.TestLoader()
-    test_suite = loader.discover('tests', pattern='test_*.py')
+    unit_test_suite = loader.discover('tests', pattern='*unit_test*.py')
+    integration_test_suite = loader.discover(
+        'tests', pattern='*integration_test*.py')
     runner = unittest.TextTestRunner()
-    runner.run(test_suite)
+    runner.run(unit_test_suite)
+    runner.run(integration_test_suite)
 
 
 if __name__ == '__main__':
