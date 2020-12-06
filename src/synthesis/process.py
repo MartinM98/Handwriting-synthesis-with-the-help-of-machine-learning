@@ -8,12 +8,12 @@ import os
 import tempfile
 import subprocess
 import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
 import numpy as np
 import tfimage as im
 import threading
 import time
 import multiprocessing
+tf.disable_v2_behavior()
 
 edge_pool = None
 
@@ -68,7 +68,7 @@ def blank(src):
     offset = int(image_size / 2 - size / 2)
 
     dst = src
-    dst[offset:offset + size,offset:offset + size,:] = np.ones([size, size, 3])
+    dst[offset:offset + size, offset:offset + size, :] = np.ones([size, size, 3])
     return dst
 
 
@@ -90,7 +90,7 @@ def combine(src, src_path):
     height, width, _ = src.shape
     if height != sibling.shape[0] or width != sibling.shape[1]:
         raise Exception("differing sizes")
-    
+
     # convert both images to RGB if necessary
     if src.shape[2] == 1:
         src = im.grayscale_to_rgb(images=src)
@@ -100,10 +100,10 @@ def combine(src, src_path):
 
     # remove alpha channel
     if src.shape[2] == 4:
-        src = src[:,:,:3]
-    
+        src = src[:, :, :3]
+
     if sibling.shape[2] == 4:
-        sibling = sibling[:,:,:3]
+        sibling = sibling[:, :, :3]
 
     return np.concatenate([src, sibling], axis=1)
 
@@ -113,33 +113,35 @@ def grayscale(src):
 
 
 net = None
+
+
 def run_caffe(src):
     # lazy load caffe and create net
     global net
     if net is None:
         # don't require caffe unless we are doing edge detection
-        os.environ["GLOG_minloglevel"] = "2" # disable logging from caffe
+        os.environ["GLOG_minloglevel"] = "2"  # disable logging from caffe
         import caffe
         # using this requires using the docker image or assembling a bunch of dependencies
         # and then changing these hardcoded paths
         net = caffe.Net("/opt/caffe/examples/hed/deploy.prototxt", "/opt/caffe/hed_pretrained_bsds.caffemodel", caffe.TEST)
-        
+
     net.blobs["data"].reshape(1, *src.shape)
     net.blobs["data"].data[...] = src
     net.forward()
-    return net.blobs["sigmoid-fuse"].data[0][0,:,:]
+    return net.blobs["sigmoid-fuse"].data[0][0, :, :]
 
-    
+
 def edges(src):
     # based on https://github.com/phillipi/pix2pix/blob/master/scripts/edges/batch_hed.py
     # and https://github.com/phillipi/pix2pix/blob/master/scripts/edges/PostprocessHED.m
     import scipy.io
     src = src * 255
-    border = 128 # put a padding around images since edge detection seems to detect edge of image
-    src = src[:,:,:3] # remove alpha channel if present
-    src = np.pad(src, ((border, border), (border, border), (0,0)), "reflect")
-    src = src[:,:,::-1]
-    src -= np.array((104.00698793,116.66876762,122.67891434))
+    border = 128  # put a padding around images since edge detection seems to detect edge of image
+    src = src[:, :, :3]  # remove alpha channel if present
+    src = np.pad(src, ((border, border), (border, border), (0, 0)), "reflect")
+    src = src[:, :, ::-1]
+    src -= np.array((104.00698793, 116.66876762, 122.67891434))
     src = src.transpose((2, 0, 1))
 
     # [height, width, channels] => [batch, channel, height, width]
@@ -148,7 +150,7 @@ def edges(src):
 
     with tempfile.NamedTemporaryFile(suffix=".png") as png_file, tempfile.NamedTemporaryFile(suffix=".mat") as mat_file:
         scipy.io.savemat(mat_file.name, {"input": fuse})
-        
+
         octave_code = r"""
 E = 1-load(input_path).input;
 E = imresize(E, [image_width,image_width]);
@@ -171,7 +173,7 @@ imwrite(E, output_path);
             input_path="'%s'" % mat_file.name,
             output_path="'%s'" % png_file.name,
             image_width=256,
-            threshold=25.0/255.0,
+            threshold=25.0 / 255.0,
             small_edge=5,
         )
 
@@ -214,6 +216,7 @@ start = None
 num_complete = 0
 total = 0
 
+
 def complete():
     global num_complete, rate, last_complete
 
@@ -248,17 +251,17 @@ def main():
         else:
             src_paths.append(src_path)
             dst_paths.append(dst_path)
-    
+
     print("skipping %d files that already exist" % skipped)
-            
+
     global total
     total = len(src_paths)
-    
+
     print("processing %d files" % total)
 
     global start
     start = time.time()
-    
+
     if a.operation == "edges":
         # use a multiprocessing pool for this operation so it can use multiple CPUs
         # create the pool before we launch processing threads
@@ -297,11 +300,12 @@ def main():
                 t = threading.Thread(target=worker, args=(coord,))
                 t.start()
                 threads.append(t)
-            
+
             try:
                 coord.join(threads)
             except KeyboardInterrupt:
                 coord.request_stop()
                 coord.join(threads)
+
 
 main()
