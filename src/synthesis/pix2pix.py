@@ -232,7 +232,7 @@ def lab_to_rgb(lab):
         return tf.reshape(srgb_pixels, tf.shape(lab))
 
 
-def load_examples():
+def load_examples():  # noqa: C901
     if a.input_dir is None or not os.path.exists(a.input_dir):
         raise Exception("input_dir does not exist")
 
@@ -536,7 +536,7 @@ def append_index(filesets, step=False):
     return index_path
 
 
-def main():
+def main():  # noqa: C901
     if a.seed is None:
         a.seed = random.randint(0, 2**31 - 1)
 
