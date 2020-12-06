@@ -180,7 +180,7 @@ def get_path_without_extention(file_path: str):
 
 def get_filename_without_extention(file_path: str):
     """
-    Retrun filename without extention.
+    Retruns base filename without extention.
 
     Returns:
         str: Filename without extention.
