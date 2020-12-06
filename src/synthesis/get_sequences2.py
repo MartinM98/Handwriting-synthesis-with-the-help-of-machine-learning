@@ -46,7 +46,7 @@ def get_unique_points(edges: list):
 
 def get_points(edges: list):
     """
-    Creates a list of all unique points ,their number of occurences
+    Creates a list of all unique points, their number of occurences
     for all points that are a part of at least one edge, and the flag which
     gets information if the point is a vertex connecting different paths.
 
@@ -120,7 +120,7 @@ def init_append(edges: list, points: list, index: int, checked: list):
     Args:
         edges (list): The list of all edges.
         points (list): The list of all unique points, their number of
-            occurences, and flags indicating if the vertex connects many paths.
+            occurences and flags indicating if the vertex connects many paths.
         index (int): the index of the first edge in the edges list.
 
     Returns:
