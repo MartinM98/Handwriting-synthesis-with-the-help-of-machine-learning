@@ -3,7 +3,18 @@ import numpy as np
 import os
 
 
-def resize_image(image_path, width, height):
+def resize_image(image_path: str, width: int, height: int):
+    """
+    Resizes image from given path to given size by pasting it into center of white baackground of given size
+
+    Args:
+        image_path (str): Path to image
+        width (int): Width in pixels
+        height (int): Height in pixels
+
+    Returns:
+        (array): Resized image
+    """
     resized = np.zeros([width, height, 3], dtype=np.uint8)
     resized.fill(255)
 
@@ -18,7 +29,14 @@ def resize_image(image_path, width, height):
     return resized
 
 
-def resize_directory(input_path, output_path):
+def resize_directory(input_path: str, output_path: str):
+    """
+    Resizes all files in given directory to given outputt directory
+
+    Args:
+        input_path (str): Input directory
+        output_path (str): Output directory
+    """
     i = 0
     for path, subdirs, files in os.walk(input_path):
         for name in files:
