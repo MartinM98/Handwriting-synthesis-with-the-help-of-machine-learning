@@ -235,7 +235,7 @@ def complete():
         last_complete = now
 
 
-def main():
+def main():  # noqa: C901
     if not os.path.exists(a.output_dir):
         os.makedirs(a.output_dir)
 
