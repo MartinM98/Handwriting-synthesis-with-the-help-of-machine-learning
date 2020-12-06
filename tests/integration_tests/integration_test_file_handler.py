@@ -4,7 +4,7 @@ import os
 import src.file_handler.file_handler as fh
 
 
-class FileHandlerTests(unittest.TestCase):
+class FileHandlerIntegrationTests(unittest.TestCase):
     """
     The class tests methods from FileHandler class.
     """
@@ -12,7 +12,7 @@ class FileHandlerTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ before all tests """
-        print('\n[START]  File Handler Tests')
+        print('\n[START]  File Handler Integration Tests')
         cls.directory = os.path.expanduser('./tmp_tests')
         if not os.path.exists(cls.directory):
             os.makedirs(cls.directory)
@@ -20,7 +20,7 @@ class FileHandlerTests(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """ after all tests """
-        print('\n[END]    File Handler Tests')
+        print('\n[END]    File Handler Integration Tests')
         os.removedirs(cls.directory)
 
     @classmethod

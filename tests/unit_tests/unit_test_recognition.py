@@ -1,20 +1,20 @@
 import unittest
 
 
-class ImageProcessingTests(unittest.TestCase):
+class RecognitionUnitTests(unittest.TestCase):
     """
-    The class tests methods from image processing functions.
+    The class tests methods from recognition functions.
     """
 
     @classmethod
     def setUpClass(cls):
         """ before all tests """
-        print('\n[START]  Image Processing Tests')
+        print('\n[START]  Recognition Unit Tests')
 
     @classmethod
     def tearDownClass(cls):
         """ after all tests """
-        print('\n[END]    Image Processing Tests')
+        print('\n[END]    Recognition Unit Tests')
 
     @classmethod
     def setUp(cls):
