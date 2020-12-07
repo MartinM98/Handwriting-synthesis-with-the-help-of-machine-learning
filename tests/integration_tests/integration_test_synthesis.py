@@ -2,6 +2,7 @@ from src.file_handler.file_handler import get_absolute_path
 import cv2
 from src.synthesis.control_points import find_control_points, find_cycles, is_neighbour_pixel, left_only_control_points, remove_cycles, skeleton_to_graph
 from src.synthesis.get_sequences import get_sequences
+from src.synthesis.synthesize import create_from_skeletons
 import unittest
 import random
 
@@ -91,6 +92,17 @@ class SynthesisIntegrationTests(unittest.TestCase):
 
     def test_generate_bsplain_fig(self):
         pass
+
+    def test_create_from_skeletons(self):
+        path_to_model = get_absolute_path(
+            './tests/data/test_model')
+        path_to_data = get_absolute_path(
+            './tests/data/')
+        path_to_result = get_absolute_path(
+            './tests/data/0.png')
+        create_from_skeletons(path_to_model, path_to_data + '/', path_to_data + '/', 'a')
+        result = cv2.imread(path_to_result)
+        self.assertIsNotNone(result)
 
 
 if __name__ == '__main__':

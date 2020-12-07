@@ -2,3 +2,4 @@ coverage run -m --rcfile="scripts/tests/.coveragerc" --source="src" pytest "test
 coverage report --rcfile="scripts/tests/.coveragerc"
 coverage html --rcfile="scripts/tests/.coveragerc"
 coverage erase
+read  -n 1
