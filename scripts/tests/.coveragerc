@@ -5,6 +5,11 @@ omit =
     *site-packages*
     tests/*
     *__init__*
+    src/synthesis/pix2pix.py
+    src/image_processing/threshold.py
+    src\graphical_interface\create_text_with_font_static_different_widths.py
+    src\graphical_interface\create_text_with_font_static.py
+    src\graphical_interface\graphical-interface.py
 
 [report]
 # Regexes for lines to exclude from consideration
@@ -14,6 +19,10 @@ exclude_lines =
     test
     draw_graph
     produce
+    extract
+    correct
+    resize_directory
+    combine_directory
 
 
     # Don't complain about missing debug-only code:
