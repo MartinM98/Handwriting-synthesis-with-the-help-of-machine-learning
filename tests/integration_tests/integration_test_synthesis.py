@@ -93,6 +93,7 @@ class SynthesisIntegrationTests(unittest.TestCase):
     def test_generate_bsplain_fig(self):
         pass
 
+    @unittest.skip("work in progress")
     def test_create_from_skeletons(self):
         path_to_model = get_absolute_path(
             './tests/data/test_model')
@@ -100,7 +101,8 @@ class SynthesisIntegrationTests(unittest.TestCase):
             './tests/data/skeletons/')
         path_to_output = get_absolute_path(
             './tests/data/output/')
-        create_from_skeletons(path_to_model, path_to_data + '/', path_to_output + '/', 'a')
+        create_from_skeletons(path_to_model, path_to_data +
+                              '/', path_to_output + '/', 'a')
         result = cv2.imread(path_to_output + '/a2/0.png')
         self.assertIsNotNone(result)
 

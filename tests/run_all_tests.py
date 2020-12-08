@@ -1,3 +1,4 @@
+from os import removedirs
 import unittest
 from datetime import datetime
 
@@ -9,7 +10,7 @@ from tests.integration_tests.integration_test_file_handler import FileHandlerInt
 from tests.integration_tests.integration_test_synthesis import SynthesisIntegrationTests
 from tests.integration_tests.integration_test_recognition import RecognitionIntegrationTests
 from tests.integration_tests.integration_test_image_processing import ImageProcessingIntegrationTests
-from src.file_handler.file_handler import combine_paths, ensure_create_and_append_file, ensure_create_dir, get_absolute_path
+from src.file_handler.file_handler import combine_paths, ensure_create_and_append_file, ensure_create_dir, get_absolute_path, remove_dir_with_content
 
 
 def run_listed_tests():
@@ -86,3 +87,5 @@ def log_errors(unit_test_result: list, integration_test_result: list):
 if __name__ == '__main__':
     run_all_tests()
     # run_listed_tests()
+    path_to_output = get_absolute_path('./tests/data/output')
+    remove_dir_with_content(path_to_output)

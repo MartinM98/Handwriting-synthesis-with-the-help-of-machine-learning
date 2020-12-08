@@ -1,4 +1,5 @@
 import os
+import shutil
 
 
 def write_to_file(file_path: str, data: str):
@@ -200,3 +201,16 @@ def get_filename_without_extention(file_path: str):
         str: Filename without extention.
     """
     return get_file_name(get_path_without_extention(file_path))
+
+
+def remove_dir_with_content(dir_path: str):
+    """
+    Remove directory even there exist content.
+
+    Args:
+        dir_path (str): Path to directory.
+    """
+    try:
+        shutil.rmtree(dir_path)
+    except OSError as e:
+        print("Error: %s : %s" % (dir_path, e.strerror))

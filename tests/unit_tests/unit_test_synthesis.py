@@ -1,4 +1,5 @@
-from src.synthesis.handwriting_reconstruction import generate_bsplain
+from src.file_handler.file_handler import get_absolute_path
+from src.synthesis.handwriting_reconstruction import draw_letter, generate_bsplain, generate_bsplain_fig
 from src.synthesis.control_points import find_neighbours, is_neighbour_pixel, points_distance, remove_edge
 import unittest
 
@@ -61,6 +62,19 @@ class SynthesisUnitTests(unittest.TestCase):
         result = generate_bsplain(x, y)
         self.assertIsNotNone(result)
         self.assertTrue(len(result) == 2)
+
+    def test_generate_bsplain_fig(self):
+        letter = [[(1, 1), (-1, -1)], [(0, 0), (0, 4), (0, 7)]]
+        result = generate_bsplain_fig(
+            letter, image_size=(20, 20), offset_x=3, offset_y=-3, show_points_flag=True)
+        self.assertIsNotNone(result)
+
+    def test_draw_letter(self):
+        letter = [[(1, 1), (-1, -1)], [(0, 0), (0, 4), (0, 7)], [(-1, -2)]]
+        path = get_absolute_path('./tests/data/output/draw_letter_test.png')
+        result = draw_letter(letter, show_flag=False,
+                             skeleton_flag=True, path_to_save_file=path)
+        self.assertIsNotNone(result)
 
 
 if __name__ == '__main__':

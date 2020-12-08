@@ -3,6 +3,7 @@ data/*
 *.box
 tests/report/*
 tests/logs/*
+tests/data/output/*
 
 ### OpenCV ###
 #OpenCV for Mac and Linux
@@ -158,5 +159,4 @@ dmypy.json
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
-
 
