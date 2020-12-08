@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Coverage report</title>
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <script type="text/javascript" src="jquery.min.js"></script>
+    <script type="text/javascript" src="jquery.ba-throttle-debounce.min.js"></script>
+    <script type="text/javascript" src="jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" src="jquery.hotkeys.js"></script>
+    <script type="text/javascript" src="coverage_html.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(coverage.index_ready);
+    </script>
+</head>
+<body class="indexfile">
+<div id="header">
+    <div class="content">
+        <h1>Coverage report:
+            <span class="pc_cov">25%</span>
+        </h1>
+        <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
+        <form id="filter_container">
+            <input id="filter" type="text" value="" placeholder="filter..." />
+        </form>
+    </div>
+</div>
+<div class="help_panel">
+    <img id="panel_icon" src="keybd_open.png" alt="Hide keyboard shortcuts" />
+    <p class="legend">Hot-keys on this page</p>
+    <div>
+    <p class="keyhelp">
+        <span class="key">n</span>
+        <span class="key">s</span>
+        <span class="key">m</span>
+        <span class="key">x</span>
+        <span class="key">b</span>
+        <span class="key">p</span>
+        <span class="key">c</span> &nbsp; change column sorting
+    </p>
+    </div>
+</div>
+<div id="index">
+    <table class="index">
+        <thead>
+            <tr class="tablehead" title="Click to sort">
+                <th class="name left headerSortDown shortkey_n">Module</th>
+                <th class="shortkey_s">statements</th>
+                <th class="shortkey_m">missing</th>
+                <th class="shortkey_x">excluded</th>
+                <th class="shortkey_b">branches</th>
+                <th class="shortkey_p">partial</th>
+                <th class="right shortkey_c">coverage</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr class="total">
+                <td class="name left">Total</td>
+                <td>1202</td>
+                <td>910</td>
+                <td>225</td>
+                <td>508</td>
+                <td>10</td>
+                <td class="right" data-ratio="420 1710">25%</td>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr class="file">
+                <td class="name left"><a href="src_file_handler_file_handler_py.html">src\file_handler\file_handler.py</a></td>
+                <td>46</td>
+                <td>14</td>
+                <td>0</td>
+                <td>4</td>
+                <td>0</td>
+                <td class="right" data-ratio="34 50">68%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_graphical_interface_create_text_different_widths_big_dataset_py.html">src\graphical_interface\create_text_different_widths_big_dataset.py</a></td>
+                <td>70</td>
+                <td>70</td>
+                <td>0</td>
+                <td>32</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 102">0%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_image_processing_automated_functions_py.html">src\image_processing\automated_functions.py</a></td>
+                <td>55</td>
+                <td>55</td>
+                <td>0</td>
+                <td>26</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 81">0%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_image_processing_binary_search_filter_py.html">src\image_processing\binary_search_filter.py</a></td>
+                <td>68</td>
+                <td>68</td>
+                <td>2</td>
+                <td>28</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 96">0%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_image_processing_common_functions_common_functions_py.html">src\image_processing\common_functions\common_functions.py</a></td>
+                <td>70</td>
+                <td>70</td>
+                <td>0</td>
+                <td>14</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 84">0%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_image_processing_consecutive_filter_py.html">src\image_processing\consecutive_filter.py</a></td>
+                <td>42</td>
+                <td>42</td>
+                <td>2</td>
+                <td>20</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 62">0%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_image_processing_gabor_filter_py.html">src\image_processing\gabor_filter.py</a></td>
+                <td>57</td>
+                <td>57</td>
+                <td>0</td>
+                <td>36</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 93">0%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_image_processing_gabor_filter_manual_py.html">src\image_processing\gabor_filter_manual.py</a></td>
+                <td>148</td>
+                <td>148</td>
+                <td>2</td>
+                <td>56</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 204">0%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_image_processing_letters_py.html">src\image_processing\letters.py</a></td>
+                <td>16</td>
+                <td>0</td>
+                <td>56</td>
+                <td>10</td>
+                <td>0</td>
+                <td class="right" data-ratio="26 26">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_image_processing_preproduce_dataset_py.html">src\image_processing\preproduce_dataset.py</a></td>
+                <td>18</td>
+                <td>18</td>
+                <td>39</td>
+                <td>4</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 22">0%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_image_processing_random_filter_py.html">src\image_processing\random_filter.py</a></td>
+                <td>60</td>
+                <td>60</td>
+                <td>2</td>
+                <td>30</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 90">0%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_image_processing_resize_py.html">src\image_processing\resize.py</a></td>
+                <td>26</td>
+                <td>2</td>
+                <td>14</td>
+                <td>4</td>
+                <td>2</td>
+                <td class="right" data-ratio="26 30">87%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_image_processing_skeletonize_py.html">src\image_processing\skeletonize.py</a></td>
+                <td>21</td>
+                <td>13</td>
+                <td>0</td>
+                <td>6</td>
+                <td>0</td>
+                <td class="right" data-ratio="8 27">30%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_image_processing_skeletonize_manual_py.html">src\image_processing\skeletonize_manual.py</a></td>
+                <td>35</td>
+                <td>35</td>
+                <td>2</td>
+                <td>4</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 39">0%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_recognition_postproduce_boxes_py.html">src\recognition\postproduce_boxes.py</a></td>
+                <td>11</td>
+                <td>11</td>
+                <td>31</td>
+                <td>2</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 13">0%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_recognition_printed_text_recognition_py.html">src\recognition\printed_text_recognition.py</a></td>
+                <td>19</td>
+                <td>19</td>
+                <td>0</td>
+                <td>6</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 25">0%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_synthesis_control_points_py.html">src\synthesis\control_points.py</a></td>
+                <td>79</td>
+                <td>0</td>
+                <td>62</td>
+                <td>46</td>
+                <td>0</td>
+                <td class="right" data-ratio="125 125">100%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_synthesis_get_sequences_py.html">src\synthesis\get_sequences.py</a></td>
+                <td>106</td>
+                <td>6</td>
+                <td>1</td>
+                <td>64</td>
+                <td>3</td>
+                <td class="right" data-ratio="157 170">92%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_synthesis_get_sequences2_py.html">src\synthesis\get_sequences2.py</a></td>
+                <td>136</td>
+                <td>136</td>
+                <td>1</td>
+                <td>76</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 212">0%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_synthesis_handwriting_reconstruction_py.html">src\synthesis\handwriting_reconstruction.py</a></td>
+                <td>60</td>
+                <td>46</td>
+                <td>9</td>
+                <td>24</td>
+                <td>0</td>
+                <td class="right" data-ratio="14 84">17%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_synthesis_process-local_py.html">src\synthesis\process-local.py</a></td>
+                <td>35</td>
+                <td>35</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td class="right" data-ratio="0 35">0%</td>
+            </tr>
+            <tr class="file">
+                <td class="name left"><a href="src_synthesis_synthesize_py.html">src\synthesis\synthesize.py</a></td>
+                <td>24</td>
+                <td>5</td>
+                <td>2</td>
+                <td>16</td>
+                <td>5</td>
+                <td class="right" data-ratio="30 40">75%</td>
+            </tr>
+        </tbody>
+    </table>
+    <p id="no_rows">
+        No items found using the specified filter.
+    </p>
+</div>
+<div id="footer">
+    <div class="content">
+        <p>
+            <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.3</a>,
+            created at 2020-12-07 19:49 +0100
+        </p>
+    </div>
+</div>
+</body>
+</html>

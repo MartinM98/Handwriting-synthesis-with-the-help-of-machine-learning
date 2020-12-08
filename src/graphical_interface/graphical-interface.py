@@ -1,5 +1,10 @@
 from create_text_different_widths_big_dataset import TextImageRenderAllDifferentWidths
 from src.image_processing.letters import extract, correct
+from src.image_processing.resize import resize_directory, combine_directory, resize_skeletons_directory
+from src.synthesis.synthesize import create_from_skeletons
+from tkinter import filedialog
+from PIL import Image
+import tkinter as tk
 import wx
 import os
 # from create_text_with_font_static import TextImageRenderAllConstantWidths
@@ -43,46 +48,105 @@ class Frame(wx.Frame):
 
 class Panel(wx.Panel):
     def __init__(self, parent):
+        self.use_synthesis = True
         wx.Panel.__init__(self, parent)
 
         # create some sizers
         mainSizer = wx.BoxSizer(wx.VERTICAL)
         grid = wx.GridBagSizer(hgap=2, vgap=2)
         hSizer = wx.BoxSizer(wx.HORIZONTAL)
+        topGrid = wx.GridBagSizer(hgap=4, vgap=1)
+
+        grid.Add(topGrid, pos=(0, 0))
+
+        self.button_load = wx.Button(
+            self, label="Load", pos=(200, 325), style=wx.EXPAND)
+        self.Bind(wx.EVT_BUTTON, self.OnLoadClick, self.button_load)
+        topGrid.Add(self.button_load, pos=(0, 0), span=(0, 1))
+
+        self.button_save = wx.Button(
+            self, label="Save", pos=(200, 325), style=wx.EXPAND)
+        self.Bind(wx.EVT_BUTTON, self.OnSaveClick, self.button_save)
+        topGrid.Add(self.button_save, pos=(0, 1), span=(0, 1))
+
+        self.button_read = wx.Button(
+            self, label="Read", pos=(200, 325), style=wx.EXPAND)
+        self.Bind(wx.EVT_BUTTON, self.OnReadClick, self.button_read)
+        topGrid.Add(self.button_read, pos=(0, 2), span=(0, 1))
 
         self.button_render = wx.Button(
             self, label="Render", pos=(200, 325), style=wx.EXPAND)
         self.Bind(wx.EVT_BUTTON, self.OnRenderClick, self.button_render)
-        grid.Add(self.button_render, pos=(0, 0), span=(0, 1))
-
-        self.button_load = wx.Button(
-            self, label="Load", pos=(400, 325), style=wx.EXPAND)
-        self.Bind(wx.EVT_BUTTON, self.OnLoadClick, self.button_load)
-        grid.Add(self.button_load, pos=(0, 1), span=(0, 1))
+        topGrid.Add(self.button_render, pos=(0, 3), span=(0, 1))
 
         self.editname = wx.TextCtrl(
-            self, value="Example text.", size=(290, 250), style=wx.TE_MULTILINE)
-        grid.Add(self.editname, pos=(1, 0))
+            self, value="Testing the function.", size=(350, 250), style=wx.TE_MULTILINE)
+        grid.Add(self.editname, pos=(1, 0), span=(0, 1))
 
         img = wx.Image(290, 250)
         self.imageCtrl = wx.StaticBitmap(self, wx.ID_ANY,
                                          wx.Bitmap(img))
-        grid.Add(self.imageCtrl, pos=(1, 1))
+        grid.Add(self.imageCtrl, pos=(1, 1), span=(0, 1))
 
         hSizer.Add(grid, 0, wx.ALL, 5)
         mainSizer.Add(hSizer, 0, wx.ALL, 5)
         self.SetSizerAndFit(mainSizer)
 
     def OnRenderClick(self, event):
-        # print("Render")
-        text_renderer = TextImageRenderAllDifferentWidths('./letters_dataset/', 290, 250, 30, self.editname.GetValue())
+        """
+        Creates a handwriting imitation image
+        """
+        if (self.use_synthesis):
+            create_from_skeletons('./export', './synthesis/skeletons/', './synthesis/synthesized/', self.editname.GetValue())
+            text_renderer = TextImageRenderAllDifferentWidths('./synthesis/synthesized/', 290, 250, 50, self.editname.GetValue())
+        else:
+            text_renderer = TextImageRenderAllDifferentWidths('./letters_dataset/', 290, 250, 50, self.editname.GetValue())
         img = text_renderer.create_image()
 
         self.imageCtrl.SetBitmap(PIL2wx(img))
 
     def OnLoadClick(self, event):
-        dir = extract(cwd=os.getcwd())
+        """
+        Creates new dataset from pictures from selected directory
+        """
+        path = os.getcwd()
+        dir = extract(path)
         correct(dir)
+        resize_directory(path + '/letters_dataset', path + '/training_dataset/letters')
+        resize_skeletons_directory(path + '/letters_dataset', path + '/training_dataset/skeletons')
+        combine_directory(path + '/training_dataset/letters', path + '/training_dataset/skeletons', path + '/training_dataset/combined')
+        train_command = 'python ../synthesis/pix2pix.py --mode train --output_dir ./model/ --max_epochs 100 --input_dir ./training_dataset/combined --which_direction BtoA --ngf 32 --ndf 32'
+        os.system(train_command)
+        export_command = 'python ../synthesis/pix2pix.py --mode export --output_dir ./export/ --checkpoint ./model/ --which_direction BtoA'
+        os.system(export_command)
+
+    def OnSaveClick(self, event):
+        """
+        Saves created image
+        """
+        root = tk.Tk()
+        root.withdraw()
+        filename = filedialog.asksaveasfilename(filetypes=[("PNG file", "*.png")], defaultextension=[("PNG file", "*.png")])
+        img = self.imageCtrl.GetBitmap()
+        img.SaveFile(filename, wx.BITMAP_TYPE_PNG)
+
+    def OnReadClick(self, event):
+        """
+        Reads text from picrute and writes it to the textbox
+        """
+        root = tk.Tk()
+        root.withdraw()
+        filename = filedialog.askopenfilename(filetypes=[("PNG file", "*.png")], defaultextension=[("PNG file", "*.png")])
+        img = Image.open(filename).convert('RGB')
+        img = img.resize((290, 250))
+        self.imageCtrl.SetBitmap(PIL2wx(img))
+        textfile = filename[:-4] + '.txt'
+        command = 'tesseract ' + filename + ' ' + filename[:-4] + ' -l engnew'
+        os.system(command)
+        f = open(textfile, 'r')
+        self.editname.Value = f.read()
+        f.close()
+        os.remove(textfile)
 
 
 # This function converts PIL image to wx image
@@ -93,7 +157,7 @@ def PIL2wx(image):
 
 class Application(wx.App):
     def OnInit(self):
-        frame = Frame(None, "Bachelor Project", (150, 150), (600, 400))
+        frame = Frame(None, "Bachelor Project", (150, 150), (670, 400))
         Panel(frame)
         self.SetTopWindow(frame)
         frame.Show()

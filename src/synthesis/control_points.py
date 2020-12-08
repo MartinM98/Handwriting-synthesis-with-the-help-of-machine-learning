@@ -210,7 +210,7 @@ def left_only_control_points(letter: list, control_points: list):
     for line in letter:
         new_line = list()
         for point in line:
-            if point in control_points or (point[1], point[0]) in line:
+            if point in control_points or (point[1], point[0]) in control_points:
                 new_line.append(point)
         new_letter.append(new_line)
     return new_letter

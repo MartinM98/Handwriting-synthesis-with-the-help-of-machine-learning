@@ -51,33 +51,47 @@ def filter_points(img2: np.ndarray, parts: list, n: int):
         index = temp
 
 
-def random_filter():
+def random_filter(img: np.ndarray = None, n: int = -1, k: int = -1):
     """
     Creates the subparts, filters the control points, shows the
     results and saves the result.
+
     Args:
-        None
+        img (np.ndarray): image with control points that should be filtered.
+        n (int, optional): a scalar determining number of
+        subparts of the image. The image is divided into
+        n x n subparts with equal sizes.
+        k (int, optional): the number of points that should be selected.
+
+    Returns:
+        img2 (np.darray): The image with filtered control points.
     """
-    if len(sys.argv) == 1:
-        exit()
-    n = int(sys.argv[1])
+    if n < 1:
+        if len(sys.argv) == 1:
+            exit()
+        n = int(sys.argv[1])
 
-    directory, path2, path = get_dir_and_file()
-
-    img = get_image(path)
+    save = False
+    if img is None:
+        directory, path2, path = get_dir_and_file()
+        img = get_image(path)
+        save = True
 
     parts = []
     get_parts(img, n, parts)
 
-    if len(sys.argv) == 2:
-        exit()
+    if k < 1:
+        if len(sys.argv) == 2:
+            exit()
+        k = int(sys.argv[2])
 
-    n = int(sys.argv[2])
+    img2 = prepare_blank_image(img.shape)
+    filter_points(img2, parts, k)
+    if save:
+        resize_and_show_images(img, img2)
+        cv2.imwrite(directory + '/' + path2 + '_filtered.png', img2)
 
-    img2 = prepare_blank_image(img)
-    filter_points(img2, parts, n)
-    resize_and_show_images(img, img2)
-    cv2.imwrite(directory + '/' + path2 + '_filtered.png', img2)
+    return img2
 
 
 if __name__ == '__main__':

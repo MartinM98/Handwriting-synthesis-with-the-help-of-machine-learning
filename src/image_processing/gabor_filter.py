@@ -1,109 +1,111 @@
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
 from skimage.filters import gabor
 from skimage import img_as_ubyte
 from skimage.util import invert
-from src.image_processing.common_functions.common_functions import get_dir_and_file
+from src.image_processing.common_functions.common_functions import get_image
+from src.image_processing.common_functions.common_functions import prepare_blank_image
 
 
-def nothing(x):
+def check_point(img: np.ndarray, point: tuple, i: int, x_max: int):
     """
-    Does nothing. It is used as sliders handler.
+    Checks if the point has a neighbour in the skeleton in the
+    given direction
     Args:
-       None - x is a surrogate argument.
+       img (np.ndarray, optional): the skeleton image.
+       point (tuple): Point that has to be chcked.
+       i (int): integer determining direction.
+       x_max (int): maximal value of the width coordiante.
+    Returns:
+        bool: determines if there is a neighbour in the skeleton
+        in the given direction.
     """
-    pass
+    result = True
+    if i == 1:
+        if point[0] != 0:
+            result = img[point[0] - 1, point[1]] == 0
+    if i == 2:
+        if point[0] != (x_max - 1):
+            result = img[point[0] + 1, point[1]] == 0
+    return result
 
 
-def save(x1, x2):
+def shift_point(cv_image: np.ndarray, point: tuple, x: int, x_max: int,):
     """
     Saves current result of the filtering to the final result image.
     The images are accessed as global variables.
     Args:
-       None - x1 and x2 are surrogate arguments.
+       cv_image (np.ndarray, optional): the image with selected part
+       of control points.
+       point (tuple): Point that has to be updated.
+       x (int): The shift in the horizontal direction.
+       x_max (int): maximal value of the width coordiante.
     """
-    global result
-    global cv_image
-    result = np.bitwise_and(result, cv_image)
+    if (point[0] != 0) and (point[0] < x_max):
+        cv_image[point[0], point[1]] = 255
+        cv_image[point[0] + x, point[1]] = 0
 
 
-def gabor_filter():
+def fit_points(img: np.ndarray, cv_image: np.ndarray):
     """
-    Main function. Creates GUI for changing the filtering parmeters,
-    shows and saves the result.
+    Fits the control points to the skeleton in the result image.
+
     Args:
-       None
+       img (np.ndarray, optional): the skeleton image.
+       cv_image (np.ndarray, optional): the image with selected part
+       of control points.
     """
-    global result
-    global cv_image
-    directory, path2, path = get_dir_and_file()
-    img2 = np.zeros((300, 512, 3), np.uint8)
-    cv2.namedWindow('trackbar')
+    points = []
+    left = True
+    right = True
+    for ix, iy in np.ndindex(cv_image.shape):
+        if cv_image[ix, iy] == 0:
+            points.append((ix, iy))
+    x_max = img.shape[0]
+    for point in points:
+        if not check_point(img, point, 1, x_max):
+            left = False
+        if not check_point(img, point, 2, x_max):
+            right = False
+    x = 0
+    if left:
+        x = -1
+    if right:
+        x = 1
+    for point in points:
+        shift_point(cv_image, point, x, x_max)
 
-    img = cv2.imread(path)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    result = np.zeros(shape=img.shape)
-    result = img_as_ubyte(result)
-    result = invert(result)
 
-    cv2.createTrackbar('theta', 'trackbar', 25, 300, nothing)
-    cv2.createTrackbar('lamda', 'trackbar', 16, 300, nothing)
-    cv2.createTrackbar('offset', 'trackbar', 0, 300, nothing)
-    cv2.createTrackbar('n_stds', 'trackbar', 3, 300, nothing)
-    cv2.createTrackbar('bandwidth', 'trackbar', 10, 300, nothing)
-    cv2.createTrackbar('sigma_x', 'trackbar', 0, 300, nothing)
-    cv2.createTrackbar('sigma_y', 'trackbar', 0, 300, nothing)
-    cv2.createTrackbar('cval', 'trackbar', 0, 300, nothing)
-    cv2.createTrackbar('cval', 'trackbar', 0, 300, nothing)
-    cv2.createTrackbar('n', 'trackbar', 1, 300, nothing)
-    cv2.createButton('save control points', save, [''], cv2.QT_PUSH_BUTTON)
-    while(1):
-        cv2.imshow('trackbar', img2)
-        k = cv2.waitKey(1) & 0xFF
-        if k == 97:
-            break
+def gabor_filter(img: np.ndarray = None, path: str = None, original: bool = False):
+    """
+    Applies the gabor filter with given paramters to
+    the image.
 
-        theta = cv2.getTrackbarPos('theta', 'trackbar') * 0.01 * np.pi
-        lamda = cv2.getTrackbarPos('lamda', 'trackbar') * 0.01 * np.pi
-        offset = cv2.getTrackbarPos('offset', 'trackbar') * 0.1
-        bandwidth = cv2.getTrackbarPos('bandwidth', 'trackbar') * 0.1
-        sigma_x = cv2.getTrackbarPos('sigma_x', 'trackbar') * 0.1
-        sigma_y = cv2.getTrackbarPos('sigma_y', 'trackbar') * 0.1
-        cval = cv2.getTrackbarPos('cval', 'trackbar') * 0.1
-        n_stds = cv2.getTrackbarPos('n_stds', 'trackbar')
-        if bandwidth == 0:
-            continue
-        img = cv2.imread(path)
+    Args:
+       img (np.ndarray, optional): the image that should be processed.
+       path (str, optional): the path to the image that should be
+       processed.
+       original (bool, optional): determines if the control points should
+       be original. Otherwise, they are fitted to the skeleton.
 
-        plt.imshow(img, cmap='gray')
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        if sigma_x == 0 or sigma_y == 0:
-            filt_real, filt_imag = gabor(
-                img, frequency=1 / lamda, theta=theta, n_stds=n_stds, offset=offset, bandwidth=bandwidth, cval=cval)
-        else:
-            filt_real, filt_imag = gabor(img, frequency=1 / lamda, theta=theta, n_stds=n_stds,
-                                         offset=offset, bandwidth=bandwidth, sigma_x=sigma_x, sigma_y=sigma_y, cval=cval)
-
-        cv2.imshow('Original Img.', img)
+    Returns:
+        img (np.ndarray): The filtered image.
+    """
+    thetas = [0.25 * np.pi, 0.75 * np.pi]
+    lamda = 0.16 * np.pi
+    if img is None:
+        img = get_image(path)
+    if len(img.shape) > 2:
+        if img.shape[2] == 3:
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    result = prepare_blank_image(img.shape)
+    for theta in thetas:
+        filt_real, filt_imag = gabor(
+            img, frequency=1 / lamda, theta=theta)
         cv_image = img_as_ubyte(filt_imag)
         cv_image = invert(cv_image)
-        cv_image3 = img_as_ubyte(filt_real)
-        cv_image3 = invert(cv_image3)
+        if not original:
+            fit_points(img, cv_image)
+        result = np.bitwise_and(result, cv_image)
 
-        size = (200, 200)
-        cv_image2 = cv2.resize(cv_image, size)
-        cv_image4 = cv2.resize(cv_image3, size)
-
-        cv2.imshow('Filtered imag', cv_image2)
-        cv2.imshow('Filtered real', cv_image4)
-
-    cv2.destroyAllWindows()
-
-    cv2.imshow('Result', result)
-    cv2.waitKey()
-    cv2.imwrite(directory + '/' + path2 + '_control_points.png', result)
-
-
-if __name__ == '__main__':
-    gabor_filter()
+    return result

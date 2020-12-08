@@ -8,7 +8,23 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import copy
 
 
-def generate_bsplain(letter: list = None, plot: plt = None, offset_x: int = 0, offset_y: int = 0, path_to_save_file: str = None, image_size: tuple = None, show_points_flag: bool = False):
+def generate_bsplain(x: list, y: list):
+    """
+    Generate B splain for input points.
+
+    Args:
+        x (int): List of x valuses.
+        y (int): List of y valuses.
+
+    Returns:
+        [list]: Gerenrated B splain.
+    """
+    tck, u = interpolate.splprep([x, y], k=2, s=1)
+    u = np.linspace(0, 1, num=50, endpoint=True)
+    return interpolate.splev(u, tck)
+
+
+def generate_bsplain_fig(letter: list = None, plot: plt = None, offset_x: int = 0, offset_y: int = 0, path_to_save_file: str = None, image_size: tuple = None, show_points_flag: bool = False):
     """
     Generate B splain for input letter.
 
@@ -44,9 +60,7 @@ def generate_bsplain(letter: list = None, plot: plt = None, offset_x: int = 0, o
             x = line[:, 0]
             y = line[:, 1]
 
-            tck, u = interpolate.splprep([x, y], k=2, s=1)
-            u = np.linspace(0, 1, num=50, endpoint=True)
-            out = interpolate.splev(u, tck)
+            out = generate_bsplain(x, y)
 
             if show_points_flag:
                 plot.plot(x, y, 'ro', out[0], out[1], 'b')
@@ -78,8 +92,8 @@ def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_
     fig = None
     plot = plt
     letter = copy.deepcopy(letter)
-    fig = generate_bsplain(letter, plot, offset_x, offset_y,
-                           path_to_save_file, image_size, show_points_flag)
+    fig = generate_bsplain_fig(letter, plot, offset_x, offset_y,
+                               path_to_save_file, image_size, show_points_flag)
     plot.axis('off')
     if path_to_save_file is None:
         plot.show()
