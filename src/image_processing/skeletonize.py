@@ -27,10 +27,10 @@ def skeletonize_image(image2: np.ndarray = None, path: str = None):
     skeleton = skeletonize(image)
     skeleton = invert(skeleton)
 
-    plt.imsave('/tmp/temp_skel.png', skeleton, cmap=plt.cm.gray)
-    image4 = cv2.imread('/tmp/temp_skel.png')
+    plt.imsave('./tmp/temp_skel.png', skeleton, cmap=plt.cm.gray)
+    image4 = cv2.imread('./tmp/temp_skel.png')
     image4 = cv2.cvtColor(image4, cv2.COLOR_BGR2GRAY)
-    # _, img = cv2.threshold(image4, 2, 160, cv2.THRESH_BINARY)
+    _, img = cv2.threshold(image4, 2, 160, cv2.THRESH_BINARY)
     for ix, iy in np.ndindex(image4.shape):
         if(image4[ix, iy] != 255):
             image4[ix, iy] = 0
