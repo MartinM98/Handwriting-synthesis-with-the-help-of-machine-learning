@@ -27,11 +27,9 @@ def create_from_skeletons(model: str, input: str, output: str, text_to_render: s
                 output_path = output + letter + '/'
             if os.path.isdir(letter_path):
                 input_path = letter_path + str(len([name for name in os.listdir(letter_path)]) - 1) + '.png'
-                print(input_path)
                 if not os.path.exists(output_path):
                     os.mkdir(output_path)
                 output_path = output_path + str(len([name for name in os.listdir(letter_path)]) - 1) + '.png'
-                print(output_path)
                 process_path = get_absolute_path('../synthesis/process-local.py')
                 command = 'python ' + process_path + ' --model_dir ' + model + ' --input_file ' + input_path + ' --output_file ' + output_path
                 os.system(command)
