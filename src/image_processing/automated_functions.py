@@ -67,7 +67,7 @@ def skeletonize_automated(directory: str = None):
         if (entry.path.endswith(".png")):
             path2 = get_filename_without_extention(entry.path)
             path = entry.path
-            img = skeletonize_image(io.imread(path))
+            img = skeletonize_image(path=path)
             if save:
                 plt.imsave(directory + '/' + path2 + '_skel.png',
                            img, cmap=plt.cm.gray)

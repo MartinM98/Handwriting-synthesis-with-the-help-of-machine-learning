@@ -21,6 +21,9 @@ def skeletonize_image(image: np.ndarray = None, path: str = None):
     if image is None:
         image = cv2.imread(path)
 
+    if image is None:
+        raise Exception("Empty image path: " + path)
+
     image = invert(image)
     warnings.filterwarnings("ignore")
     image = image > filters.threshold_otsu(image)
