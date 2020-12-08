@@ -1,5 +1,7 @@
 from create_text_different_widths_big_dataset import TextImageRenderAllDifferentWidths
 from src.image_processing.letters import extract, correct
+from src.image_processing.resize import resize_directory, combine_directory
+from src.synthesis.synthesize import create_from_skeletons
 from tkinter import filedialog
 from PIL import Image
 import tkinter as tk
@@ -46,6 +48,7 @@ class Frame(wx.Frame):
 
 class Panel(wx.Panel):
     def __init__(self, parent):
+        self.use_synthesis = True
         wx.Panel.__init__(self, parent)
 
         # create some sizers
@@ -93,8 +96,11 @@ class Panel(wx.Panel):
         """
         Creates a handwriting imitation image
         """
-        # print("Render")
-        text_renderer = TextImageRenderAllDifferentWidths('./letters_dataset/', 290, 250, 50, self.editname.GetValue())
+        if (self.use_synthesis):
+            create_from_skeletons('./test_model', './synthesis/skeletons/', './synthesis/synthesized/', self.editname.GetValue())
+            text_renderer = TextImageRenderAllDifferentWidths('./synthesis/synthesized/', 290, 250, 50, self.editname.GetValue())
+        else:
+            text_renderer = TextImageRenderAllDifferentWidths('./letters_dataset/', 290, 250, 50, self.editname.GetValue())
         img = text_renderer.create_image()
 
         self.imageCtrl.SetBitmap(PIL2wx(img))
@@ -103,8 +109,15 @@ class Panel(wx.Panel):
         """
         Creates new dataset from pictures from selected directory
         """
-        dir = extract(os.getcwd())
+        path = os.getcwd()
+        dir = extract(path)
         correct(dir)
+        resize_directory(path + '/letters_dataset', path + '/training_dataset/skeletons')
+        combine_directory(path + '/training_dataset/letters', path + '/training_dataset/skeletons', path + '/training_dataset/combined')
+        train_command = 'python ../synthesis/pix2pix.py --mode train --output_dir ./model/ --max_epochs 200 --input_dir ./training_dataset/combined --which_direction BtoA --ngf 32 --ndf 32'
+        os.system(train_command)
+        export_command = 'python ../synthesis/pix2pix.py --mode export --output_dir ./export/ --checkpoint ./model/ --which_direction BtoA'
+        os.system(export_command)
 
     def OnSaveClick(self, event):
         """

@@ -21,6 +21,7 @@ from src.image_processing.gabor_filter import shift_point
 from src.image_processing.gabor_filter import fit_points
 
 
+
 class ImageProcessingUnitTests(unittest.TestCase):
     """
     The class tests methods from image processing functions.
@@ -62,6 +63,7 @@ class ImageProcessingUnitTests(unittest.TestCase):
         self.assertTrue(dot == './tests/data/dot/')
         self.assertTrue(question == './tests/data/question/')
         self.assertTrue(asterisk == './tests/data/asterisk/')
+
 
     # ------------ common_functions.py ------------
 
@@ -145,6 +147,7 @@ class ImageProcessingUnitTests(unittest.TestCase):
         fit_points(img, img2)
         for ix, iy in np.ndindex(img.shape):
             self.assertEqual(img[ix, iy], img2[ix, iy])
+
 
 
 if __name__ == '__main__':

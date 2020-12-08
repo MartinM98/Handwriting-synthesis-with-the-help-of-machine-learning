@@ -2,6 +2,7 @@ import unittest
 import cv2
 from src.file_handler.file_handler import get_absolute_path
 from src.image_processing.resize import resize_image, combine, crop_image
+
 from unittest.mock import Mock
 from tkinter import filedialog
 import numpy as np
@@ -28,6 +29,7 @@ from src.image_processing.gabor_filter import gabor_filter
 
 # ------------ skeletonize.py ------------
 from src.image_processing.skeletonize import skeletonize_image
+
 
 
 class ImageProcessingIntegrationTests(unittest.TestCase):
@@ -81,6 +83,7 @@ class ImageProcessingIntegrationTests(unittest.TestCase):
         result = cv2.imread(output_path)
         self.assertTrue(result.shape[0] < 256)
         self.assertTrue(result.shape[1] < 256)
+
 
     # ------------ common_functions.py ------------
 
@@ -164,6 +167,7 @@ class ImageProcessingIntegrationTests(unittest.TestCase):
             'tests/data/skeletonization/0.png'))
         result = skeletonize_image(image)
         self.assertIsNotNone(result)
+
 
 
 if __name__ == '__main__':

@@ -116,6 +116,7 @@ class SynthesisIntegrationTests(unittest.TestCase):
         result = cv2.imread(path_to_output + '/a2/0.png')
         self.assertIsNotNone(result)
 
+
     # ------------ get_sequences2.py ------------
 
     def test_get_unique_points(self):
@@ -176,6 +177,7 @@ class SynthesisIntegrationTests(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]), len(self.edges2) + 1)
+
 
 
 if __name__ == '__main__':
