@@ -125,8 +125,12 @@ class ImageProcessingIntegrationTests(unittest.TestCase):
         results = gabor_filter_automated(
             get_absolute_path('tests/data/gabor_filter'))
         self.assertEqual(len(results), 2)
-        self.assertTupleEqual(results[0].shape, (62, 51))
-        self.assertTupleEqual(results[1].shape, (29, 29))
+        if results[0].shape == (62, 51):
+            self.assertTupleEqual(results[0].shape, (62, 51))
+            self.assertTupleEqual(results[1].shape, (29, 29))
+        else:
+            self.assertTupleEqual(results[1].shape, (62, 51))
+            self.assertTupleEqual(results[0].shape, (29, 29))
 
     def test_skeletonize_automated(self):
         results = skeletonize_automated(
