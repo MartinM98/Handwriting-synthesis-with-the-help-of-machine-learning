@@ -1,4 +1,5 @@
 import os
+import shutil
 
 
 def write_to_file(file_path: str, data: str):
@@ -26,6 +27,20 @@ def add_to_file(file_path: str, data: str):
     f = open(file_path, "a")
     f.write(data)
     f.close()
+
+
+def ensure_create_and_append_file(file_path: str, data: str):
+    """
+    Creates file if such no exists and write data to the file.
+
+    Args:
+        file_path (str): Path to the file.
+        data (str): Data to write.
+    """
+    if os.path.exists(file_path):
+        add_to_file(file_path, data)
+    else:
+        write_to_file(file_path, data)
 
 
 def read_from_file(file_path: str):
@@ -186,3 +201,16 @@ def get_filename_without_extention(file_path: str):
         str: Filename without extention.
     """
     return get_file_name(get_path_without_extention(file_path))
+
+
+def remove_dir_with_content(dir_path: str):
+    """
+    Remove directory even there exist content.
+
+    Args:
+        dir_path (str): Path to directory.
+    """
+    try:
+        shutil.rmtree(dir_path)
+    except OSError as e:
+        print("Error: %s : %s" % (dir_path, e.strerror))

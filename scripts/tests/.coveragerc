@@ -10,6 +10,15 @@ omit =
     src\graphical_interface\create_text_with_font_static_different_widths.py
     src\graphical_interface\create_text_with_font_static.py
     src\graphical_interface\graphical-interface.py
+    src\recognition\postproduce_boxes.py
+    src\image_processing\preproduce_dataset.py
+    src\graphical_interface\create_text_different_widths_big_dataset.py	
+    src\image_processing\consecutive_filter.py
+    src\image_processing\gabor_filter_manual.py
+    src\image_processing\skeletonize_manual.py
+    src\image_processing\random_filter.py
+    src\recognition\printed_text_recognition.py
+    src\synthesis\process-local.py
 
 [report]
 # Regexes for lines to exclude from consideration
@@ -23,6 +32,7 @@ exclude_lines =
     correct
     resize_directory
     combine_directory
+    line_length == 1
 
 
     # Don't complain about missing debug-only code:

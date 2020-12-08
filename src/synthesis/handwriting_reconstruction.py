@@ -73,7 +73,7 @@ def generate_bsplain_fig(letter: list = None, plot: plt = None, offset_x: int = 
     return fig
 
 
-def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_to_save_file: str = None, image_size: tuple = None, show_points_flag: bool = False, skeleton_flag: bool = False):
+def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_to_save_file: str = None, image_size: tuple = None, show_points_flag: bool = False, skeleton_flag: bool = False, show_flag: bool = True):
     """
     Create image with input letter, using the B spline the imitation of is made. Function has many parameters to define all imporatant features.
 
@@ -83,8 +83,9 @@ def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_
         offset_y (int, optional): Offset in second points cooridante. Defaults to 0.
         path_to_save_file (str, optional): If the path is provided then the image is saved in the location. Defaults to None.
         image_size (tuple, optional): If provided the output image is in the size. Defaults to None.
-        show_points_flag (bool, optional): If true show points on image.  Defaults to False.
-        skeleton_flag (bool, optional): If true generate skeleton.  Defaults to False.
+        show_points_flag (bool, optional): If true then show points on image.  Defaults to False.
+        skeleton_flag (bool, optional): If true then generate skeleton.  Defaults to False.
+        show_flag (bool, optional): If true then show plot.  Defaults to False.
     Returns:
         image (image): Image with the created letter.
     """
@@ -95,7 +96,7 @@ def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_
     fig = generate_bsplain_fig(letter, plot, offset_x, offset_y,
                                path_to_save_file, image_size, show_points_flag)
     plot.axis('off')
-    if path_to_save_file is None:
+    if path_to_save_file is None and show_flag:
         plot.show()
     canvas = FigureCanvas(fig)
     canvas.draw()
@@ -105,8 +106,6 @@ def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_
     plot.close()
     if skeleton_flag:
         image = skeletonize_image(image)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        _, image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
     if path_to_save_file is not None:
         cv2.imwrite(path_to_save_file, image)
 

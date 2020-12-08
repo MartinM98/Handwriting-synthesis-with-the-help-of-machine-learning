@@ -1,9 +1,7 @@
-
-from skimage import io
 import matplotlib.pyplot as plt
 import os
 import cv2
-from src.file_handler.file_handler import ensure_create_dir
+from src.file_handler.file_handler import combine_paths, ensure_create_dir
 from src.image_processing.skeletonize import skeletonize_image
 from src.file_handler.file_handler import get_filename_without_extention
 from src.image_processing.common_functions.common_functions import get_dir
@@ -37,7 +35,8 @@ def gabor_filter_automated(directory: str = None):
             path = entry.path
             result = gabor_filter(get_image(path))
             if save:
-                cv2.imwrite(directory + '/' + path2 + '_control_points.png', result)
+                cv2.imwrite(directory + '/' + path2 + '_control_points.png',
+                            result)
             results.append(result)
 
     return results
@@ -66,9 +65,10 @@ def skeletonize_automated(directory: str = None):
         if (entry.path.endswith(".png")):
             path2 = get_filename_without_extention(entry.path)
             path = entry.path
-            img = skeletonize_image(io.imread(path))
+            img = skeletonize_image(path=path)
             if save:
-                plt.imsave(directory + '/' + path2 + '_skel.png', img, cmap=plt.cm.gray)
+                plt.imsave(directory + '/' + path2 + '_skel.png',
+                           img, cmap=plt.cm.gray)
             results.append(img)
 
     return results
@@ -94,7 +94,14 @@ def process_dataset(directory: str = None):
             for file in os.listdir(dir2):
                 if file.endswith('.png'):
                     filename = get_filename_without_extention(file)
-                    skeleton = skeletonize_image(path=dir2 + file)
+                    path = combine_paths(dir2, file)
+                    img = cv2.imread(path)
+                    skeleton = skeletonize_image(img)
                     cv2.imwrite(dir3 + filename + '_skel.png', skeleton)
                     gabor = gabor_filter(path=dir3 + filename + '_skel.png')
-                    cv2.imwrite(dir3 + filename + '_skel_control_points.png', gabor)
+                    cv2.imwrite(dir3 + filename + '_skel_control_points.png',
+                                gabor)
+
+
+if __name__ == "__main__":
+    process_dataset()

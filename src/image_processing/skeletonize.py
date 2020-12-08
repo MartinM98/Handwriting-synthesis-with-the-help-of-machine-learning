@@ -1,38 +1,37 @@
 from skimage.morphology import skeletonize
 from skimage import filters
-from skimage import io
-import matplotlib.pyplot as plt
 from skimage.util import invert
 import cv2
 import numpy as np
+import warnings
 
 
-def skeletonize_image(image2: np.ndarray = None, path: str = None):
+def skeletonize_image(image: np.ndarray = None, path: str = None):
     """
     Skeletonizes the image.
 
     Args:
-       image2 (np.ndarray, optional): the image that should be processed.
+       image (np.ndarray, optional): the image that should be processed.
        path (str, optional): the path to the image that should
        be processed.
 
     Returns:
         (np.ndarray): The skeletonized image.
     """
-    if image2 is None:
-        image2 = io.imread(path)
-    image2 = invert(image2)
-    image = image2 > filters.threshold_otsu(image2)
+    if image is None:
+        image = cv2.imread(path)
+
+    if image is None:
+        raise Exception("Empty image path: " + path)
+
+    image = invert(image)
+    warnings.filterwarnings("ignore")
+    image = image > filters.threshold_otsu(image)
 
     skeleton = skeletonize(image)
     skeleton = invert(skeleton)
 
-    plt.imsave('./tmp/temp_skel.png', skeleton, cmap=plt.cm.gray)
-    image4 = cv2.imread('./tmp/temp_skel.png')
-    image4 = cv2.cvtColor(image4, cv2.COLOR_BGR2GRAY)
-    _, img = cv2.threshold(image4, 2, 160, cv2.THRESH_BINARY)
-    for ix, iy in np.ndindex(image4.shape):
-        if(image4[ix, iy] != 255):
-            image4[ix, iy] = 0
+    image = cv2.cvtColor(skeleton, cv2.COLOR_BGR2GRAY)
+    _, image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
 
-    return image4
+    return image

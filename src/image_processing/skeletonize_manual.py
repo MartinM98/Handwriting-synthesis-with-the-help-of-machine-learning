@@ -1,29 +1,9 @@
-from skimage.morphology import skeletonize
-from skimage import filters
+from src.image_processing.skeletonize import skeletonize_image
 from skimage import io
 import matplotlib.pyplot as plt
-from skimage.util import invert
 import cv2
 import numpy as np
 from src.image_processing.common_functions.common_functions import get_dir_and_file
-
-
-def skeletonize_image(image):
-    """
-    Generate skeleton from image.
-
-    Args:
-        image (image): Input image.
-
-    Returns:
-        image: Output image with skeleton
-    """
-    image = invert(image)
-    image = image > filters.threshold_otsu(image)
-
-    skeleton = skeletonize(image)
-    skeleton = invert(skeleton)
-    return skeleton
 
 
 def skeletonize_function():
