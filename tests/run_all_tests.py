@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime
 
 from tests.unit_tests.unit_test_file_handler import FileHandlerUnitTests
 from tests.unit_tests.unit_test_recognition import RecognitionUnitTests
@@ -8,6 +9,7 @@ from tests.integration_tests.integration_test_file_handler import FileHandlerInt
 from tests.integration_tests.integration_test_synthesis import SynthesisIntegrationTests
 from tests.integration_tests.integration_test_recognition import RecognitionIntegrationTests
 from tests.integration_tests.integration_test_image_processing import ImageProcessingIntegrationTests
+from src.file_handler.file_handler import combine_paths, ensure_create_and_append_file, ensure_create_dir, get_absolute_path
 
 
 def run_listed_tests():
@@ -34,7 +36,7 @@ def run_listed_tests():
     runner.run(test_suite)
 
 
-def run_all_tests():  # run all test
+def run_all_tests():
     """
     Run all test.
     """
@@ -43,9 +45,42 @@ def run_all_tests():  # run all test
     unit_test_suite = loader.discover('tests', pattern='*unit_test*.py')
     integration_test_suite = loader.discover(
         'tests', pattern='*integration_test*.py')
-    runner = unittest.TextTestRunner()
-    runner.run(unit_test_suite)
-    runner.run(integration_test_suite)
+    runner = unittest.TextTestRunner(verbosity=3)
+    unit_test_result = runner.run(unit_test_suite)
+    integration_test_result = runner.run(integration_test_suite)
+    log_errors(unit_test_result, integration_test_result)
+
+
+def log_errors(unit_test_result: list, integration_test_result: list):
+    """
+    Function analyse results of tests and log failed to file.
+
+    Args:
+        unit_test_result (list): Results of unit tests.
+        integration_test_result (list): Results of integration tests.
+    """
+    n_failed = len(unit_test_result.failures) + \
+        len(integration_test_result.failures)
+    if n_failed > 0:
+        path = get_absolute_path('./tests/logs/')
+        ensure_create_dir(path)
+        now = datetime.now()
+        dt_string = now.strftime('%d_%m_%Y_%H_%M_%S')
+        file_name = 'logs_' + dt_string + '.txt'
+        path = combine_paths(path, file_name)
+        data = 'Tests erros from date: ' + \
+            now.strftime('%d/%m/%Y %H:%M:%S') + '.\n\n'
+        data += 'Unit Tests\n\n'
+        for fail in unit_test_result.failures:
+            data += '--------------------------\n'
+            for f in fail:
+                data += str(f) + '\n\n'
+        data += 'Integration Tests\n\n'
+        for fail in integration_test_result.failures:
+            data += '--------------------------\n'
+            for f in fail:
+                data += str(f) + '\n\n'
+        ensure_create_and_append_file(path, data)
 
 
 if __name__ == '__main__':

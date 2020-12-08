@@ -28,6 +28,20 @@ def add_to_file(file_path: str, data: str):
     f.close()
 
 
+def ensure_create_and_append_file(file_path: str, data: str):
+    """
+    Creates file if such no exists and write data to the file.
+
+    Args:
+        file_path (str): Path to the file.
+        data (str): Data to write.
+    """
+    if os.path.exists(file_path):
+        add_to_file(file_path, data)
+    else:
+        write_to_file(file_path, data)
+
+
 def read_from_file(file_path: str):
     """
     Read data from file.
