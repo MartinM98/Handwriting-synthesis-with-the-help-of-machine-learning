@@ -87,6 +87,9 @@ class ImageProcessingIntegrationTests(unittest.TestCase):
 
     def test_get_dir_and_file(self):
         filedialog.askopenfilename = Mock(return_value='/usr/local/test.png')
+        Tk = Mock()
+        Tk.withdraw = Mock()
+        Tk.destroy = Mock()
         self.assertTupleEqual(get_dir_and_file(),
                               ('/usr/local', 'test', '/usr/local/test.png'))
         filedialog.askopenfilename = Mock(return_value='')
