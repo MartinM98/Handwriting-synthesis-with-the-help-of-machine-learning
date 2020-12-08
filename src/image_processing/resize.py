@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import os
+from src.file_handler.file_handler import get_filename_without_extention
 
 
 def resize_image(image_path: str, width: int, height: int):
@@ -83,6 +84,27 @@ def resize_directory(input_path: str, output_path: str):
             resized = resize_image(os.path.join(path, name), 256, 256)
             cv2.imwrite(os.path.join(output_path, str(i) + '.png'), resized)
             i += 1
+
+
+def resize_skeletons_directory(input_path: str, output_path: str):
+    """
+    Resizes all skeleton images in given directory to given output directory
+
+    Args:
+        input_path (str): Input directory
+        output_path (str): Output directory
+    """
+    i = 0
+    for dir in os.listdir(input_path):
+        if not dir.startswith('.'):
+            dir2 = input_path + '/' + dir + '/skel/'
+            for file in os.listdir(dir2):
+                if file.endswith('.png'):
+                    filename = get_filename_without_extention(file)
+                    if not filename.endswith('control_points'):
+                        resized = resize_image(os.path.join(dir2, file), 256, 256)
+                        cv2.imwrite(os.path.join(output_path, str(i) + '.png'), resized)
+                        i += 1
 
 
 def combine_directory(input_path_a: str, input_path_b: str, output_path: str):
