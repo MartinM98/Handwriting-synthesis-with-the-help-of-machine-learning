@@ -1,4 +1,3 @@
-from os import removedirs
 import unittest
 from datetime import datetime
 
@@ -41,7 +40,6 @@ def run_all_tests():
     """
     Run all test.
     """
-
     loader = unittest.TestLoader()
     unit_test_suite = loader.discover('tests', pattern='*unit_test*.py')
     integration_test_suite = loader.discover(
@@ -87,5 +85,5 @@ def log_errors(unit_test_result: list, integration_test_result: list):
 if __name__ == '__main__':
     run_all_tests()
     # run_listed_tests()
-    path_to_output = get_absolute_path('./tests/data/output')
-    remove_dir_with_content(path_to_output)
+    # path_to_output = get_absolute_path('./tests/data/output')
+    # remove_dir_with_content(path_to_output)

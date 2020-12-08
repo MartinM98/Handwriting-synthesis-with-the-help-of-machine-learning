@@ -106,8 +106,6 @@ def draw_letter(letter: list = None, offset_x: int = 0, offset_y: int = 0, path_
     plot.close()
     if skeleton_flag:
         image = skeletonize_image(image)
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        _, image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
     if path_to_save_file is not None:
         cv2.imwrite(path_to_save_file, image)
 
