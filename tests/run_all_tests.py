@@ -9,7 +9,7 @@ from tests.integration_tests.integration_test_file_handler import FileHandlerInt
 from tests.integration_tests.integration_test_synthesis import SynthesisIntegrationTests
 from tests.integration_tests.integration_test_recognition import RecognitionIntegrationTests
 from tests.integration_tests.integration_test_image_processing import ImageProcessingIntegrationTests
-from src.file_handler.file_handler import combine_paths, ensure_create_and_append_file, ensure_create_dir, get_absolute_path, remove_dir_with_content
+from src.file_handler.file_handler import combine_paths, ensure_create_and_append_file, ensure_create_dir, get_absolute_path
 
 
 def run_listed_tests():
