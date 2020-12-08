@@ -31,7 +31,6 @@ from src.image_processing.gabor_filter import gabor_filter
 from src.image_processing.skeletonize import skeletonize_image
 
 
-
 class ImageProcessingIntegrationTests(unittest.TestCase):
     """
     The class tests methods from image processing functions.
@@ -83,7 +82,6 @@ class ImageProcessingIntegrationTests(unittest.TestCase):
         result = cv2.imread(output_path)
         self.assertTrue(result.shape[0] < 256)
         self.assertTrue(result.shape[1] < 256)
-
 
     # ------------ common_functions.py ------------
 
@@ -167,7 +165,6 @@ class ImageProcessingIntegrationTests(unittest.TestCase):
             'tests/data/skeletonization/0.png'))
         result = skeletonize_image(image)
         self.assertIsNotNone(result)
-
 
 
 if __name__ == '__main__':
