@@ -112,8 +112,7 @@ class SynthesisIntegrationTests(unittest.TestCase):
             './tests/data/skeletons/')
         path_to_output = get_absolute_path(
             './tests/data/output/')
-        create_from_skeletons(path_to_model, path_to_data +
-                              '/', path_to_output + '/', 'a')
+        create_from_skeletons(path_to_model, path_to_data + '/', path_to_output + '/', 'a')
         result = cv2.imread(path_to_output + '/a2/0.png')
         self.assertIsNotNone(result)
 
