@@ -1,7 +1,7 @@
 from create_text_different_widths_big_dataset import TextImageRenderAllDifferentWidths
 from src.image_processing.letters import extract, correct
 from src.image_processing.resize import resize_directory, combine_directory, resize_skeletons_directory
-from src.synthesis.synthesize import create_from_skeletons
+from src.synthesis.process import process_directory
 from tkinter import filedialog
 from PIL import Image
 import tkinter as tk
@@ -80,7 +80,7 @@ class Panel(wx.Panel):
         topGrid.Add(self.button_render, pos=(0, 3), span=(0, 1))
 
         self.editname = wx.TextCtrl(
-            self, value="Testing the function.", size=(350, 250), style=wx.TE_MULTILINE)
+            self, value="Testing", size=(350, 250), style=wx.TE_MULTILINE)
         grid.Add(self.editname, pos=(1, 0), span=(0, 1))
 
         img = wx.Image(290, 250)
@@ -97,7 +97,7 @@ class Panel(wx.Panel):
         Creates a handwriting imitation image
         """
         if (self.use_synthesis):
-            create_from_skeletons('./export', './synthesis/skeletons/', './synthesis/synthesized/', self.editname.GetValue())
+            process_directory('./export', './synthesis/skeletons/')
             text_renderer = TextImageRenderAllDifferentWidths('./synthesis/synthesized/', 290, 250, 50, self.editname.GetValue())
         else:
             text_renderer = TextImageRenderAllDifferentWidths('./letters_dataset/', 290, 250, 50, self.editname.GetValue())
