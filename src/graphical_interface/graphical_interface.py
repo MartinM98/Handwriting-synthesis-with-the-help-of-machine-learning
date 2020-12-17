@@ -1,0 +1,85 @@
+from src.graphical_interface.common import EVT_SOME_NEW_EVENT
+import wx
+from src.graphical_interface.recognition_panel import RecognitionPanel
+from src.graphical_interface.synthesis_panel import SynthesisPanel
+
+
+class Frame(wx.Frame):
+    """
+    This is MyFrame.  It just shows a few controls on a wxPanel,
+    and has a simple menu.
+    """
+
+    def __init__(self, parent, title, position, size):
+        wx.Frame.__init__(self, parent, -1, title,
+                          pos=position, size=size)
+
+        self.editname = wx.TextCtrl(
+            self, value="Testing the function.", style=wx.TE_MULTILINE)
+        window_size = self.GetSize()
+        self.editname.SetMinSize((300, 400))
+        self.editname.SetMaxSize((int(window_size[0] / 2), -1))
+        # editname.SetMaxSize((200, 200))
+
+        self.statusBar = self.CreateStatusBar()
+        self.statusBar.SetStatusText("Synthesis Mode")
+
+        self.synthesis_panel = SynthesisPanel(
+            self, self.editname, self.statusBar)
+        self.recognition_panel = RecognitionPanel(
+            self, self.editname, self.statusBar)
+        self.synthesis_panel.Hide()
+
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer.Add(self.synthesis_panel, 1, wx.EXPAND)
+        self.sizer.Add(self.recognition_panel, 1, wx.EXPAND)
+        self.SetSizerAndFit(self.sizer)
+
+        menuBar = wx.MenuBar()
+        menu = wx.Menu()
+        menu.Append(wx.ID_EXIT, "E&xit\tAlt-X", "Exit this simple sample")
+
+        # bind the menu event to an event handler
+        self.Bind(wx.EVT_MENU, self.Menu_Close, id=wx.ID_EXIT)
+        self.Bind(wx.EVT_CLOSE, self.onClose)
+        self.Bind(EVT_SOME_NEW_EVENT, self.on_switch_panels)
+
+        menuBar.Append(menu, "&Options")
+        self.SetMenuBar(menuBar)
+
+    def Menu_Close(self, event):
+        self.Close()
+
+    def onClose(self, event):
+        event.Skip()
+        # dlg = wx.MessageDialog(
+        #     None, "Do you want to exit?", 'See you later?', wx.YES_NO | wx.ICON_QUESTION)
+        # result = dlg.ShowModal()
+
+        # if result == wx.ID_YES:
+        #     event.Skip()
+
+    def on_switch_panels(self, event):
+        if self.synthesis_panel.IsShown():
+            self.synthesis_panel.Hide()
+            self.recognition_panel.Show()
+            self.statusBar.SetStatusText("Recognition Mode")
+        else:
+            self.synthesis_panel.Show()
+            self.recognition_panel.Hide()
+            self.statusBar.SetStatusText("Synthesis Mode")
+        self.Layout()
+
+
+class Application(wx.App):
+    def OnInit(self):
+        frame = Frame(None, "Bachelor Project", (150, 150), (1280, 720))
+        # SynthesisPanel(frame)
+        # self.SetTopWindow(frame)
+        frame.Show()
+        return True
+
+
+if __name__ == '__main__':
+    app = Application(redirect=False)  # TODO change to True at the end
+    app.MainLoop()

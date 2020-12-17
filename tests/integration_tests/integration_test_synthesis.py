@@ -102,9 +102,6 @@ class SynthesisIntegrationTests(unittest.TestCase):
                 self.assertTrue(element in points or (
                     element[1], element[0]) in points)
 
-    def test_generate_bsplain_fig(self):
-        pass
-
     @unittest.skip("work in progress")
     def test_create_from_skeletons(self):
         path_to_model = get_absolute_path(
