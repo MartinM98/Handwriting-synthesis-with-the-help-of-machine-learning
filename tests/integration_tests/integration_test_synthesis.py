@@ -2,7 +2,6 @@ from src.file_handler.file_handler import get_absolute_path
 import cv2
 from src.synthesis.control_points import find_control_points, find_cycles, is_neighbour_pixel, left_only_control_points, remove_cycles, skeleton_to_graph
 from src.synthesis.get_sequences import get_sequences
-from src.synthesis.synthesize import create_from_skeletons
 import unittest
 import random
 import numpy as np
