@@ -1,7 +1,7 @@
 from src.graphical_interface.common import SomeNewEvent
 from src.image_processing.letters import extract, correct
 from src.image_processing.resize import resize_directory, combine_directory, resize_skeletons_directory
-from src.synthesis.synthesize import create_from_skeletons
+from src.synthesis.process import process_directory
 from tkinter import filedialog
 import tkinter as tk
 import wx
@@ -96,8 +96,7 @@ class SynthesisPanel(wx.Panel):
         Creates a handwriting imitation image
         """
         if (self.use_synthesis):
-            create_from_skeletons('./export', './synthesis/skeletons/',
-                                  './synthesis/synthesized/', self.editname.GetValue())
+            process_directory('./export', './synthesis/skeletons/')
             pass
             # text_renderer = TextImageRenderAllDifferentWidths(
             #     './synthesis/synthesized/', 290, 250, 50, self.editname.GetValue())
