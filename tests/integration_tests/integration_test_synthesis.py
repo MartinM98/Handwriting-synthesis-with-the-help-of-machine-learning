@@ -101,9 +101,6 @@ class SynthesisIntegrationTests(unittest.TestCase):
                 self.assertTrue(element in points or (
                     element[1], element[0]) in points)
 
-    def test_generate_bsplain_fig(self):
-        pass
-
     # ------------ get_sequences2.py ------------
 
     def test_get_unique_points(self):
