@@ -7,6 +7,7 @@ import numpy as np
 import math
 import multiprocessing
 from glob import glob
+from src.synthesis.generate_letter import generate_letter
 
 
 def is_neighbour_pixel(p1: tuple, p2: tuple):
@@ -83,7 +84,10 @@ def find_control_points(image_with_control_points):
     Returns:
         list: List of control points
     """
-    gray = cv2.cvtColor(image_with_control_points, cv2.COLOR_BGR2GRAY)
+    if len(image_with_control_points.shape) == 3:
+        gray = cv2.cvtColor(image_with_control_points, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = image_with_control_points
     threshold_level = 50
     vertices = np.column_stack(np.where(gray < threshold_level))
     return [(v[0], v[1]) for v in vertices]
@@ -100,7 +104,10 @@ def skeleton_to_graph(image):
         vertices(list): List of vertices.
         edges(set): Set of edges as pairs of connected points.
     """
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    if len(image.shape) == 3:
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = image
     threshold_level = 50
     vertices = np.column_stack(np.where(gray < threshold_level))
     vertices = [(v[0], v[1]) for v in vertices]
@@ -225,12 +232,19 @@ def produce_imitation(path_to_skeleton: str):
     """
     image = cv2.imread(path_to_skeleton)
     image = cv2.rotate(image, cv2.cv2.ROTATE_90_CLOCKWISE)
+    path_to_control_points = path_to_skeleton.replace(
+        '.png', '_control_points.png')
+    image_control_points = cv2.imread(path_to_control_points)
+    image_control_points = cv2.rotate(
+        image_control_points, cv2.cv2.ROTATE_90_CLOCKWISE)
+    control_points = find_control_points(image_control_points)
     height, width, _ = image.shape
     vertices, edges = skeleton_to_graph(image)
     remove_cycles(vertices, edges)
     result = list()
     result = get_sequences(list(edges))
     # result = list(r for r in result if len(r) > 2)
+    result = left_only_control_points(result, control_points)
     file_name = get_file_name(path_to_skeleton).replace('_skel', '_bspline')
     path_to_save = get_dir_path(get_dir_path(path_to_skeleton))
     path_to_save = combine_paths(path_to_save, 'bspline')
@@ -263,6 +277,30 @@ def produce_imitation_set(path_to_letters: str):
     p.join()  # Wait for all child processes to close.
 
 
+def match_points(letter: list, new_letter: list):
+    """
+    Matches the generated points to the base letter.
+
+    Args:
+        letter (list): The list of the base letter.
+        new_letter (list): The list of tuples of base image's points
+        and generated points.
+
+    Returns:
+        (list): List of generated points matched to the points
+        of the base letter.
+    """
+    new = list()
+    for line in letter:
+        new_line = list()
+        for point in line:
+            for i in new_letter:
+                if (i[0][0] == point[0]) and (i[0][1] == point[1]):
+                    new_line.append(i[1])
+        new.append(new_line)
+    return new
+
+
 def test():
     """
     Testing
@@ -271,21 +309,38 @@ def test():
         './src/graphical_interface/letters_dataset/A/skel/0_skel.png')
     path_to_control_points = get_absolute_path(
         './src/graphical_interface/letters_dataset/A/skel/0_skel_control_points.png')
+    path_to_control_points2 = get_absolute_path(
+        './src/graphical_interface/letters_dataset/A/skel/1_skel_control_points.png')
     image_skeleton = cv2.imread(path_to_skeleton)
     image_skeleton = cv2.rotate(image_skeleton, cv2.cv2.ROTATE_90_CLOCKWISE)
     image_control_points = cv2.imread(path_to_control_points)
+    image_control_points = cv2.rotate(
+        image_control_points, cv2.cv2.ROTATE_90_CLOCKWISE)
+    image_control_points2 = cv2.imread(path_to_control_points2)
+    image_control_points2 = cv2.rotate(
+        image_control_points2, cv2.cv2.ROTATE_90_CLOCKWISE)
     vertices, edges = skeleton_to_graph(image_skeleton)
     control_points = find_control_points(image_control_points)
     # draw_graph(vertices, edges)
     remove_cycles(vertices, edges)
-    draw_graph(vertices, edges)
+    # draw_graph(vertices, edges)
     result = get_sequences(list(edges))
     # res = [r for r in result if len(r) > 2]
     print("control points", control_points, '\n')
     print("res", result, '\n')
     letter = left_only_control_points(result, control_points)
-    print("letter", letter, '\n')
-    draw_letter(letter, path_to_save_file='./test.png')
+    print("letter", result, '\n')
+    new_letter = generate_letter(
+        path_to_control_points, path_to_control_points2)
+    letter2 = match_points(letter, new_letter)
+    letter3 = []
+    for line in letter2:
+        letter3.append(list(dict.fromkeys(line)))
+    print('generated', letter3)
+    width = max(image_control_points.shape[0], image_control_points2.shape[0])
+    height = max(image_control_points.shape[1], image_control_points2.shape[1])
+    draw_letter(letter3, path_to_save_file='./test.png',
+                image_size=(width, height), skeleton_flag=True)
 
 
 if __name__ == '__main__':
