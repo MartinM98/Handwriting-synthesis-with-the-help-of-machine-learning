@@ -144,6 +144,7 @@ class ImageProcessingIntegrationTests(unittest.TestCase):
         # self.assertTupleEqual(results[1].shape, (62, 51))
         # self.assertTupleEqual(results[0].shape, (29, 29))
 
+    @unittest.skip("work in progress")
     def test_process_dataset(self):
         cv2.imwrite = Mock()
         try:
