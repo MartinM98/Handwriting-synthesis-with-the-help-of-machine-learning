@@ -76,7 +76,7 @@ def skeletonize_automated(directory: str = None):
     return results
 
 
-def process_dataset(directory: str = None):
+def create_skeletons_and_control_points(directory: str):
     """
     Applies skeletonization and gabor filter to the given dataset
     with the standard structure.
@@ -85,9 +85,6 @@ def process_dataset(directory: str = None):
        directory (str): the path to the directory that should
        be processed.
     """
-    if directory is None:
-        directory = get_dir()
-
     for dir in os.listdir(directory):
         if not dir.startswith('.'):
             dir2 = directory + '/' + dir + '/'
@@ -103,6 +100,17 @@ def process_dataset(directory: str = None):
                     gabor = gabor_filter(path=dir3 + filename + '_skel.png')
                     cv2.imwrite(dir3 + filename + '_skel_control_points.png',
                                 gabor)
+
+
+def create_bsplines(directory: str):
+    """
+    Generates letters in the given dataset
+    with the standard structure.
+
+    Args:
+       directory (str): the path to the directory that should
+       be processed.
+    """
     for dir in os.listdir(directory):
         if not dir.startswith('.'):
             dir3 = directory + '/' + dir + '/skel/'
@@ -119,6 +127,21 @@ def process_dataset(directory: str = None):
                     idx = random.randint(0, length)
                 produce_imitation(
                     path_to_skeleton=dir3 + files[i], path_to_control_points2=dir3 + files[idx], idx=idx)
+
+
+def process_dataset(directory: str = None):
+    """
+    Invokes functions applying skeletonization, gabor filter
+    and generate letters to the given dataset with the standard structure.
+
+    Args:
+       directory (str, optional): the path to the directory that should
+       be processed.
+    """
+    if directory is None:
+        directory = get_dir()
+    create_skeletons_and_control_points(directory=directory)
+    create_bsplines(directory=directory)
 
 
 if __name__ == "__main__":
