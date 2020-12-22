@@ -1,12 +1,14 @@
 import matplotlib.pyplot as plt
 import os
 import cv2
+import random
 from src.file_handler.file_handler import combine_paths, ensure_create_dir
 from src.image_processing.skeletonize import skeletonize_image
 from src.file_handler.file_handler import get_filename_without_extention
 from src.image_processing.common_functions.common_functions import get_dir
 from src.image_processing.common_functions.common_functions import get_image
 from src.image_processing.gabor_filter import gabor_filter
+from src.synthesis.control_points import produce_imitation
 
 
 def gabor_filter_automated(directory: str = None):
@@ -101,6 +103,22 @@ def process_dataset(directory: str = None):
                     gabor = gabor_filter(path=dir3 + filename + '_skel.png')
                     cv2.imwrite(dir3 + filename + '_skel_control_points.png',
                                 gabor)
+    for dir in os.listdir(directory):
+        if not dir.startswith('.'):
+            dir3 = directory + '/' + dir + '/skel/'
+            length = len(
+                [filename for filename in os.listdir(directory + '/' + dir) if filename.endswith('.png')]) - 1
+            if length < 1 or dir == 'dot':
+                continue
+            ensure_create_dir(directory + '/' + dir + '/bspline/')
+            files = [filename for filename in os.listdir(
+                dir3) if filename.endswith('_skel.png')]
+            for i in range(len(files)):
+                idx = i
+                while idx == i:
+                    idx = random.randint(0, length)
+                produce_imitation(
+                    path_to_skeleton=dir3 + files[i], path_to_control_points2=dir3 + files[idx], idx=idx)
 
 
 if __name__ == "__main__":
