@@ -1,4 +1,5 @@
-from src.graphical_interface.common import SomeNewEvent
+from src.graphical_interface.create_text_different_widths_big_dataset import TextImageRenderAllDifferentWidths
+from src.graphical_interface.common import SomeNewEvent, PIL2wx
 from src.image_processing.letters import extract, correct
 from src.image_processing.resize import resize_directory, combine_directory, resize_skeletons_directory
 from src.synthesis.process import process_directory
@@ -10,7 +11,7 @@ import os
 
 class SynthesisPanel(wx.Panel):
     def __init__(self, parent, editname, statusBar):
-        # self.use_synthesis = True
+        self.use_synthesis = True
         wx.Panel.__init__(self, parent)
         self.Bind(wx.EVT_SIZE, self.on_resize)
         self.statusBar = statusBar
@@ -39,14 +40,14 @@ class SynthesisPanel(wx.Panel):
         self.button_render = wx.Button(
             self, label="Render")
         self.Bind(wx.EVT_BUTTON, self.on_render_click, self.button_render)
-        hSizer1.Add(self.button_render, 0, wx.ALIGN_RIGHT | wx.ALL, border=5)
+        hSizer1.Add(self.button_render, 0, wx.RIGHT | wx.ALL, border=5)
 
         hSizer1.AddStretchSpacer()
 
         self.change_panel = wx.Button(
             self, label="Recognition Mode")
         self.Bind(wx.EVT_BUTTON, self.on_change_panel, self.change_panel)
-        hSizer1.Add(self.change_panel, 0, wx.ALIGN_RIGHT | wx.ALL, border=5)
+        hSizer1.Add(self.change_panel, 0, wx.RIGHT | wx.ALL, border=5)
         # ------------------ hSizer1 ------------------ #
 
         # ------------------ hSizer2 ------------------ #
@@ -86,7 +87,7 @@ class SynthesisPanel(wx.Panel):
         editname_size = ((window_size[0] - 10) / 2, window_size[1] - 30)
         self.editname.SetSize(editname_size)
 
-        img = wx.Image(100, 100)
+        img = self.imageCtrl.GetBitmap().ConvertToImage()
         img = img.Scale((window_size[0] - 10) / 2, window_size[1] - 30)
         self.imageCtrl.SetBitmap(wx.Bitmap(img))
         self.Refresh()
@@ -97,16 +98,14 @@ class SynthesisPanel(wx.Panel):
         """
         if (self.use_synthesis):
             process_directory('./export', './synthesis/skeletons/')
-            pass
-            # text_renderer = TextImageRenderAllDifferentWidths(
-            #     './synthesis/synthesized/', 290, 250, 50, self.editname.GetValue())
+            text_renderer = TextImageRenderAllDifferentWidths(
+                './synthesis/synthesized/', 290, 250, 50, self.editname.GetValue())
         else:
-            pass
-            # text_renderer = TextImageRenderAllDifferentWidths(
-            #     './letters_dataset/', 290, 250, 50, self.editname.GetValue())
-        # img = text_renderer.create_image()
+            text_renderer = TextImageRenderAllDifferentWidths(
+                './letters_dataset/', 290, 250, 50, self.editname.GetValue())
+        img = text_renderer.create_image()
 
-        # self.imageCtrl.SetBitmap(PIL2wx(img))
+        self.imageCtrl.SetBitmap(PIL2wx(img))
 
     def on_load_click(self, event):
         """

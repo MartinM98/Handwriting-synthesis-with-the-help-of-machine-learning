@@ -1,5 +1,5 @@
-from src.graphical_interface.common import PIL2wx, SomeNewEvent
-from tkinter import Image, filedialog
+from src.graphical_interface.common import SomeNewEvent
+from tkinter import filedialog
 import tkinter as tk
 import wx
 import os
@@ -27,7 +27,7 @@ class RecognitionPanel(wx.Panel):
         self.change_panel = wx.Button(
             self, label="Synthesis Mode")
         self.Bind(wx.EVT_BUTTON, self.on_change_panel, self.change_panel)
-        hSizer1.Add(self.change_panel, 0, wx.ALIGN_RIGHT | wx.ALL, border=5)
+        hSizer1.Add(self.change_panel, 0, wx.RIGHT | wx.ALL, border=5)
         # ------------------ hSizer1 ------------------ #
 
         # ------------------ hSizer2 ------------------ #
@@ -57,13 +57,11 @@ class RecognitionPanel(wx.Panel):
         root.withdraw()
         filename = filedialog.askopenfilename(
             filetypes=[("PNG file", "*.png")], defaultextension=[("PNG file", "*.png")])
-        img = Image.open(filename).convert('RGB')
-        img = img.resize((290, 250))
-        self.imageCtrl.SetBitmap(PIL2wx(img))
         textfile = filename[:-4] + '.txt'
-        command = 'tesseract ' + filename + ' ' + filename[:-4] + ' -l engnew'
+        command = 'tesseract ' + filename + ' ' + filename[:-4] + ' -l engnew quiet'
         os.system(command)
-        f = open(textfile, 'r')
-        self.editname.Value = f.read()
-        f.close()
-        os.remove(textfile)
+        if os.path.isfile(textfile):
+            f = open(textfile, 'r')
+            self.editname.Value = f.read()[:-1]
+            f.close()
+            os.remove(textfile)

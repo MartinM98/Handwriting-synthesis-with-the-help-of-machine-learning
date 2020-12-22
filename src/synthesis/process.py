@@ -3,15 +3,16 @@ from __future__ import division
 from __future__ import print_function
 from src.image_processing.resize import crop_image
 
+import os
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow.compat.v1 as tf
 import numpy as np
 import json
 import base64
-import os
 tf.disable_v2_behavior()
 
 
-def process_file(model_path: str, input_path: str, output_path: str):
+def process_file(model_path: str, input_path: str, output_path: str, use_gpu: bool = False):
     """
     Generates a letter from skeleton based on given model
 
@@ -19,6 +20,7 @@ def process_file(model_path: str, input_path: str, output_path: str):
         model_path (str): Path to model
         input_path (str): Path to skeleton
         output_path (str): Path to output
+        use_gpu (bool): Flag whether to use GPU or not
     """
     with open(input_path, "rb") as f:
         input_data = f.read()
@@ -26,7 +28,12 @@ def process_file(model_path: str, input_path: str, output_path: str):
     input_instance = dict(input=base64.urlsafe_b64encode(input_data).decode("ascii"), key="0")
     input_instance = json.loads(json.dumps(input_instance))
 
-    with tf.Session() as sess:
+    if use_gpu:
+        config = tf.ConfigProto()
+    else:
+        config = tf.ConfigProto(device_count={'GPU': 0})
+
+    with tf.Session(config=config) as sess:
         saver = tf.train.import_meta_graph(model_path + "/export.meta")
         saver.restore(sess, model_path + "/export")
         input_vars = json.loads(tf.get_collection("inputs")[0])
@@ -46,15 +53,21 @@ def process_file(model_path: str, input_path: str, output_path: str):
         f.write(output_data)
 
 
-def process_directory(model_path: str, input_path: str):
+def process_directory(model_path: str, input_path: str, use_gpu: bool = False):
     """
     Generates letters from skeletons based on given model in the same directory but different subfolder
 
     Args:
         model_path (str): Path to model
         input_path (str): Path to skeleton
+        use_gpu (bool): Flag whether to use GPU or not
     """
-    with tf.Session() as sess:
+    if use_gpu:
+        config = tf.ConfigProto()
+    else:
+        config = tf.ConfigProto(device_count={'GPU': 0})
+
+    with tf.Session(config=config) as sess:
         saver = tf.train.import_meta_graph(model_path + "/export.meta")
         saver.restore(sess, model_path + "/export")
         input_vars = json.loads(tf.get_collection("inputs")[0])
