@@ -1,4 +1,4 @@
-from src.graphical_interface.create_text_different_widths_big_dataset import TextImageRenderAllDifferentWidths
+from src.graphical_interface.create_text import TextImageRenderAllDifferentWidths
 from src.graphical_interface.common import ChangePanelEvent, PIL2wx
 from src.image_processing.letters import extract, correct
 from src.image_processing.resize import resize_directory, combine_directory, resize_skeletons_directory
