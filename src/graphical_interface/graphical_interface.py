@@ -32,7 +32,6 @@ class Frame(wx.Frame):
         self.recognition_panel = RecognitionPanel(
             self, self.editname, self.statusBar)
         self.synthesis_panel.Hide()
-        self.synthesis_panel.SetupScrolling()
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.synthesis_panel, 1, wx.EXPAND)
