@@ -1,5 +1,6 @@
 # https://note.nkmk.me/en/python-pillow-concat-images/
 
+from src.file_handler.file_handler import combine_paths
 from PIL import Image
 import math
 import random
@@ -28,23 +29,31 @@ class TextImageRenderAllDifferentWidths:
 
     # Method which parses the given string and creates a image representing the text
     def create_image(self):
-        result_image = Image.new('RGB', (self.width, self.height), (255, 255, 255))  # this example uses color images - one may use mode='L' for monochrome images
+        # this example uses color images - one may use mode='L' for monochrome images
+        result_image = Image.new(
+            'RGB', (self.width, self.height), (255, 255, 255))
         random.seed(datetime.now())
         for letter in self.text_to_render:
             letter_to_int = ord(letter)
             if letter_to_int != 32:
                 if letter_to_int == 46:
-                    letter_path = self.directory_path + 'dot/'
+                    letter_path = combine_paths(self.directory_path, 'dot/')
                 elif letter_to_int >= 97:
-                    letter_path = self.directory_path + letter.upper() + '2/'
+                    letter_path = combine_paths(
+                        self.directory_path, letter.upper() + '2/')
                 else:
-                    letter_path = self.directory_path + letter + '/'
+                    letter_path = combine_paths(
+                        self.directory_path, letter + '/')
                 if os.path.isdir(letter_path):
-                    img = Image.open(letter_path + str(random.randint(0, len([name for name in os.listdir(letter_path)]) - 1)) + '.png')
+                    img = Image.open(letter_path + str(random.randint(
+                        0, len([name for name in os.listdir(letter_path)]) - 1)) + '.png')
                 else:
-                    img = Image.new('RGB', (self.font_width, self.line_capacity), (255, 255, 255))
+                    img = Image.new(
+                        'RGB', (self.font_width, self.line_capacity), (255, 255, 255))
             else:
-                img = Image.new('RGB', (self.font_width, self.line_capacity), (255, 255, 255))
+                img = Image.new(
+                    'RGB', (self.font_width, self.line_capacity), (255, 255, 255))
+            print(img)
             if self.current_width + img.width >= self.width:
                 self.current_width = 0
                 self.current_line += 1
@@ -75,13 +84,17 @@ class TextImageRenderAllDifferentWidths:
         letter_type = self.get_size_coefficients(letter_to_int)
         line_height = self.line_height * self.current_line
         if letter_type == 3:
-            result_image.paste(letter_image, (self.current_width, line_height - letter_image.height))
+            result_image.paste(
+                letter_image, (self.current_width, line_height - letter_image.height))
         elif letter_type == 1:
-            result_image.paste(letter_image, (self.current_width, line_height - letter_image.height))
+            result_image.paste(
+                letter_image, (self.current_width, line_height - letter_image.height))
         elif letter_type == 2:
-            result_image.paste(letter_image, (self.current_width, line_height - int(letter_image.height / 2)))
+            result_image.paste(
+                letter_image, (self.current_width, line_height - int(letter_image.height / 2)))
         elif letter_type == 0:
-            result_image.paste(letter_image, (self.current_width, line_height - letter_image.height))
+            result_image.paste(
+                letter_image, (self.current_width, line_height - letter_image.height))
 
 
 if '__name__' == '__main__':
@@ -90,5 +103,6 @@ if '__name__' == '__main__':
     height = 300
     font_size = 60
     text_to_render = 'Testing the function.'
-    text_renderer = TextImageRenderAllDifferentWidths(directory_path, width, height, font_size, text_to_render)
+    text_renderer = TextImageRenderAllDifferentWidths(
+        directory_path, width, height, font_size, text_to_render)
     text_renderer.create_image()

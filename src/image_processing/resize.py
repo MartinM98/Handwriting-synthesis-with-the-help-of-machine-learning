@@ -63,9 +63,10 @@ def crop_image(image_path: str, output_path: str):
         image_path (str): Path to image
         output_path (str): Output path
     """
-    img = cv2.imread(image_path, 0)
-    points = np.column_stack(np.where(img == 0))
-    cropped = img[np.min(points[:, 0]): np.max(points[:, 0]), np.min(points[:, 1]): np.max(points[:, 0])]
+    img = cv2.imread(image_path, cv2.COLOR_BGR2GRAY)
+    points = np.column_stack(np.where(img < 240))
+    cropped = img[np.min(points[:, 0]): np.max(
+        points[:, 0]), np.min(points[:, 1]): np.max(points[:, 0])]
 
     cv2.imwrite(output_path, cropped)
 
@@ -102,8 +103,10 @@ def resize_skeletons_directory(input_path: str, output_path: str):
                 if file.endswith('.png'):
                     filename = get_filename_without_extention(file)
                     if not filename.endswith('control_points'):
-                        resized = resize_image(os.path.join(dir2, file), 256, 256)
-                        cv2.imwrite(os.path.join(output_path, str(i) + '.png'), resized)
+                        resized = resize_image(
+                            os.path.join(dir2, file), 256, 256)
+                        cv2.imwrite(os.path.join(
+                            output_path, str(i) + '.png'), resized)
                         i += 1
 
 
@@ -118,5 +121,6 @@ def combine_directory(input_path_a: str, input_path_b: str, output_path: str):
     """
     for path, subdirs, files in os.walk(input_path_a):
         for name in files:
-            combined = combine(os.path.join(path, name), os.path.join(input_path_b, name))
+            combined = combine(os.path.join(path, name),
+                               os.path.join(input_path_b, name))
             cv2.imwrite(os.path.join(output_path, name), combined)

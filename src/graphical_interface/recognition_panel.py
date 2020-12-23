@@ -1,4 +1,4 @@
-from src.graphical_interface.common import SomeNewEvent
+from src.graphical_interface.common import ChangePanelEvent
 from tkinter import filedialog
 import tkinter as tk
 import wx
@@ -45,7 +45,7 @@ class RecognitionPanel(wx.Panel):
         self.SetSizerAndFit(mainSizer)
 
     def on_change_panel(self, event):
-        evt = SomeNewEvent()
+        evt = ChangePanelEvent()
         wx.PostEvent(self.Parent, evt)
         event.Skip()
 
@@ -58,7 +58,8 @@ class RecognitionPanel(wx.Panel):
         filename = filedialog.askopenfilename(
             filetypes=[("PNG file", "*.png")], defaultextension=[("PNG file", "*.png")])
         textfile = filename[:-4] + '.txt'
-        command = 'tesseract ' + filename + ' ' + filename[:-4] + ' -l engnew quiet'
+        command = 'tesseract ' + filename + ' ' + \
+            filename[:-4] + ' -l engnew quiet'
         os.system(command)
         if os.path.isfile(textfile):
             f = open(textfile, 'r')

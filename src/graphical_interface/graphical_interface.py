@@ -1,4 +1,4 @@
-from src.graphical_interface.common import EVT_SOME_NEW_EVENT
+from src.graphical_interface.common import EVT_CHANGE_PANEL_EVENT
 import wx
 from src.graphical_interface.recognition_panel import RecognitionPanel
 from src.graphical_interface.synthesis_panel import SynthesisPanel
@@ -15,11 +15,14 @@ class Frame(wx.Frame):
                           pos=position, size=size)
 
         self.editname = wx.TextCtrl(
-            self, value="Testing the function.", style=wx.TE_MULTILINE)
-        window_size = self.GetSize()
-        self.editname.SetMinSize((300, 400))
-        self.editname.SetMaxSize((int(window_size[0] / 2), -1))
-        # editname.SetMaxSize((200, 200))
+            self, value="Testing", style=wx.TE_MULTILINE)
+        # screenSizeMonitor = wx.DisplaySize()
+        # print(int(1 / 2 * screenSizeMonitor[0]),
+        #       int(1 / 2 * screenSizeMonitor[1]))
+        # self.editname.SetMinSize(
+        #     (int(1 / 2 * screenSizeMonitor[0]), int(1 / 2 * screenSizeMonitor[1])))
+        self.editname.SetMinSize(
+            (900, 600))
 
         self.statusBar = self.CreateStatusBar()
         self.statusBar.SetStatusText("Synthesis Mode")
@@ -29,6 +32,7 @@ class Frame(wx.Frame):
         self.recognition_panel = RecognitionPanel(
             self, self.editname, self.statusBar)
         self.synthesis_panel.Hide()
+        self.synthesis_panel.SetupScrolling()
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.synthesis_panel, 1, wx.EXPAND)
@@ -42,7 +46,7 @@ class Frame(wx.Frame):
         # bind the menu event to an event handler
         self.Bind(wx.EVT_MENU, self.Menu_Close, id=wx.ID_EXIT)
         self.Bind(wx.EVT_CLOSE, self.onClose)
-        self.Bind(EVT_SOME_NEW_EVENT, self.on_switch_panels)
+        self.Bind(EVT_CHANGE_PANEL_EVENT, self.on_switch_panels)
 
         menuBar.Append(menu, "&Options")
         self.SetMenuBar(menuBar)
@@ -74,8 +78,6 @@ class Frame(wx.Frame):
 class Application(wx.App):
     def OnInit(self):
         frame = Frame(None, "Bachelor Project", (150, 150), (1280, 720))
-        # SynthesisPanel(frame)
-        # self.SetTopWindow(frame)
         frame.Show()
         return True
 
