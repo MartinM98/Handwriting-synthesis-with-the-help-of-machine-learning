@@ -2,13 +2,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 from src.image_processing.resize import crop_image
-
-import os
-# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-import tensorflow.compat.v1 as tf
 import numpy as np
 import json
 import base64
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+import tensorflow.compat.v1 as tf  # noqa: E402
 tf.disable_v2_behavior()
 
 
