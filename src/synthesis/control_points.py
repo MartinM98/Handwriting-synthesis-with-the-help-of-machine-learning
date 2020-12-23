@@ -1,6 +1,7 @@
 from src.synthesis.handwriting_reconstruction import draw_letter
 from src.file_handler.file_handler import combine_paths, ensure_create_dir, get_absolute_path, get_dir_path, get_file_name
 from src.synthesis.get_sequences import get_sequences
+from src.synthesis.get_sequences2 import get_sequences2
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
@@ -223,7 +224,7 @@ def left_only_control_points(letter: list, control_points: list):
     return new_letter
 
 
-def produce_imitation(path_to_skeleton: str):
+def produce_imitation(path_to_skeleton: str, path_to_control_points2: str, idx: int):
     """
     Produce imitation of the letter form the skeleton.
 
@@ -237,20 +238,31 @@ def produce_imitation(path_to_skeleton: str):
     image_control_points = cv2.imread(path_to_control_points)
     image_control_points = cv2.rotate(
         image_control_points, cv2.cv2.ROTATE_90_CLOCKWISE)
+    image_control_points2 = cv2.imread(path_to_control_points2)
+    image_control_points2 = cv2.rotate(
+        image_control_points2, cv2.cv2.ROTATE_90_CLOCKWISE)
     control_points = find_control_points(image_control_points)
-    height, width, _ = image.shape
     vertices, edges = skeleton_to_graph(image)
     remove_cycles(vertices, edges)
     result = list()
     result = get_sequences(list(edges))
     # result = list(r for r in result if len(r) > 2)
-    result = left_only_control_points(result, control_points)
-    file_name = get_file_name(path_to_skeleton).replace('_skel', '_bspline')
+    letter = left_only_control_points(result, control_points)
+    new_letter = generate_letter(
+        path_to_control_points, path_to_control_points2)
+    letter2 = match_points(letter, new_letter)
+    letter3 = []
+    for line in letter2:
+        letter3.append(list(dict.fromkeys(line)))
+    file_name = get_file_name(path_to_skeleton).replace(
+        '_skel', '_bspline' + str(idx))
     path_to_save = get_dir_path(get_dir_path(path_to_skeleton))
     path_to_save = combine_paths(path_to_save, 'bspline')
     path_to_save = combine_paths(path_to_save, file_name)
+    width = max(image_control_points.shape[0], image_control_points2.shape[0])
+    height = max(image_control_points.shape[1], image_control_points2.shape[1])
     draw_letter(result, path_to_save_file=path_to_save,
-                image_size=(height, width), skeleton_flag=True)
+                image_size=(width, height), skeleton_flag=True)
 
 
 def produce_imitation_set(path_to_letters: str):
@@ -306,11 +318,11 @@ def test():
     Testing
     """
     path_to_skeleton = get_absolute_path(
-        './src/graphical_interface/letters_dataset/A/skel/0_skel.png')
+        './src/graphical_interface/letters_dataset/A/skel/1_skel.png')
     path_to_control_points = get_absolute_path(
-        './src/graphical_interface/letters_dataset/A/skel/0_skel_control_points.png')
-    path_to_control_points2 = get_absolute_path(
         './src/graphical_interface/letters_dataset/A/skel/1_skel_control_points.png')
+    path_to_control_points2 = get_absolute_path(
+        './src/graphical_interface/letters_dataset/A/skel/2_skel_control_points.png')
     image_skeleton = cv2.imread(path_to_skeleton)
     image_skeleton = cv2.rotate(image_skeleton, cv2.cv2.ROTATE_90_CLOCKWISE)
     image_control_points = cv2.imread(path_to_control_points)
@@ -324,7 +336,7 @@ def test():
     # draw_graph(vertices, edges)
     remove_cycles(vertices, edges)
     # draw_graph(vertices, edges)
-    result = get_sequences(list(edges))
+    result = get_sequences2(list(edges))
     # res = [r for r in result if len(r) > 2]
     print("control points", control_points, '\n')
     print("res", result, '\n')

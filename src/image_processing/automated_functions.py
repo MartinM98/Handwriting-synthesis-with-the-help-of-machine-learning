@@ -1,12 +1,14 @@
 import matplotlib.pyplot as plt
 import os
 import cv2
+import random
 from src.file_handler.file_handler import combine_paths, ensure_create_dir
 from src.image_processing.skeletonize import skeletonize_image
 from src.file_handler.file_handler import get_filename_without_extention
 from src.image_processing.common_functions.common_functions import get_dir
 from src.image_processing.common_functions.common_functions import get_image
 from src.image_processing.gabor_filter import gabor_filter
+from src.synthesis.control_points import produce_imitation
 
 
 def gabor_filter_automated(directory: str = None):
@@ -74,7 +76,7 @@ def skeletonize_automated(directory: str = None):
     return results
 
 
-def process_dataset(directory: str = None):
+def create_skeletons_and_control_points(directory: str):
     """
     Applies skeletonization and gabor filter to the given dataset
     with the standard structure.
@@ -83,9 +85,6 @@ def process_dataset(directory: str = None):
        directory (str): the path to the directory that should
        be processed.
     """
-    if directory is None:
-        directory = get_dir()
-
     for dir in os.listdir(directory):
         if not dir.startswith('.'):
             dir2 = directory + '/' + dir + '/'
@@ -101,6 +100,48 @@ def process_dataset(directory: str = None):
                     gabor = gabor_filter(path=dir3 + filename + '_skel.png')
                     cv2.imwrite(dir3 + filename + '_skel_control_points.png',
                                 gabor)
+
+
+def create_bsplines(directory: str):
+    """
+    Generates letters in the given dataset
+    with the standard structure.
+
+    Args:
+       directory (str): the path to the directory that should
+       be processed.
+    """
+    for dir in os.listdir(directory):
+        if not dir.startswith('.'):
+            dir3 = directory + '/' + dir + '/skel/'
+            length = len(
+                [filename for filename in os.listdir(directory + '/' + dir) if filename.endswith('.png')]) - 1
+            if length < 1 or dir == 'dot':
+                continue
+            ensure_create_dir(directory + '/' + dir + '/bspline/')
+            files = [filename for filename in os.listdir(
+                dir3) if filename.endswith('_skel.png')]
+            for i in range(len(files)):
+                idx = i
+                while idx == i:
+                    idx = random.randint(0, length)
+                produce_imitation(
+                    path_to_skeleton=dir3 + files[i], path_to_control_points2=dir3 + files[idx], idx=idx)
+
+
+def process_dataset(directory: str = None):
+    """
+    Invokes functions applying skeletonization, gabor filter
+    and generate letters to the given dataset with the standard structure.
+
+    Args:
+       directory (str, optional): the path to the directory that should
+       be processed.
+    """
+    if directory is None:
+        directory = get_dir()
+    create_skeletons_and_control_points(directory=directory)
+    create_bsplines(directory=directory)
 
 
 if __name__ == "__main__":
