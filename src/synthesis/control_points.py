@@ -224,7 +224,7 @@ def left_only_control_points(letter: list, control_points: list):
     return new_letter
 
 
-def produce_imitation(path_to_skeleton: str, path_to_control_points2: str, idx: int):
+def produce_imitation(path_to_skeleton: str, path_to_control_points2: str, idx: int, font_size: int = None):
     """
     Produce imitation of the letter form the skeleton.
 
@@ -242,6 +242,10 @@ def produce_imitation(path_to_skeleton: str, path_to_control_points2: str, idx: 
     image_control_points2 = cv2.rotate(
         image_control_points2, cv2.cv2.ROTATE_90_CLOCKWISE)
     control_points = find_control_points(image_control_points)
+    height, width, _ = image.shape
+    if font_size is not None:
+        height = int(height * font_size)
+        width = int(width * font_size)
     vertices, edges = skeleton_to_graph(image)
     remove_cycles(vertices, edges)
     result = list()
