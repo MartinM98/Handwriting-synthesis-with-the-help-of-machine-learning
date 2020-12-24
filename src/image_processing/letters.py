@@ -1,7 +1,5 @@
 """ Extraction letters from images """
 import os
-import tkinter as tk
-from tkinter import filedialog
 from PIL import Image
 
 
@@ -29,10 +27,11 @@ def check_char(path, char: str):
             return path + '/' + char + '/'
 
 
-def extract(path=None):
-    root = tk.Tk()
-    root.withdraw()
-    directory = filedialog.askdirectory()
+def extract(s, wx, path=None):
+    with wx.DirDialog(s, 'Choose a directory') as fd:
+        if fd.ShowModal() != wx.ID_OK:
+            return None
+        directory = fd.GetPath()
     if path is None:
         path = directory
     letters = path + '/letters_dataset'
@@ -71,14 +70,14 @@ def extract(path=None):
             return letters
 
 
-def correct(path=None):
+def correct(_self, _wx, path=None):
     for r, d, f in os.walk(path):
         for folder in d:
-            root = tk.Tk()
-            root.withdraw()
             directory = os.path.join(r, folder)
-            filestring = filedialog.askopenfilenames(initialdir=directory, title='Select incorrectly recognized letters')
-            files = root.tk.splitlist(filestring)
+            with _wx.FileDialog(_self, 'Choose a directory', defaultDir=directory) as fd:
+                fd.ShowModal()
+                files = fd.GetPaths()
+            files = list(files)
             for file in files:
                 os.remove(file)
             if not os.listdir(directory):
