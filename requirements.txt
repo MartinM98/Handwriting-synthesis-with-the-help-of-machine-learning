@@ -7,3 +7,4 @@ six==1.15.0
 coverage==5.3
 scikit-image==0.16.2
 pytest==6.1.2
+# wxPython==4.0.7

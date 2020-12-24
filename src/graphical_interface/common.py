@@ -1,7 +1,6 @@
 import wx.lib.newevent
 
-SomeNewEvent, EVT_SOME_NEW_EVENT = wx.lib.newevent.NewEvent()
-SomeNewCommandEvent, EVT_SOME_NEW_COMMAND_EVENT = wx.lib.newevent.NewCommandEvent()
+ChangePanelEvent, EVT_CHANGE_PANEL_EVENT = wx.lib.newevent.NewEvent()
 
 
 def PIL2wx(image):  # This function converts PIL image to wx image

@@ -1,4 +1,4 @@
-from src.graphical_interface.common import SomeNewEvent
+from src.graphical_interface.common import ChangePanelEvent
 import wx
 import os
 
@@ -43,7 +43,7 @@ class RecognitionPanel(wx.Panel):
         self.SetSizerAndFit(mainSizer)
 
     def on_change_panel(self, event):
-        evt = SomeNewEvent()
+        evt = ChangePanelEvent()
         wx.PostEvent(self.Parent, evt)
         event.Skip()
 
