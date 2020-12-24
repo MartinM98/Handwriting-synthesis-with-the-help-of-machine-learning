@@ -3,10 +3,9 @@ from src.graphical_interface.common import SomeNewEvent, PIL2wx
 from src.image_processing.letters import extract, correct
 from src.image_processing.resize import resize_directory, combine_directory, resize_skeletons_directory
 from src.synthesis.process import process_directory
-from tkinter import filedialog
-import tkinter as tk
 import wx
 import os
+from src.image_processing.automated_functions import process_dataset
 
 
 class SynthesisPanel(wx.Panel):
@@ -112,8 +111,11 @@ class SynthesisPanel(wx.Panel):
         Creates new dataset from pictures from selected directory
         """
         path = os.getcwd()
-        dir = extract(path)
-        correct(dir)
+        dir = extract(self, wx, path)
+        if dir is None:
+            return
+        correct(self, wx, dir)
+        process_dataset(path + '/letters_dataset')
         resize_directory(path + '/letters_dataset',
                          path + '/training_dataset/letters')
         resize_skeletons_directory(
@@ -129,12 +131,11 @@ class SynthesisPanel(wx.Panel):
         """
         Saves created image
         """
-        root = tk.Tk()
-        root.withdraw()
-        filename = filedialog.asksaveasfilename(
-            filetypes=[("PNG file", "*.png")], defaultextension=[("PNG file", "*.png")])
-        img = self.imageCtrl.GetBitmap()
-        if len(filename) > 0:
-            self.statusBar.SetStatusText("Saving...")
-            img.SaveFile(filename, wx.BITMAP_TYPE_PNG)
-            self.statusBar.SetStatusText("File saved.")
+        with wx.FileDialog(self, 'Save image', wildcard='PNG files (*.png)|*.png', style=wx.FD_SAVE) as fd:
+            if fd.ShowModal() == wx.ID_OK:
+                filename = fd.GetPath()
+                img = self.imageCtrl.GetBitmap()
+                if len(filename) > 0:
+                    self.statusBar.SetStatusText("Saving...")
+                    img.SaveFile(filename, wx.BITMAP_TYPE_PNG)
+                    self.statusBar.SetStatusText("File saved.")

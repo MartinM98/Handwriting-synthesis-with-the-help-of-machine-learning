@@ -1,6 +1,4 @@
 from src.graphical_interface.common import SomeNewEvent
-from tkinter import filedialog
-import tkinter as tk
 import wx
 import os
 
@@ -53,15 +51,14 @@ class RecognitionPanel(wx.Panel):
         """
         Reads text from picrute and writes it to the textbox
         """
-        root = tk.Tk()
-        root.withdraw()
-        filename = filedialog.askopenfilename(
-            filetypes=[("PNG file", "*.png")], defaultextension=[("PNG file", "*.png")])
-        textfile = filename[:-4] + '.txt'
-        command = 'tesseract ' + filename + ' ' + filename[:-4] + ' -l engnew quiet'
-        os.system(command)
-        if os.path.isfile(textfile):
-            f = open(textfile, 'r')
-            self.editname.Value = f.read()[:-1]
-            f.close()
-            os.remove(textfile)
+        with wx.FileDialog(self, 'Choose an image', wildcard='PNG files (*.png)|*.png') as fd:
+            if fd.ShowModal() == wx.ID_OK:
+                filename = fd.GetPath()
+                textfile = filename[:-4] + '.txt'
+                command = 'tesseract ' + filename + ' ' + filename[:-4] + ' -l engnew quiet'
+                os.system(command)
+                if os.path.isfile(textfile):
+                    f = open(textfile, 'r')
+                    self.editname.Value = f.read()[:-1]
+                    f.close()
+                    os.remove(textfile)
