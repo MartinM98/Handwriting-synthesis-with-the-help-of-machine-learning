@@ -17,7 +17,7 @@ class ImageSize(enum.Enum):
 
 
 class SynthesisPanel(wx.Panel):
-    def __init__(self, parent, editname, statusBar):
+    def __init__(self, parent, statusBar):
         self.use_synthesis = True
         wx.Panel.__init__(self, parent)
         # self.Bind(wx.EVT_SIZE, self.on_resize)
@@ -81,7 +81,10 @@ class SynthesisPanel(wx.Panel):
         # ------------------ hSizer2 ------------------ #
         # hSizer2.AddStretchSpacer()
 
-        self.editname = editname
+        self.editname = wx.TextCtrl(
+            self, value='Test', style=wx.TE_MULTILINE)
+        self.editname.SetMinSize(
+            (900, 600))
         self.hSizer2.Add(self.editname, 2, wx.EXPAND, border=10)
 
         # hSizer2.AddStretchSpacer()

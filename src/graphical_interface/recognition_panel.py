@@ -4,7 +4,7 @@ import os
 
 
 class RecognitionPanel(wx.Panel):
-    def __init__(self, parent, editname, statusBar):
+    def __init__(self, parent, statusBar):
         # self.use_synthesis = True
         wx.Panel.__init__(self, parent)
         self.statusBar = statusBar
@@ -31,7 +31,10 @@ class RecognitionPanel(wx.Panel):
         # ------------------ hSizer2 ------------------ #
         hSizer2.AddStretchSpacer()
 
-        self.editname = editname
+        self.editname = wx.TextCtrl(
+            self, value='Test', style=wx.TE_MULTILINE)
+        self.editname.SetMinSize(
+            (900, 600))
         hSizer2.Add(self.editname, 3, wx.EXPAND, border=10)
 
         hSizer2.AddStretchSpacer()
