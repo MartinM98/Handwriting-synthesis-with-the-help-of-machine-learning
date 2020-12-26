@@ -1,4 +1,4 @@
-data/*
+dataset/*
 !data/download_database.sh
 *.box
 tests/report/*
