@@ -16,12 +16,9 @@ class Frame(wx.Frame):
 
         # self.editname = wx.TextCtrl(
         #     self, value="Testing", style=wx.TE_MULTILINE)
-        # # screenSizeMonitor = wx.DisplaySize()
-        # # print(int(1 / 2 * screenSizeMonitor[0]),
-        # #       int(1 / 2 * screenSizeMonitor[1]))
-        # # self.editname.SetMinSize(
-        # #     (int(1 / 2 * screenSizeMonitor[0]), int(1 / 2 * screenSizeMonitor[1])))
         # self.editname.SetMinSize(
+        #     (300, 300))
+        # self.editname.SetSize(
         #     (900, 600))
 
         self.statusBar = self.CreateStatusBar()
@@ -36,6 +33,7 @@ class Frame(wx.Frame):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.synthesis_panel, 1, wx.EXPAND)
         self.sizer.Add(self.recognition_panel, 1, wx.EXPAND)
+        self.sizer.SetMinSize(1400, 700)
         self.SetSizerAndFit(self.sizer)
 
         menuBar = wx.MenuBar()

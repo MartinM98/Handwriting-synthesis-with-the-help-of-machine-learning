@@ -15,8 +15,8 @@ from src.file_handler.file_handler import ensure_create_dir
 
 
 class ImageSize(enum.Enum):
-    Small = (150, 100)
-    Medium = (450, 300)
+    Small = (450, 300)
+    Medium = (675, 450)
     Large = (900, 600)
 
 
@@ -51,7 +51,7 @@ class SynthesisPanel(wx.Panel):
         self.hSizer1.Add(self.combobox, 0,
                          wx.CENTER | wx.LEFT | wx.ALL, border=5)
 
-        self.font_sizes = [str(x) for x in range(8, 24)]
+        self.font_sizes = [str(x) for x in range(8, 25)]
         self.font_size_combobox = wx.ComboBox(
             self, choices=self.font_sizes, value='10', size=(80, -1))
         self.font_size_combobox.Bind(wx.EVT_COMBOBOX, self.on_combo)
@@ -84,11 +84,10 @@ class SynthesisPanel(wx.Panel):
 
         # ------------------ hSizer2 ------------------ #
         # hSizer2.AddStretchSpacer()
-
         self.editname = wx.TextCtrl(
             self, value='Test', style=wx.TE_MULTILINE)
         self.editname.SetMinSize(
-            (900, 600))
+            (300, 300))
         self.hSizer2.Add(self.editname, 2, wx.EXPAND, border=10)
 
         # hSizer2.AddStretchSpacer()
@@ -96,7 +95,7 @@ class SynthesisPanel(wx.Panel):
         img = wx.Image(self.image_size.value[0], self.image_size.value[1])
         self.imageCtrl = wx.StaticBitmap(self, wx.ID_ANY,
                                          wx.Bitmap(img))
-        self.hSizer2.Add(self.imageCtrl, 3, wx.CENTER, border=10)
+        self.hSizer2.Add(self.imageCtrl, 5, wx.CENTER, border=10)
 
         # hSizer2.AddStretchSpacer()
         # ------------------ hSizer2 ------------------ #
