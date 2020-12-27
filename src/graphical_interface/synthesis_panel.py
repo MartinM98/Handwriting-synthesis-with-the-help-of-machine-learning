@@ -17,85 +17,117 @@ class ImageSize(enum.Enum):
 
 
 class SynthesisPanel(wx.Panel):
-    def __init__(self, parent, editname, statusBar):
+    def __init__(self, parent, editname, statusBar, main_color, second_color):
         self.use_synthesis = True
         wx.Panel.__init__(self, parent)
         # self.Bind(wx.EVT_SIZE, self.on_resize)
         self.statusBar = statusBar
+        self.SetBackgroundColour(main_color)
 
         # create some sizers
         self.mainSizer = wx.BoxSizer(wx.VERTICAL)
         self.hSizer1 = wx.BoxSizer(wx.HORIZONTAL)
         self.hSizer2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hSizer3 = wx.BoxSizer(wx.HORIZONTAL)
+        self.hSizer4 = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.button_load = wx.Button(
-            self, label="Load")
+        # ------------------ hSizer1 ------------------ #
+
+        self.upper_panel = wx.Panel(self, wx.ID_ANY)
+        self.upper_panel.SetBackgroundColour(second_color)
+        self.hSizer1.Add(self.upper_panel, 1, wx.EXPAND, 0)
+
+        self.sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
+
+        path = get_absolute_path(
+            'src/graphical_interface/buttons/load_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
+        self.button_load = wx.BitmapButton(
+            self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
         self.Bind(wx.EVT_BUTTON, self.on_load_click, self.button_load)
-        self.hSizer1.Add(self.button_load, 0,
+        self.sizer_2.Add(self.button_load, 0,
                          wx.TOP | wx.LEFT | wx.ALL, border=5)
 
-        self.button_save = wx.Button(
-            self, label="Save")
+        path = get_absolute_path(
+            'src/graphical_interface/buttons/save_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
+        self.button_save = wx.BitmapButton(
+            self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
         self.Bind(wx.EVT_BUTTON, self.on_save_click, self.button_save)
-        self.hSizer1.Add(self.button_save, 0,
+        self.sizer_2.Add(self.button_save, 0,
                          wx.TOP | wx.LEFT | wx.ALL, border=5)
 
         self.styles = ['Style 1', 'Style 2', 'Style 3']
         self.combobox = wx.ComboBox(
-            self, choices=self.styles, value='Style 1', size=(80, -1))
+            self.upper_panel, choices=self.styles, value='Style 1', size=(80, -1))
         self.combobox.Bind(wx.EVT_COMBOBOX, self.on_combo)
-        self.hSizer1.Add(self.combobox, 0,
+        self.sizer_2.Add(self.combobox, 0,
                          wx.CENTER | wx.LEFT | wx.ALL, border=5)
 
         self.font_sizes = [str(x) for x in range(8, 25)]
         self.font_size_combobox = wx.ComboBox(
-            self, choices=self.font_sizes, value='10', size=(80, -1))
+            self.upper_panel, choices=self.font_sizes, value='10', size=(80, -1))
         self.font_size_combobox.Bind(wx.EVT_COMBOBOX, self.on_combo)
-        self.hSizer1.Add(self.font_size_combobox, 0,
+        self.sizer_2.Add(self.font_size_combobox, 0,
                          wx.CENTER | wx.LEFT | wx.ALL, border=5)
 
         self.image_sizes = ['Small', 'Medium', 'Large']
         self.image_size_combobox = wx.ComboBox(
-            self, choices=self.image_sizes, value='Medium', size=(80, -1))
+            self.upper_panel, choices=self.image_sizes, value='Medium', size=(80, -1))
         self.image_size_combobox.Bind(
             wx.EVT_COMBOBOX, self.on_image_size_combo)
-        self.hSizer1.Add(self.image_size_combobox, 0,
+        self.sizer_2.Add(self.image_size_combobox, 0,
                          wx.CENTER | wx.LEFT | wx.ALL, border=5)
 
-        self.checkbox = wx.CheckBox(self, label='use GPU')
-        self.hSizer1.Add(self.checkbox, 0, wx.CENTER | wx.ALL, border=5)
+        self.checkbox = wx.CheckBox(self.upper_panel, label='use GPU')
+        self.checkbox.SetForegroundColour("white")
+        self.sizer_2.Add(self.checkbox, 0, wx.CENTER | wx.ALL, border=5)
 
-        self.button_render = wx.Button(
-            self, label="Render")
+        path = get_absolute_path(
+            'src/graphical_interface/buttons/render_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
+        self.button_render = wx.BitmapButton(
+            self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
         self.Bind(wx.EVT_BUTTON, self.on_render_click, self.button_render)
-        self.hSizer1.Add(self.button_render, 0, wx.RIGHT | wx.ALL, border=5)
+        self.sizer_2.Add(self.button_render, 0, wx.RIGHT | wx.ALL, border=5)
 
-        self.hSizer1.AddStretchSpacer()
+        self.sizer_2.AddStretchSpacer()
 
-        self.change_panel = wx.Button(
-            self, label="Recognition Mode")
+        path = get_absolute_path(
+            'src/graphical_interface/buttons/recognition_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
+        self.change_panel = wx.BitmapButton(
+            self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
         self.Bind(wx.EVT_BUTTON, self.on_change_panel, self.change_panel)
-        self.hSizer1.Add(self.change_panel, 0, wx.RIGHT | wx.ALL, border=5)
+        self.sizer_2.Add(self.change_panel, 0, wx.RIGHT | wx.ALL, border=5)
+
+        self.upper_panel.SetSizer(self.sizer_2)
         # ------------------ hSizer1 ------------------ #
 
         # ------------------ hSizer2 ------------------ #
-        # hSizer2.AddStretchSpacer()
+        self.hSizer2.AddStretchSpacer()
 
         self.editname = editname
         self.hSizer2.Add(self.editname, 3, wx.EXPAND, border=10)
 
-        # hSizer2.AddStretchSpacer()
+        self.hSizer2.AddStretchSpacer()
+
         self.image_size = ImageSize.Medium
         img = wx.Image(self.image_size.value[0], self.image_size.value[1])
         self.imageCtrl = wx.StaticBitmap(self, wx.ID_ANY,
                                          wx.Bitmap(img))
         self.hSizer2.Add(self.imageCtrl, 5, wx.CENTER, border=10)
 
-        # hSizer2.AddStretchSpacer()
+        self.hSizer2.AddStretchSpacer()
         # ------------------ hSizer2 ------------------ #
 
+        self.hSizer3.AddStretchSpacer()
+        self.hSizer4.AddStretchSpacer()
+
         self.mainSizer.Add(self.hSizer1, 0, wx.EXPAND)
-        self.mainSizer.Add(self.hSizer2, 1, wx.EXPAND)
+        self.mainSizer.Add(self.hSizer3, 1, wx.EXPAND)
+        self.mainSizer.Add(self.hSizer2, 10, wx.EXPAND)
+        self.mainSizer.Add(self.hSizer4, 1, wx.EXPAND)
         self.SetSizerAndFit(self.mainSizer)
 
     def on_combo(self, event):
@@ -176,3 +208,81 @@ class SynthesisPanel(wx.Panel):
                     self.statusBar.SetStatusText("Saving...")
                     img.SaveFile(filename, wx.BITMAP_TYPE_PNG)
                     self.statusBar.SetStatusText("File saved.")
+
+
+class Frame(wx.Frame):
+    """
+    This is MyFrame.  It just shows a few controls on a wxPanel,
+    and has a simple menu.
+    """
+
+    def __init__(self, parent, title, position, size):
+        wx.Frame.__init__(self, parent, -1, title,
+                          pos=position, size=size)
+
+        self.editname = wx.TextCtrl(
+            self, value="Testing", style=wx.TE_MULTILINE)
+        self.editname.SetMinSize(
+            (300, 300))
+        self.editname.SetSize(
+            (900, 600))
+
+        self.statusBar = self.CreateStatusBar()
+        self.statusBar.SetStatusText("Synthesis Mode")
+
+        main_color = wx.Colour(242, 223, 206)
+        second_color = wx.Colour(64, 1, 1)
+
+        self.synthesis_panel = SynthesisPanel(
+            self, self.editname, self.statusBar, main_color, second_color)
+
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer.Add(self.synthesis_panel, 1, wx.EXPAND)
+        self.sizer.SetMinSize(1400, 700)
+        self.SetSizerAndFit(self.sizer)
+
+        menuBar = wx.MenuBar()
+        menu = wx.Menu()
+        menu.Append(wx.ID_EXIT, "E&xit\tAlt-X", "Exit this simple sample")
+
+        # bind the menu event to an event handler
+        self.Bind(wx.EVT_MENU, self.Menu_Close, id=wx.ID_EXIT)
+        self.Bind(wx.EVT_CLOSE, self.onClose)
+
+        menuBar.Append(menu, "&Options")
+        self.SetMenuBar(menuBar)
+
+    def Menu_Close(self, event):
+        self.Close()
+
+    def onClose(self, event):
+        event.Skip()
+        # dlg = wx.MessageDialog(
+        #     None, "Do you want to exit?", 'See you later?', wx.YES_NO | wx.ICON_QUESTION)
+        # result = dlg.ShowModal()
+
+        # if result == wx.ID_YES:
+        #     event.Skip()
+
+    def on_switch_panels(self, event):
+        if self.synthesis_panel.IsShown():
+            self.synthesis_panel.Hide()
+            self.recognition_panel.Show()
+            self.statusBar.SetStatusText("Recognition Mode")
+        else:
+            self.synthesis_panel.Show()
+            self.recognition_panel.Hide()
+            self.statusBar.SetStatusText("Synthesis Mode")
+        self.Layout()
+
+
+class Application(wx.App):
+    def OnInit(self):
+        frame = Frame(None, "Bachelor Project", (150, 150), (1280, 720))
+        frame.Show()
+        return True
+
+
+if __name__ == '__main__':
+    app = Application(redirect=False)  # TODO change to True at the end
+    app.MainLoop()

@@ -24,10 +24,13 @@ class Frame(wx.Frame):
         self.statusBar = self.CreateStatusBar()
         self.statusBar.SetStatusText("Synthesis Mode")
 
+        main_color = wx.Colour(242, 223, 206)
+        second_color = wx.Colour(64, 1, 1)
+
         self.synthesis_panel = SynthesisPanel(
-            self, self.editname, self.statusBar)
+            self, self.editname, self.statusBar, main_color, second_color)
         self.recognition_panel = RecognitionPanel(
-            self, self.editname, self.statusBar)
+            self, self.editname, self.statusBar, main_color, second_color)
         self.synthesis_panel.Hide()
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
