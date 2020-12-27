@@ -89,7 +89,7 @@ def random_filter(img: np.ndarray = None, n: int = -1, k: int = -1):
     filter_points(img2, parts, k)
     if save:
         resize_and_show_images(img, img2)
-        cv2.imwrite(directory + '/' + path2 + '_filtered.png', img2)
+        cv2.imwrite(directory + '/' + path2 + '_r.png', img2)
 
     return img2
 

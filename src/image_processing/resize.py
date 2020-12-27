@@ -80,11 +80,14 @@ def resize_directory(input_path: str, output_path: str):
         output_path (str): Output directory
     """
     i = 0
-    for path, subdirs, files in os.walk(input_path):
-        for name in files:
-            resized = resize_image(os.path.join(path, name), 256, 256)
-            cv2.imwrite(os.path.join(output_path, str(i) + '.png'), resized)
-            i += 1
+    for dir in sorted(os.listdir(input_path)):
+        if not dir.startswith('.'):
+            dir2 = input_path + '/' + dir + '/'
+            for file in sorted(os.listdir(dir2)):
+                if file.endswith('.png'):
+                    resized = resize_image(os.path.join(dir2, file), 256, 256)
+                    cv2.imwrite(os.path.join(output_path, str(i) + '.png'), resized)
+                    i += 1
 
 
 def resize_skeletons_directory(input_path: str, output_path: str):
@@ -96,10 +99,10 @@ def resize_skeletons_directory(input_path: str, output_path: str):
         output_path (str): Output directory
     """
     i = 0
-    for dir in os.listdir(input_path):
+    for dir in sorted(os.listdir(input_path)):
         if not dir.startswith('.'):
             dir2 = input_path + '/' + dir + '/skel/'
-            for file in os.listdir(dir2):
+            for file in sorted(os.listdir(dir2)):
                 if file.endswith('.png'):
                     filename = get_filename_without_extention(file)
                     if not filename.endswith('control_points'):

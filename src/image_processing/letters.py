@@ -1,6 +1,7 @@
 """ Extraction letters from images """
 import os
 from PIL import Image
+import wx
 
 
 def check_char(path, char: str):
@@ -27,7 +28,7 @@ def check_char(path, char: str):
             return path + '/' + char + '/'
 
 
-def extract(s, wx, path=None):
+def extract(s, path=None):
     with wx.DirDialog(s, 'Choose a directory') as fd:
         if fd.ShowModal() != wx.ID_OK:
             return None
@@ -70,11 +71,11 @@ def extract(s, wx, path=None):
             return letters
 
 
-def correct(_self, _wx, path=None):
+def correct(_self, path=None):
     for r, d, f in os.walk(path):
         for folder in d:
             directory = os.path.join(r, folder)
-            with _wx.FileDialog(_self, 'Choose a directory', defaultDir=directory) as fd:
+            with wx.FileDialog(_self, 'Choose a directory', defaultDir=directory, style=wx.TE_MULTILINE) as fd:
                 fd.ShowModal()
                 files = fd.GetPaths()
             files = list(files)

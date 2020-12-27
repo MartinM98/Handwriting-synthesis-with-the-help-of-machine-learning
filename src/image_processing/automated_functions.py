@@ -9,6 +9,10 @@ from src.image_processing.common_functions.common_functions import get_dir
 from src.image_processing.common_functions.common_functions import get_image
 from src.image_processing.gabor_filter import gabor_filter
 from src.synthesis.control_points import produce_imitation
+from src.graphical_interface.load_dialog import LoadDialog
+from src.image_processing.consecutive_filter import consecutive
+from src.image_processing.random_filter import random_filter
+from src.image_processing.binary_search_filter import binary_search_filter
 
 
 def gabor_filter_automated(directory: str = None):
@@ -76,7 +80,7 @@ def skeletonize_automated(directory: str = None):
     return results
 
 
-def create_skeletons_and_control_points(directory: str):
+def create_skeletons_and_control_points(directory: str, options: list = None):
     """
     Applies skeletonization and gabor filter to the given dataset
     with the standard structure.
@@ -98,11 +102,31 @@ def create_skeletons_and_control_points(directory: str):
                     skeleton = skeletonize_image(img)
                     cv2.imwrite(dir3 + filename + '_skel.png', skeleton)
                     gabor = gabor_filter(path=dir3 + filename + '_skel.png')
-                    cv2.imwrite(dir3 + filename + '_skel_control_points.png',
-                                gabor)
+                    cv2.imwrite(dir3 + filename + '_skel_control_points.png', gabor)
+                    if len(options) > 0:
+                        if (options[0] is not None) and (options[1] is not None):
+                            try:
+                                c = consecutive(gabor, options[1], options[2])
+                                cv2.imwrite(dir3 + filename + '_skel_control_points_c.png', c)
+                            except ValueError:
+                                print('Consecutive error error (', dir3 + filename + '_skel_control_points_c.png: ', ValueError)
+
+                        if (options[2] is not None) and (options[3] is not None):
+                            try:
+                                r = random_filter(gabor, options[3], options[4])
+                                cv2.imwrite(dir3 + filename + '_skel_control_points_r.png', r)
+                            except ValueError:
+                                print('Random error error (', dir3 + filename + '_skel_control_points_r.png: ', ValueError)
+
+                        if (options[4] is not None) and (options[5] is not None):
+                            try:
+                                bs = binary_search_filter(gabor, options[5], options[6])
+                                cv2.imwrite(dir3 + filename + '_skel_control_points_bs.png', bs)
+                            except ValueError:
+                                print('BS error error (', dir3 + filename + '_skel_control_points_bs.png: ', ValueError)
 
 
-def create_bsplines(directory: str):
+def create_bsplines(directory: str, options: list = None):
     """
     Generates letters in the given dataset
     with the standard structure.
@@ -129,7 +153,36 @@ def create_bsplines(directory: str):
                     path_to_skeleton=dir3 + files[i], path_to_control_points2=dir3 + files[idx], idx=idx)
 
 
-def process_dataset(directory: str = None):
+def process_options(ld: LoadDialog):
+    options = []
+    try:
+        options.append(int(ld.consecutive_n.GetValue()))
+    except ValueError:
+        options.append(None)
+    try:
+        options.append(int(ld.consecutive_k.GetValue()))
+    except ValueError:
+        options.append(None)
+    try:
+        options.append(int(ld.random_n.GetValue()))
+    except ValueError:
+        options.append(None)
+    try:
+        options.append(int(ld.random_k.GetValue()))
+    except ValueError:
+        options.append(None)
+    try:
+        options.append(int(ld.bs_n.GetValue()))
+    except ValueError:
+        options.append(None)
+    try:
+        options.append(int(ld.bs_k.GetValue()))
+    except ValueError:
+        options.append(None)
+    return options
+
+
+def process_dataset(directory: str = None, options: list = None):
     """
     Invokes functions applying skeletonization, gabor filter
     and generate letters to the given dataset with the standard structure.
@@ -140,8 +193,9 @@ def process_dataset(directory: str = None):
     """
     if directory is None:
         directory = get_dir()
-    create_skeletons_and_control_points(directory=directory)
-    create_bsplines(directory=directory)
+
+    create_skeletons_and_control_points(directory=directory, options=options)
+    create_bsplines(directory=directory, options=options)
 
 
 if __name__ == "__main__":
