@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import os
 import cv2
 import random
+import numpy as np
 from src.file_handler.file_handler import combine_paths, ensure_create_dir
 from src.image_processing.skeletonize import skeletonize_image
 from src.file_handler.file_handler import get_filename_without_extention
@@ -13,6 +14,7 @@ from src.graphical_interface.load_dialog import LoadDialog
 from src.image_processing.consecutive_filter import consecutive
 from src.image_processing.random_filter import random_filter
 from src.image_processing.binary_search_filter import binary_search_filter
+from src.image_processing.common_functions.common_functions import is_int
 
 
 def gabor_filter_automated(directory: str = None):
@@ -103,27 +105,7 @@ def create_skeletons_and_control_points(directory: str, options: list = None):
                     cv2.imwrite(dir3 + filename + '_skel.png', skeleton)
                     gabor = gabor_filter(path=dir3 + filename + '_skel.png')
                     cv2.imwrite(dir3 + filename + '_skel_control_points.png', gabor)
-                    if len(options) > 0:
-                        if (options[0] is not None) and (options[1] is not None):
-                            try:
-                                c = consecutive(gabor, options[1], options[2])
-                                cv2.imwrite(dir3 + filename + '_skel_control_points_c.png', c)
-                            except ValueError:
-                                print('Consecutive error error (', dir3 + filename + '_skel_control_points_c.png: ', ValueError)
-
-                        if (options[2] is not None) and (options[3] is not None):
-                            try:
-                                r = random_filter(gabor, options[3], options[4])
-                                cv2.imwrite(dir3 + filename + '_skel_control_points_r.png', r)
-                            except ValueError:
-                                print('Random error error (', dir3 + filename + '_skel_control_points_r.png: ', ValueError)
-
-                        if (options[4] is not None) and (options[5] is not None):
-                            try:
-                                bs = binary_search_filter(gabor, options[5], options[6])
-                                cv2.imwrite(dir3 + filename + '_skel_control_points_bs.png', bs)
-                            except ValueError:
-                                print('BS error error (', dir3 + filename + '_skel_control_points_bs.png: ', ValueError)
+                    filter_points_based_on_options(gabor, options, dir3 + filename)
 
 
 def create_bsplines(directory: str, options: list = None):
@@ -153,32 +135,79 @@ def create_bsplines(directory: str, options: list = None):
                     path_to_skeleton=dir3 + files[i], path_to_control_points2=dir3 + files[idx], idx=idx)
 
 
+def filter_points_based_on_options(gabor: np.ndarray, options: list, path: str):
+    """
+    Filters control points based on options.
+
+    Args:
+        gabor (np.ndarray): image with control points.
+        options (list): list of options.
+        path (str): path to the destination of the images.
+    """
+    if len(options) > 0:
+        if (options[0] is not None) and (options[1] is not None):
+            try:
+                c = consecutive(gabor, options[0], options[1])
+                cv2.imwrite(path + '_skel_control_points_c.png', c)
+            except ValueError:
+                print('Consecutive error error (', path + '_skel_control_points_c.png: ', ValueError)
+
+        if (options[2] is not None) and (options[3] is not None):
+            try:
+                r = random_filter(gabor, options[2], options[3])
+                cv2.imwrite(path + '_skel_control_points_r.png', r)
+            except ValueError:
+                print('Random error error (', path + '_skel_control_points_r.png: ', ValueError)
+
+        if (options[4] is not None) and (options[5] is not None):
+            try:
+                bs = binary_search_filter(gabor, options[4], options[5])
+                cv2.imwrite(path + '_skel_control_points_bs.png', bs)
+            except ValueError:
+                print('BS error error (', path + '_skel_control_points_bs.png: ', ValueError)
+
+
 def process_options(ld: LoadDialog):
+    """
+    Creates a list of options in the advanced mode of load process.
+
+    Args:
+       directory (LoadDialog): Instance of custom class LoadDialog.
+
+    Returns:
+        list : list of options retrieved from the LoadDialog class
+    """
     options = []
-    try:
+    if is_int(ld.consecutive_n.GetValue()):
         options.append(int(ld.consecutive_n.GetValue()))
-    except ValueError:
+    else:
         options.append(None)
-    try:
+
+    if is_int(ld.consecutive_k.GetValue()):
         options.append(int(ld.consecutive_k.GetValue()))
-    except ValueError:
+    else:
         options.append(None)
-    try:
+
+    if is_int(ld.random_n.GetValue()):
         options.append(int(ld.random_n.GetValue()))
-    except ValueError:
+    else:
         options.append(None)
-    try:
+
+    if is_int(ld.random_k.GetValue()):
         options.append(int(ld.random_k.GetValue()))
-    except ValueError:
+    else:
         options.append(None)
-    try:
+
+    if is_int(ld.bs_n.GetValue()):
         options.append(int(ld.bs_n.GetValue()))
-    except ValueError:
+    else:
         options.append(None)
-    try:
+
+    if is_int(ld.bs_k.GetValue()):
         options.append(int(ld.bs_k.GetValue()))
-    except ValueError:
+    else:
         options.append(None)
+
     return options
 
 

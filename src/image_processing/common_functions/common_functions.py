@@ -194,3 +194,18 @@ def get_parts(img, n, parts):
         for x in range(0, width, x_step):
             x1, x2, y1, y2 = get_box(x, x_step, width, y, y_step, height)
             parts.append(process_part(img, x1, y1, x2, y2))
+
+
+def is_int(x: str):
+    """
+    Checks if a string is an integer.
+    Args:
+       x (str): input string
+    Returns:
+        bool: boolean determining if the input string is an integer.
+    """
+    try:
+        int(x)
+        return True
+    except ValueError:
+        return False
