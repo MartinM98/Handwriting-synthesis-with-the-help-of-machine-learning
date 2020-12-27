@@ -5,29 +5,50 @@ import os
 
 
 class RecognitionPanel(wx.Panel):
-    def __init__(self, parent, statusBar):
+    def __init__(self, parent, statusBar, main_color, second_color):
         self.is_tesseract_loaded = False
         # self.use_synthesis = True
         wx.Panel.__init__(self, parent)
         self.statusBar = statusBar
+        self.SetBackgroundColour(main_color)
 
         # create some sizers
         mainSizer = wx.BoxSizer(wx.VERTICAL)
         hSizer1 = wx.BoxSizer(wx.HORIZONTAL)
+        hSizer3 = wx.BoxSizer(wx.HORIZONTAL)
         hSizer2 = wx.BoxSizer(wx.HORIZONTAL)
+        hSizer4 = wx.BoxSizer(wx.HORIZONTAL)
 
         # ------------------ hSizer1 ------------------ #
-        self.button_read = wx.Button(
-            self, label="Read")
+        self.upper_panel = wx.Panel(self, wx.ID_ANY)
+        self.upper_panel.SetBackgroundColour(second_color)
+        hSizer1.Add(self.upper_panel, 1, wx.EXPAND, 0)
+
+        sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
+
+        path = get_absolute_path(
+            'src/graphical_interface/buttons/read_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
+        self.button_read = wx.BitmapButton(
+            self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
         self.Bind(wx.EVT_BUTTON, self.on_read_click, self.button_read)
-        hSizer1.Add(self.button_read, 0, wx.TOP | wx.RIGHT | wx.ALL, border=5)
+        # self.button_read.SetBackgroundColour(wx.Colour(217, 131, 26))
+        # self.button_read.SetToolTip("ToolTip")
+        sizer_2.Add(self.button_read, 0, wx.TOP | wx.RIGHT | wx.ALL, border=5)
 
-        hSizer1.AddStretchSpacer()
+        sizer_2.AddStretchSpacer()
 
-        self.change_panel = wx.Button(
-            self, label="Synthesis Mode")
+        path = get_absolute_path(
+            'src/graphical_interface/buttons/synthesis_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
+        self.change_panel = wx.BitmapButton(
+            self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
         self.Bind(wx.EVT_BUTTON, self.on_change_panel, self.change_panel)
-        hSizer1.Add(self.change_panel, 0, wx.RIGHT | wx.ALL, border=5)
+        self.change_panel.SetBackgroundColour(wx.Colour(217, 131, 26))
+        self.change_panel.SetToolTip("ToolTip")
+        sizer_2.Add(self.change_panel, 0, wx.RIGHT | wx.ALL, border=5)
+
+        self.upper_panel.SetSizer(sizer_2)
         # ------------------ hSizer1 ------------------ #
 
         # ------------------ hSizer2 ------------------ #
@@ -42,8 +63,13 @@ class RecognitionPanel(wx.Panel):
         hSizer2.AddStretchSpacer()
         # ------------------ hSizer2 ------------------ #
 
+        hSizer3.AddStretchSpacer()
+        hSizer4.AddStretchSpacer()
+
         mainSizer.Add(hSizer1, 0, wx.EXPAND)
-        mainSizer.Add(hSizer2, 1, wx.CENTER | wx.EXPAND)
+        mainSizer.Add(hSizer3, 1, wx.CENTER | wx.EXPAND)
+        mainSizer.Add(hSizer2, 10, wx.CENTER | wx.EXPAND)
+        mainSizer.Add(hSizer4, 1, wx.CENTER | wx.EXPAND)
         self.SetSizerAndFit(mainSizer)
 
     def on_change_panel(self, event):
