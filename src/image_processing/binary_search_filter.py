@@ -66,6 +66,8 @@ def filter_points(img2: np.ndarray, parts: list, n: int):
     state = 2
     while(state < n):
         parts2 = [part for part in parts2 if len(part) > 0]
+        if len(parts2) == 0:
+            return
         halves = []
         add_end_points(halves, img2, parts2)
         while(len(halves) < n and len(halves) < len(parts2)):
@@ -122,7 +124,7 @@ def binary_search_filter(img: np.ndarray = None, n: int = -1, k: int = -1):
     filter_points(img2, parts, k)
     if save:
         resize_and_show_images(img, img2)
-        cv2.imwrite(directory + '/' + path2 + '_filtered.png', img2)
+        cv2.imwrite(directory + '/' + path2 + '_bs.png', img2)
 
     return img2
 

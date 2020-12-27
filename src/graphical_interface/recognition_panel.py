@@ -5,7 +5,7 @@ import os
 
 
 class RecognitionPanel(wx.Panel):
-    def __init__(self, parent, editname, statusBar, main_color, second_color):
+    def __init__(self, parent, statusBar, main_color, second_color):
         self.is_tesseract_loaded = False
         # self.use_synthesis = True
         wx.Panel.__init__(self, parent)
@@ -54,7 +54,10 @@ class RecognitionPanel(wx.Panel):
         # ------------------ hSizer2 ------------------ #
         hSizer2.AddStretchSpacer()
 
-        self.editname = editname
+        self.editname = wx.TextCtrl(
+            self, value='Test', style=wx.TE_MULTILINE)
+        self.editname.SetMinSize(
+            (300, 300))
         hSizer2.Add(self.editname, 3, wx.EXPAND, border=10)
 
         hSizer2.AddStretchSpacer()

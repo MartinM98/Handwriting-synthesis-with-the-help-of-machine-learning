@@ -8,6 +8,10 @@ from src.file_handler.file_handler import get_absolute_path
 import wx
 import os
 import enum
+from src.graphical_interface.load_dialog import LoadDialog
+from src.image_processing.automated_functions import process_options
+from src.file_handler.file_handler import remove_dir_with_content
+from src.file_handler.file_handler import ensure_create_dir
 
 
 class ImageSize(enum.Enum):
@@ -17,7 +21,7 @@ class ImageSize(enum.Enum):
 
 
 class SynthesisPanel(wx.Panel):
-    def __init__(self, parent, editname, statusBar, main_color, second_color):
+    def __init__(self, parent, statusBar, main_color, second_color):
         self.use_synthesis = True
         wx.Panel.__init__(self, parent)
         # self.Bind(wx.EVT_SIZE, self.on_resize)
@@ -105,10 +109,13 @@ class SynthesisPanel(wx.Panel):
         # ------------------ hSizer1 ------------------ #
 
         # ------------------ hSizer2 ------------------ #
-        self.hSizer2.AddStretchSpacer()
 
-        self.editname = editname
-        self.hSizer2.Add(self.editname, 3, wx.EXPAND, border=10)
+        self.hSizer2.AddStretchSpacer()
+        self.editname = wx.TextCtrl(
+            self, value='Test', style=wx.TE_MULTILINE)
+        self.editname.SetMinSize(
+            (300, 300))
+        self.hSizer2.Add(self.editname, 2, wx.EXPAND, border=10)
 
         self.hSizer2.AddStretchSpacer()
 
@@ -175,16 +182,37 @@ class SynthesisPanel(wx.Panel):
         self.imageCtrl.SetBitmap(PIL2wx(img))
         self.Layout()
 
+    def clear_directories(self, path):
+        remove_dir_with_content(path + '/letters_dataset')
+        remove_dir_with_content(path + '/training_dataset')
+        ensure_create_dir(path + '/training_dataset')
+        ensure_create_dir(path + '/training_dataset/letters')
+        ensure_create_dir(path + '/training_dataset/skeletons')
+        ensure_create_dir(path + '/training_dataset/combined')
+
     def on_load_click(self, event):
         """
         Creates new dataset from pictures from selected directory
         """
-        path = os.getcwd()
-        dir = extract(self, wx, path)
+        md = wx.MessageDialog(self, message='Do you want to use the advanced mode?', caption='Advanced mode', style=wx.YES_NO)
+        options = []
+        if md.ShowModal() == wx.ID_YES:
+            ld = LoadDialog(None)
+            if ld.ShowModal() == wx.ID_CANCEL:
+                ld.Destroy()
+                return
+            options = process_options(ld)
+            ld.Destroy()
+        md.Destroy()
+
+        path = get_absolute_path('src/graphical_interface/')
+        self.clear_directories(path)
+
+        dir = extract(self, path)
         if dir is None:
             return
-        correct(self, wx, dir)
-        process_dataset(path + '/letters_dataset')
+        correct(self, dir)
+        process_dataset(path + '/letters_dataset', options)
         resize_directory(path + '/letters_dataset',
                          path + '/training_dataset/letters')
         resize_skeletons_directory(
