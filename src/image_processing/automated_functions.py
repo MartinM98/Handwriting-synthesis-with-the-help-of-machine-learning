@@ -91,21 +91,23 @@ def create_skeletons_and_control_points(directory: str, options: list = None):
        directory (str): the path to the directory that should
        be processed.
     """
-    for dir in os.listdir(directory):
+    for dir in sorted(os.listdir(directory)):
         if not dir.startswith('.'):
             dir2 = directory + '/' + dir + '/'
             dir3 = directory + '/' + dir + '/skel/'
+            dir4 = directory + '/' + dir + '/filtered/'
             ensure_create_dir(dir3)
-            for file in os.listdir(dir2):
+            ensure_create_dir(dir4)
+            for file in sorted(os.listdir(dir2)):
                 if file.endswith('.png'):
                     filename = get_filename_without_extention(file)
                     path = combine_paths(dir2, file)
                     img = cv2.imread(path)
                     skeleton = skeletonize_image(img)
-                    cv2.imwrite(dir3 + filename + '_skel.png', skeleton)
-                    gabor = gabor_filter(path=dir3 + filename + '_skel.png')
-                    cv2.imwrite(dir3 + filename + '_skel_control_points.png', gabor)
-                    filter_points_based_on_options(gabor, options, dir3 + filename)
+                    cv2.imwrite(dir3 + filename + '.png', skeleton)
+                    gabor = gabor_filter(path=dir3 + filename + '.png')
+                    cv2.imwrite(dir4 + filename + '.png', gabor)
+                    filter_points_based_on_options(gabor, options, dir4 + filename)
 
 
 def create_bsplines(directory: str, options: list = None):
@@ -117,22 +119,23 @@ def create_bsplines(directory: str, options: list = None):
        directory (str): the path to the directory that should
        be processed.
     """
-    for dir in os.listdir(directory):
+    for dir in sorted(os.listdir(directory)):
         if not dir.startswith('.'):
             dir3 = directory + '/' + dir + '/skel/'
+            dir4 = directory + '/' + dir + '/filtered/'
             length = len(
                 [filename for filename in os.listdir(directory + '/' + dir) if filename.endswith('.png')]) - 1
             if length < 1 or dir == 'dot':
                 continue
             ensure_create_dir(directory + '/' + dir + '/bspline/')
             files = [filename for filename in os.listdir(
-                dir3) if filename.endswith('_skel.png')]
+                dir3)]
             for i in range(len(files)):
                 idx = i
                 while idx == i:
                     idx = random.randint(0, length)
                 produce_imitation(
-                    path_to_skeleton=dir3 + files[i], path_to_control_points2=dir3 + files[idx], idx=idx)
+                    path_to_skeleton=dir3 + files[i], path_to_control_points=dir4 + files[i], path_to_control_points2=dir4 + files[idx], idx=idx)
 
 
 def filter_points_based_on_options(gabor: np.ndarray, options: list, path: str):
@@ -146,25 +149,70 @@ def filter_points_based_on_options(gabor: np.ndarray, options: list, path: str):
     """
     if len(options) > 0:
         if (options[0] is not None) and (options[1] is not None):
-            try:
-                c = consecutive(gabor, options[0], options[1])
-                cv2.imwrite(path + '_skel_control_points_c.png', c)
-            except ValueError:
-                print('Consecutive error error (', path + '_skel_control_points_c.png: ', ValueError)
+            try_filter_points_consecutive(gabor, path, options[0], options[1])
 
         if (options[2] is not None) and (options[3] is not None):
-            try:
-                r = random_filter(gabor, options[2], options[3])
-                cv2.imwrite(path + '_skel_control_points_r.png', r)
-            except ValueError:
-                print('Random error error (', path + '_skel_control_points_r.png: ', ValueError)
+            try_filter_points_random(gabor, path, options[2], options[3])
 
         if (options[4] is not None) and (options[5] is not None):
-            try:
-                bs = binary_search_filter(gabor, options[4], options[5])
-                cv2.imwrite(path + '_skel_control_points_bs.png', bs)
-            except ValueError:
-                print('BS error error (', path + '_skel_control_points_bs.png: ', ValueError)
+            try_filter_points_bs(gabor, path, options[4], options[5])
+
+
+def try_filter_points_consecutive(gabor: np.ndarray, path: str, n: int, k: int):
+    """
+    Tries to apply consecutive filter on a image with control points.
+
+    Args:
+        gabor (np.ndarray): image with control points.
+        path (str): path to the destination of the images.
+        n (int,): a scalar determining number of
+        subparts of the image. The image is divided into
+        n x n subparts with equal sizes.
+        k (int): the number of points that should be selected.
+    """
+    try:
+        c = consecutive(gabor, n, k)
+        cv2.imwrite(path + '_c.png', c)
+    except ValueError:
+        print('Consecutive filter error (', path + '_c.png')
+
+
+def try_filter_points_random(gabor: np.ndarray, path: str, n: int, k: int):
+    """
+    Tries to apply random filter on a image with control points.
+
+    Args:
+        gabor (np.ndarray): image with control points.
+        path (str): path to the destination of the images.
+        n (int,): a scalar determining number of
+        subparts of the image. The image is divided into
+        n x n subparts with equal sizes.
+        k (int): the number of points that should be selected.
+    """
+    try:
+        r = random_filter(gabor, n, k)
+        cv2.imwrite(path + '_r.png', r)
+    except ValueError:
+        print('Random filter error (', path + '_r.png')
+
+
+def try_filter_points_bs(gabor: np.ndarray, path: str, n: int, k: int):
+    """
+    Tries to apply binary search filter on a image with control points.
+
+    Args:
+        gabor (np.ndarray): image with control points.
+        path (str): path to the destination of the images.
+        n (int,): a scalar determining number of
+        subparts of the image. The image is divided into
+        n x n subparts with equal sizes.
+        k (int): the number of points that should be selected.
+    """
+    try:
+        bs = binary_search_filter(gabor, n, k)
+        cv2.imwrite(path + '_bs.png', bs)
+    except ValueError:
+        print('BS error error (', path + '_bs.png')
 
 
 def process_options(ld: LoadDialog):
