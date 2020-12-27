@@ -1,10 +1,12 @@
 from src.graphical_interface.common import ChangePanelEvent
+from src.file_handler.file_handler import get_absolute_path
 import wx
 import os
 
 
 class RecognitionPanel(wx.Panel):
     def __init__(self, parent, editname, statusBar):
+        self.is_tesseract_loaded = False
         # self.use_synthesis = True
         wx.Panel.__init__(self, parent)
         self.statusBar = statusBar
@@ -35,7 +37,6 @@ class RecognitionPanel(wx.Panel):
         hSizer2.Add(self.editname, 3, wx.EXPAND, border=10)
 
         hSizer2.AddStretchSpacer()
-
         # ------------------ hSizer2 ------------------ #
 
         mainSizer.Add(hSizer1, 0, wx.EXPAND)
@@ -51,14 +52,22 @@ class RecognitionPanel(wx.Panel):
         """
         Reads text from picrute and writes it to the textbox
         """
+        if self.is_tesseract_loaded is False:
+            self.export_tesseract()
+            self.is_tesseract_loaded = True
         with wx.FileDialog(self, 'Choose an image', wildcard='PNG files (*.png)|*.png') as fd:
             if fd.ShowModal() == wx.ID_OK:
                 filename = fd.GetPath()
                 textfile = filename[:-4] + '.txt'
-                command = 'tesseract ' + filename + ' ' + filename[:-4] + ' -l engnew quiet'
-                os.system(command)
+                tesseract_command = 'tesseract ' + filename + \
+                    ' ' + filename[:-4] + ' -l engnew quiet'
+                os.system(tesseract_command)
                 if os.path.isfile(textfile):
                     f = open(textfile, 'r')
                     self.editname.Value = f.read()[:-1]
                     f.close()
                     os.remove(textfile)
+
+    def export_tesseract(self):
+        path_to_model = get_absolute_path('./data/recognition_model/')
+        os.environ["TESSDATA_PREFIX"] = path_to_model
