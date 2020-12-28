@@ -103,6 +103,7 @@ def process_directory(model_path: str, input_path: str, use_gpu: bool = False):
                     f.write(output_data)
                 crop_image(os.path.join(output_path, name),
                            os.path.join(output_path, name))
+    tf.reset_default_graph()
 
 
 # process_directory('../graphical_interface/export', '../graphical_interface/synthesis/skeletons')

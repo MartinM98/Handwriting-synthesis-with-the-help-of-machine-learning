@@ -53,7 +53,6 @@ class TextImageRenderAllDifferentWidths:
             else:
                 img = Image.new(
                     'RGB', (self.font_width, self.line_capacity), (255, 255, 255))
-            print(img)
             if self.current_width + img.width >= self.width:
                 self.current_width = 0
                 self.current_line += 1
