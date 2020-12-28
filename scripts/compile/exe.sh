@@ -1,6 +1,5 @@
-# python -O -m PyInstaller "src/graphical_interface/graphical_interface.py" --noconsole --windowed --onefile --specpath "scripts/compile/"
-# pyinstaller "scripts/compile/graphical_interface.spec"
-pyinstaller --windowed --onefile "graphical_interface.spec"
-# pyinstaller "src/graphical_interface/graphical_interface.py"
-# pyinstaller "scripts/compile/graphical_interface.spec"
-# --noconsole --onefile --windowed 
+# pyinstaller --windowed --noconsole --onedir --noconfirm "src/graphical_interface/graphical_interface.py" --icon="scripts/compile/Bachelor_Thesis.ico"
+pyinstaller --windowed --noconsole --onedir --noconfirm "scripts/compile/Bachelor_Thesis_dir.spec"
+
+# pyinstaller --windowed --noconsole --onefile --noconfirm "src/graphical_interface/graphical_interface.py" --icon="scripts/compile/Bachelor_Thesis.ico"
+# pyinstaller --windowed --noconsole --onefile --noconfirm "scripts/compile/Bachelor_Thesis.spec"

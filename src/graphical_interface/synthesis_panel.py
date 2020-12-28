@@ -44,7 +44,7 @@ class SynthesisPanel(wx.Panel):
         self.sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
 
         path = get_absolute_path(
-            'src/graphical_interface/buttons/load_button.png')
+            'buttons/load_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
         self.button_load = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
@@ -79,7 +79,7 @@ class SynthesisPanel(wx.Panel):
         self.sizer_2.Add(self.checkbox, 0, wx.CENTER | wx.ALL, border=5)
 
         path = get_absolute_path(
-            'src/graphical_interface/buttons/save_button.png')
+            'buttons/save_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
         self.button_save = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
@@ -88,7 +88,7 @@ class SynthesisPanel(wx.Panel):
                          wx.TOP | wx.LEFT | wx.ALL, border=5)
 
         path = get_absolute_path(
-            'src/graphical_interface/buttons/render_button.png')
+            'buttons/render_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
         self.button_render = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
@@ -98,7 +98,7 @@ class SynthesisPanel(wx.Panel):
         self.sizer_2.AddStretchSpacer()
 
         path = get_absolute_path(
-            'src/graphical_interface/buttons/recognition_button.png')
+            'buttons/recognition_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
         self.change_panel = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
