@@ -30,11 +30,7 @@ def check_char(path, char: str):
             return path + '/' + char + '/'
 
 
-def extract(s, path=None):
-    with wx.DirDialog(s, 'Choose a directory') as fd:
-        if fd.ShowModal() != wx.ID_OK:
-            return None
-        directory = fd.GetPath()
+def extract(directory, path=None):
     if path is None:
         path = directory
     letters = path + '/letters_dataset'

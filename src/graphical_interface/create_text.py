@@ -64,12 +64,13 @@ class TextImageRenderAllDifferentWidths:
         result_image = Image.new(
             'RGB', (self.width, self.height), (255, 255, 255))
         # random.seed(datetime.now())
-        for letter in os.listdir(directory_path):
-            img = Image.open(letter)
+        for letter in sorted(os.listdir(self.directory_path), key=lambda x: int(os.path.splitext(x)[0])):
+            img = Image.open(combine_paths(self.directory_path, letter))
             if self.current_width + img.width >= self.width:
                 self.current_width = 0
                 self.current_line += 1
-            letter_to_int = self.text_to_render[os.path.basename(letter)[:-4]]
+            print(self.text_to_render[int(letter[:-4])])
+            letter_to_int = ord(self.text_to_render[int(letter[:-4])])
             self.concatenate_vertical(result_image, img, letter_to_int)
             self.current_width = self.current_width + img.width
         return result_image

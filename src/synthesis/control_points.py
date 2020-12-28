@@ -10,6 +10,7 @@ import multiprocessing
 from glob import glob
 from src.synthesis.generate_letter import generate_letter
 from src.file_handler.file_handler import get_file_name
+from src.image_processing.resize import resize_image
 
 
 def is_neighbour_pixel(p1: tuple, p2: tuple):
@@ -303,12 +304,12 @@ def produce_bspline(path_to_skeleton: str, path_to_control_points: str, path_to_
     letter3 = []
     for line in letter2:
         letter3.append(list(dict.fromkeys(line)))
-    path_to_save = get_absolute_path('./src/graphical_interface/synthesis/skeletons/')
-    path_to_save += str(idx) + '.png'
+    path_to_save = combine_paths(get_absolute_path('./src/graphical_interface/synthesis/skeletons/'), str(idx) + '.png')
     width = max(image_control_points.shape[0], image_control_points2.shape[0])
     height = max(image_control_points.shape[1], image_control_points2.shape[1])
-    draw_letter(result, path_to_save_file=path_to_save,
-                image_size=(width, height), skeleton_flag=True)
+    bspline_image = draw_letter(result, image_size=(width, height), skeleton_flag=True, show_flag=False)
+    bspline_image = resize_image('', 256, 256, image=bspline_image)
+    cv2.imwrite(path_to_save, bspline_image)
 
 
 def produce_imitation_set(path_to_letters: str):

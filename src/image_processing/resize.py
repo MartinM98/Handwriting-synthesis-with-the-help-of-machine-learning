@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 
-def resize_image(image_path: str, width: int, height: int):
+def resize_image(image_path: str, width: int, height: int, image: np.ndarray = None):
     """
     Resizes image from given path to given size by pasting it into center of white baackground of given size
 
@@ -17,8 +17,10 @@ def resize_image(image_path: str, width: int, height: int):
     """
     resized = np.zeros([width, height, 3], dtype=np.uint8)
     resized.fill(255)
-
-    image = cv2.imread(image_path)
+    if image is None:
+        image = cv2.imread(image_path)
+    if len(image.shape) == 2:
+        image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
     (h, w) = image.shape[:2]
 
     yoff = round((height - h) / 2)

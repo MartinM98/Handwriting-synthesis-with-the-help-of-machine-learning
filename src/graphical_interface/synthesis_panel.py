@@ -192,8 +192,6 @@ class SynthesisPanel(wx.Panel):
                 get_absolute_path('./src/graphical_interface/letters_dataset/'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
             img = text_renderer.create_image()
 
-        
-
         self.imageCtrl.SetBitmap(PIL2wx(img))
         self.Layout()
 
@@ -220,11 +218,16 @@ class SynthesisPanel(wx.Panel):
             options = process_options(ld)
             ld.Destroy()
         md.Destroy()
-
+        dd = wx.DirDialog(self, 'Choose a directory')
+        if dd.ShowModal() != wx.ID_OK:
+            dd.Destroy()
+            return
+        directory = dd.GetPath()
+        dd.Destroy()
         path = get_absolute_path('src/graphical_interface/')
         self.clear_directories_load(path)
 
-        dir = extract(self, path)
+        dir = extract(directory, path)
         if dir is None:
             return
         correct(self, dir)
@@ -237,7 +240,7 @@ class SynthesisPanel(wx.Panel):
                           path + '/training_dataset/skeletons', path + '/training_dataset/combined')
 
         options = []
-        md = ModelDialog(None, title='Model settings', size=(300, 200))
+        md = ModelDialog(self, title='Model settings', size=(300, 200))
         if md.ShowModal() == wx.ID_CANCEL:
             md.Destroy()
             return
