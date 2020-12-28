@@ -81,28 +81,28 @@ def process_directory(model_path: str, input_path: str, use_gpu: bool = False):
 
         for path, subdirs, files in os.walk(input_path):
             for name in files:
-                output_path = path.replace('skeletons', 'synthesized')
-                if not os.path.exists(output_path):
-                    os.mkdir(output_path)
+                if name.endswith('.png'):
+                    output_path = path.replace('skeletons', 'synthesized')
+                    if not os.path.exists(output_path):
+                        os.mkdir(output_path)
 
-                with open(os.path.join(path, name), "rb") as f:
-                    input_data = f.read()
+                    with open(os.path.join(path, name), "rb") as f:
+                        input_data = f.read()
 
-                input_instance = dict(input=base64.urlsafe_b64encode(
-                    input_data).decode("ascii"), key="0")
-                input_instance = json.loads(json.dumps(input_instance))
-                input_value = np.array(input_instance["input"])
-                output_value = sess.run(
-                    output, feed_dict={input: np.expand_dims(input_value, axis=0)})[0]
-                output_instance = dict(
-                    output=output_value.decode("ascii"), key="0")
-                b64data = output_instance["output"]
-                b64data += "=" * (-len(b64data) % 4)
-                output_data = base64.urlsafe_b64decode(b64data.encode("ascii"))
-                with open(os.path.join(output_path, name), "wb") as f:
-                    f.write(output_data)
-                crop_image(os.path.join(output_path, name),
-                           os.path.join(output_path, name))
+                    input_instance = dict(input=base64.urlsafe_b64encode(
+                        input_data).decode("ascii"), key="0")
+                    input_instance = json.loads(json.dumps(input_instance))
+                    input_value = np.array(input_instance["input"])
+                    output_value = sess.run(
+                        output, feed_dict={input: np.expand_dims(input_value, axis=0)})[0]
+                    output_instance = dict(
+                        output=output_value.decode("ascii"), key="0")
+                    b64data = output_instance["output"]
+                    b64data += "=" * (-len(b64data) % 4)
+                    output_data = base64.urlsafe_b64decode(b64data.encode("ascii"))
+                    with open(os.path.join(output_path, name), "wb") as f:
+                        f.write(output_data)
+                    crop_image(os.path.join(output_path, name), os.path.join(output_path, name))
     tf.reset_default_graph()
 
 
