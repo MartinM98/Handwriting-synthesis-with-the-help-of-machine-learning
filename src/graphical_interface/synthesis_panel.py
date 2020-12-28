@@ -4,7 +4,7 @@ from src.image_processing.letters import extract, correct
 from src.image_processing.resize import resize_directory, combine_directory, resize_skeletons_directory
 from src.synthesis.process import process_directory
 from src.image_processing.automated_functions import process_dataset
-from src.file_handler.file_handler import combine_paths, ensure_create_and_append_file, get_absolute_path
+from src.file_handler.file_handler import combine_paths, get_absolute_path
 import wx
 import os
 import enum

@@ -1,6 +1,6 @@
 from src.graphical_interface.common import ChangePanelEvent
 from src.file_handler.file_handler import get_absolute_path
-from src.graphical_interface.common import resource_path
+# from src.graphical_interface.common import resource_path
 import wx
 import os
 
