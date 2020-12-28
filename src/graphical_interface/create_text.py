@@ -58,7 +58,20 @@ class TextImageRenderAllDifferentWidths:
                 self.current_line += 1
             self.concatenate_vertical(result_image, img, letter_to_int)
             self.current_width = self.current_width + img.width
-        # result_image.show()
+        return result_image
+
+    def create_synth_image(self):
+        result_image = Image.new(
+            'RGB', (self.width, self.height), (255, 255, 255))
+        # random.seed(datetime.now())
+        for letter in os.listdir(directory_path):
+            img = Image.open(letter)
+            if self.current_width + img.width >= self.width:
+                self.current_width = 0
+                self.current_line += 1
+            letter_to_int = self.text_to_render[os.path.basename(letter)[:-4]]
+            self.concatenate_vertical(result_image, img, letter_to_int)
+            self.current_width = self.current_width + img.width
         return result_image
 
     # This method is used for determining the dimensions of a letter

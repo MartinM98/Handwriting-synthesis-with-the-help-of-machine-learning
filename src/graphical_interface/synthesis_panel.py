@@ -174,11 +174,13 @@ class SynthesisPanel(wx.Panel):
                 './src/graphical_interface/export'), get_absolute_path('./src/graphical_interface/synthesis/skeletons/'), use_gpu)
             text_renderer = TextImageRenderAllDifferentWidths(
                 get_absolute_path('./src/graphical_interface/synthesis/synthesized/'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
+            img = text_renderer.create_synth_image()
         else:
             text_renderer = TextImageRenderAllDifferentWidths(
                 get_absolute_path('./src/graphical_interface/letters_dataset/'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
+            img = text_renderer.create_image()
 
-        img = text_renderer.create_image()
+        
 
         self.imageCtrl.SetBitmap(PIL2wx(img))
         self.Layout()
