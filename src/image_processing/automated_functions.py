@@ -283,6 +283,10 @@ def prepare_letters(input: str):
             continue
         length = len(
             [filename for filename in os.listdir(dir_dataset + '/' + dir) if filename.endswith('.png')]) - 1
+        if length == -1:
+            print('There is no instance of letter ', letter)
+            i += 1
+            continue
         if length == 0:
             image = cv2.imread(dir_skel + '0.png')
             cv2.imwrite(f"{dir_destination}{str(i)}.png", image)
