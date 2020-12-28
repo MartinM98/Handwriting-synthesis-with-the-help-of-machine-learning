@@ -11,6 +11,7 @@ from src.image_processing.common_functions.common_functions import get_image
 from src.image_processing.gabor_filter import gabor_filter
 from src.synthesis.control_points import produce_imitation
 from src.graphical_interface.load_dialog import LoadDialog
+from src.graphical_interface.model_dialog import ModelDialog
 from src.image_processing.consecutive_filter import consecutive
 from src.image_processing.random_filter import random_filter
 from src.image_processing.binary_search_filter import binary_search_filter
@@ -253,6 +254,35 @@ def process_options(ld: LoadDialog):
 
     if is_int(ld.bs_k.GetValue()):
         options.append(int(ld.bs_k.GetValue()))
+    else:
+        options.append(None)
+
+    return options
+
+
+def process_model_options(md: ModelDialog):
+    """
+    Creates a list of options for the model.
+
+    Args:
+       directory (ModelDialog): Instance of custom class ModelDialog.
+
+    Returns:
+        list : list of options retrieved from the ModelDialog class
+    """
+    options = []
+    if is_int(md.epochs.GetValue()):
+        options.append(int(md.epochs.GetValue()))
+    else:
+        options.append(None)
+
+    if is_int(md.ngf.GetValue()):
+        options.append(int(md.ngf.GetValue()))
+    else:
+        options.append(None)
+
+    if is_int(md.ndf.GetValue()):
+        options.append(int(md.ndf.GetValue()))
     else:
         options.append(None)
 
