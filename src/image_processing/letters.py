@@ -21,6 +21,8 @@ def check_char(path, char: str):
         return path + '/question/'
     elif char == '*':
         return path + '/asterisk/'
+    elif char == '"':
+        return path + '/quote/'
     else:
         if char.islower():
             return path + '/' + char + '2/'
