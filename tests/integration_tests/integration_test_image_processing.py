@@ -17,9 +17,9 @@ from src.image_processing.common_functions.common_functions import resize_and_sh
 from src.image_processing.common_functions.common_functions import get_parts
 
 # ------------ automated_functions.py ------------
-from src.image_processing.automated_functions import gabor_filter_automated
-from src.image_processing.automated_functions import skeletonize_automated
-from src.image_processing.automated_functions import process_dataset
+# from src.image_processing.automated_functions import gabor_filter_automated
+# from src.image_processing.automated_functions import skeletonize_automated
+# from src.image_processing.automated_functions import process_dataset
 
 # ------------ binary_search_filter.py ------------
 from src.image_processing.binary_search_filter import binary_search_filter
@@ -126,32 +126,32 @@ class ImageProcessingIntegrationTests(unittest.TestCase):
 
     # ------------ automated_functions.py ------------
 
-    def test_gabor_filter_automated(self):
-        results = gabor_filter_automated(
-            get_absolute_path('tests/data/gabor_filter'))
-        self.assertEqual(len(results), 2)
-        if results[0].shape == (62, 51):
-            self.assertTupleEqual(results[0].shape, (62, 51))
-            self.assertTupleEqual(results[1].shape, (29, 29))
-        else:
-            self.assertTupleEqual(results[1].shape, (62, 51))
-            self.assertTupleEqual(results[0].shape, (29, 29))
+    # def test_gabor_filter_automated(self):
+    #     results = gabor_filter_automated(
+    #         get_absolute_path('tests/data/gabor_filter'))
+    #     self.assertEqual(len(results), 2)
+    #     if results[0].shape == (62, 51):
+    #         self.assertTupleEqual(results[0].shape, (62, 51))
+    #         self.assertTupleEqual(results[1].shape, (29, 29))
+    #     else:
+    #         self.assertTupleEqual(results[1].shape, (62, 51))
+    #         self.assertTupleEqual(results[0].shape, (29, 29))
 
-    def test_skeletonize_automated(self):
-        results = skeletonize_automated(
-            get_absolute_path('tests/data/skeletonization'))
-        self.assertEqual(len(results), 2)
-        # self.assertTupleEqual(results[1].shape, (62, 51))
-        # self.assertTupleEqual(results[0].shape, (29, 29))
+    # def test_skeletonize_automated(self):
+    #     results = skeletonize_automated(
+    #         get_absolute_path('tests/data/skeletonization'))
+    #     self.assertEqual(len(results), 2)
+    #     # self.assertTupleEqual(results[1].shape, (62, 51))
+    #     # self.assertTupleEqual(results[0].shape, (29, 29))
 
-    @unittest.skip("work in progress")
-    def test_process_dataset(self):
-        cv2.imwrite = Mock()
-        try:
-            process_dataset(get_absolute_path(
-                'tests/data/skeletonization_gabor_filter'))
-        except Exception:
-            self.fail('process_dataset raised error unexpectedly')
+    # @unittest.skip("work in progress")
+    # def test_process_dataset(self):
+    #     cv2.imwrite = Mock()
+    #     try:
+    #         process_dataset(get_absolute_path(
+    #             'tests/data/skeletonization_gabor_filter'))
+    #     except Exception:
+    #         self.fail('process_dataset raised error unexpectedly')
 
     # ------------ binary_search_filter.py ------------
 

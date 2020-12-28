@@ -9,9 +9,11 @@ import wx
 import os
 import enum
 from src.graphical_interface.load_dialog import LoadDialog
-from src.image_processing.automated_functions import process_options
+from src.graphical_interface.model_dialog import ModelDialog
+from src.image_processing.automated_functions import process_options, process_model_options
 from src.file_handler.file_handler import remove_dir_with_content
 from src.file_handler.file_handler import ensure_create_dir
+from src.image_processing.automated_functions import prepare_letters
 
 
 class ImageSize(enum.Enum):
@@ -165,26 +167,35 @@ class SynthesisPanel(wx.Panel):
         # self.Refresh()
         self.Layout()
 
+    def clear_directories_render(self):
+        remove_dir_with_content(get_absolute_path('./src/graphical_interface/synthesis/synthesized/'))
+        remove_dir_with_content(get_absolute_path('./src/graphical_interface/synthesis/skeletons/'))
+        ensure_create_dir(get_absolute_path('./src/graphical_interface/synthesis/skeletons/'))
+        ensure_create_dir(get_absolute_path('./src/graphical_interface/synthesis/synthesized/'))
+
     def on_render_click(self, event):
         """
         Creates a handwriting imitation image
         """
+        self.clear_directories_render()
+        prepare_letters(self.editname.GetValue())
+
         use_gpu = self.checkbox.GetValue()
         if (self.use_synthesis):
             process_directory(get_absolute_path(
                 './src/graphical_interface/export'), get_absolute_path('./src/graphical_interface/synthesis/skeletons/'), use_gpu)
             text_renderer = TextImageRenderAllDifferentWidths(
                 get_absolute_path('./src/graphical_interface/synthesis/synthesized/'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
+            img = text_renderer.create_synth_image()
         else:
             text_renderer = TextImageRenderAllDifferentWidths(
                 get_absolute_path('./src/graphical_interface/letters_dataset/'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
-
-        img = text_renderer.create_image()
+            img = text_renderer.create_image()
 
         self.imageCtrl.SetBitmap(PIL2wx(img))
         self.Layout()
 
-    def clear_directories(self, path):
+    def clear_directories_load(self, path):
         remove_dir_with_content(path + '/letters_dataset')
         remove_dir_with_content(path + '/training_dataset')
         ensure_create_dir(path + '/training_dataset')
@@ -207,11 +218,16 @@ class SynthesisPanel(wx.Panel):
             options = process_options(ld)
             ld.Destroy()
         md.Destroy()
-
+        dd = wx.DirDialog(self, 'Choose a directory')
+        if dd.ShowModal() != wx.ID_OK:
+            dd.Destroy()
+            return
+        directory = dd.GetPath()
+        dd.Destroy()
         path = get_absolute_path('src/graphical_interface/')
-        self.clear_directories(path)
+        self.clear_directories_load(path)
 
-        dir = extract(self, path)
+        dir = extract(directory, path)
         if dir is None:
             return
         correct(self, dir)
@@ -222,7 +238,16 @@ class SynthesisPanel(wx.Panel):
             path + '/letters_dataset', path + '/training_dataset/skeletons')
         combine_directory(path + '/training_dataset/letters',
                           path + '/training_dataset/skeletons', path + '/training_dataset/combined')
-        train_command = 'python src/synthesis/pix2pix.py --mode train --output_dir src/graphical_interface/model/ --max_epochs 400 --input_dir src/graphical_interface/training_dataset/combined --which_direction BtoA --ngf 8 --ndf 8'
+
+        options = []
+        md = ModelDialog(self, title='Model settings', size=(300, 200))
+        if md.ShowModal() == wx.ID_CANCEL:
+            md.Destroy()
+            return
+        options = process_model_options(md)
+        md.Destroy()
+
+        train_command = 'python src/synthesis/pix2pix.py --mode train --output_dir src/graphical_interface/model/ --max_epochs ' + str(options[0]) + ' --input_dir src/graphical_interface/training_dataset/combined --which_direction BtoA --ngf ' + str(options[1]) + ' --ndf ' + str(options[2])
         os.system(train_command)
         export_command = 'python src/synthesis/pix2pix.py --mode export --output_dir src/graphical_interface/export/ --checkpoint src/graphical_interface/model/ --which_direction BtoA'
         os.system(export_command)

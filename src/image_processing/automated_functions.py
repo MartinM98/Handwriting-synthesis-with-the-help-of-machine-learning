@@ -9,12 +9,14 @@ from src.file_handler.file_handler import get_filename_without_extention
 from src.image_processing.common_functions.common_functions import get_dir
 from src.image_processing.common_functions.common_functions import get_image
 from src.image_processing.gabor_filter import gabor_filter
-from src.synthesis.control_points import produce_imitation
+from src.synthesis.control_points import produce_imitation, produce_bspline
 from src.graphical_interface.load_dialog import LoadDialog
+from src.graphical_interface.model_dialog import ModelDialog
 from src.image_processing.consecutive_filter import consecutive
 from src.image_processing.random_filter import random_filter
 from src.image_processing.binary_search_filter import binary_search_filter
 from src.image_processing.common_functions.common_functions import is_int
+from src.file_handler.file_handler import get_absolute_path
 
 
 def gabor_filter_automated(directory: str = None):
@@ -253,6 +255,75 @@ def process_options(ld: LoadDialog):
 
     if is_int(ld.bs_k.GetValue()):
         options.append(int(ld.bs_k.GetValue()))
+    else:
+        options.append(None)
+
+    return options
+
+
+def prepare_letters(input: str):
+    """
+    Prepares and saves b-splines for given input string in the appropriate directory.
+
+    Args:
+       input (str): the string for which the b-splines have to be generated.
+    """
+    i = 0
+    for letter in input:
+        dir = letter
+        if letter.islower():
+            dir = letter + '2'
+        dir_dataset = get_absolute_path('./src/graphical_interface/letters_dataset/')
+        dir_skel = dir_dataset + '/' + dir + '/skel/'
+        dir_filtered = dir_dataset + '/' + dir + '/filtered/'
+        dir_destination = get_absolute_path('./src/graphical_interface/synthesis/skeletons/')
+        if not os.path.isdir(dir_dataset + '/' + dir):
+            print('There is no instance of letter ', letter)
+            i += 1
+            continue
+        length = len(
+            [filename for filename in os.listdir(dir_dataset + '/' + dir) if filename.endswith('.png')]) - 1
+        if length == -1:
+            print('There is no instance of letter ', letter)
+            i += 1
+            continue
+        if length == 0:
+            image = cv2.imread(dir_skel + '0.png')
+            cv2.imwrite(f"{dir_destination}{str(i)}.png", image)
+            i += 1
+            continue
+        files = [filename for filename in os.listdir(dir_skel)]
+        idx1 = random.randint(0, length)
+        idx2 = idx1
+        while idx1 == idx2:
+            idx2 = random.randint(0, length)
+        produce_bspline(path_to_skeleton=dir_skel + files[idx1], path_to_control_points=dir_filtered + files[idx1], path_to_control_points2=dir_filtered + files[idx2], idx=i)
+        i += 1
+
+
+def process_model_options(md: ModelDialog):
+    """
+    Creates a list of options for the model.
+
+    Args:
+       directory (ModelDialog): Instance of custom class ModelDialog.
+
+    Returns:
+        list : list of options retrieved from the ModelDialog class
+    """
+    options = []
+    if is_int(md.epochs.GetValue()):
+        options.append(int(md.epochs.GetValue()))
+    else:
+        options.append(None)
+
+    if is_int(md.ngf.GetValue()):
+        options.append(int(md.ngf.GetValue()))
+    else:
+        options.append(None)
+
+    if is_int(md.ndf.GetValue()):
+        options.append(int(md.ndf.GetValue()))
     else:
         options.append(None)
 

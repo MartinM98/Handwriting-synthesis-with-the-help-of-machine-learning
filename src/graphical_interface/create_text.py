@@ -53,13 +53,26 @@ class TextImageRenderAllDifferentWidths:
             else:
                 img = Image.new(
                     'RGB', (self.font_width, self.line_capacity), (255, 255, 255))
-            print(img)
             if self.current_width + img.width >= self.width:
                 self.current_width = 0
                 self.current_line += 1
             self.concatenate_vertical(result_image, img, letter_to_int)
             self.current_width = self.current_width + img.width
-        # result_image.show()
+        return result_image
+
+    def create_synth_image(self):
+        result_image = Image.new(
+            'RGB', (self.width, self.height), (255, 255, 255))
+        # random.seed(datetime.now())
+        for letter in sorted(os.listdir(self.directory_path), key=lambda x: int(os.path.splitext(x)[0])):
+            img = Image.open(combine_paths(self.directory_path, letter))
+            if self.current_width + img.width >= self.width:
+                self.current_width = 0
+                self.current_line += 1
+            print(self.text_to_render[int(letter[:-4])])
+            letter_to_int = ord(self.text_to_render[int(letter[:-4])])
+            self.concatenate_vertical(result_image, img, letter_to_int)
+            self.current_width = self.current_width + img.width
         return result_image
 
     # This method is used for determining the dimensions of a letter

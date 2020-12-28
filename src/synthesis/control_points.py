@@ -1,5 +1,5 @@
 from src.synthesis.handwriting_reconstruction import draw_letter
-from src.file_handler.file_handler import combine_paths, ensure_create_dir, get_absolute_path, get_dir_path, get_file_name
+from src.file_handler.file_handler import combine_paths, ensure_create_dir, get_absolute_path, get_dir_path
 from src.synthesis.get_sequences import get_sequences
 from src.synthesis.get_sequences2 import get_sequences2
 import cv2
@@ -9,6 +9,8 @@ import math
 import multiprocessing
 from glob import glob
 from src.synthesis.generate_letter import generate_letter
+from src.file_handler.file_handler import get_file_name
+from src.image_processing.resize import resize_image
 
 
 def is_neighbour_pixel(p1: tuple, p2: tuple):
@@ -265,6 +267,49 @@ def produce_imitation(path_to_skeleton: str, path_to_control_points: str, path_t
     height = max(image_control_points.shape[1], image_control_points2.shape[1])
     draw_letter(result, path_to_save_file=path_to_save,
                 image_size=(width, height), skeleton_flag=True)
+
+
+def produce_bspline(path_to_skeleton: str, path_to_control_points: str, path_to_control_points2: str, idx: int, font_size: int = None):
+    """
+    Produce imitation of the letter form the skeleton.
+
+    Args:
+        path_to_skel (str): Path to skeleton of letter.
+
+    Returns:
+        np.ndarray: a generated bspline.
+    """
+    image = cv2.imread(path_to_skeleton)
+    image = cv2.rotate(image, cv2.cv2.ROTATE_90_CLOCKWISE)
+    image_control_points = cv2.imread(path_to_control_points)
+    image_control_points = cv2.rotate(
+        image_control_points, cv2.cv2.ROTATE_90_CLOCKWISE)
+    image_control_points2 = cv2.imread(path_to_control_points2)
+    image_control_points2 = cv2.rotate(
+        image_control_points2, cv2.cv2.ROTATE_90_CLOCKWISE)
+    control_points = find_control_points(image_control_points)
+    height, width, _ = image.shape
+    if font_size is not None:
+        height = int(height * font_size)
+        width = int(width * font_size)
+    vertices, edges = skeleton_to_graph(image)
+    remove_cycles(vertices, edges)
+    result = list()
+    result = get_sequences(list(edges))
+    # result = list(r for r in result if len(r) > 2)
+    letter = left_only_control_points(result, control_points)
+    new_letter = generate_letter(
+        path_to_control_points, path_to_control_points2)
+    letter2 = match_points(letter, new_letter)
+    letter3 = []
+    for line in letter2:
+        letter3.append(list(dict.fromkeys(line)))
+    path_to_save = combine_paths(get_absolute_path('./src/graphical_interface/synthesis/skeletons/'), str(idx) + '.png')
+    width = max(image_control_points.shape[0], image_control_points2.shape[0])
+    height = max(image_control_points.shape[1], image_control_points2.shape[1])
+    bspline_image = draw_letter(result, image_size=(width, height), skeleton_flag=True, show_flag=False)
+    bspline_image = resize_image('', 256, 256, image=bspline_image)
+    cv2.imwrite(path_to_save, bspline_image)
 
 
 def produce_imitation_set(path_to_letters: str):
