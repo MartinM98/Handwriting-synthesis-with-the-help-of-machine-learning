@@ -1,3 +1,5 @@
+import os
+from src.file_handler.file_handler import ensure_create_and_append_file, read_from_file
 from src.graphical_interface.common import EVT_CHANGE_PANEL_EVENT
 import wx
 from src.graphical_interface.recognition_panel import RecognitionPanel
@@ -14,24 +16,17 @@ class Frame(wx.Frame):
         wx.Frame.__init__(self, parent, -1, title,
                           pos=position, size=size)
 
-        # self.editname = wx.TextCtrl(
-        #     self, value="Testing", style=wx.TE_MULTILINE)
-        # self.editname.SetMinSize(
-        #     (300, 300))
-        # self.editname.SetSize(
-        #     (900, 600))
-
         self.statusBar = self.CreateStatusBar()
         self.statusBar.SetStatusText("Synthesis Mode")
 
-        main_color = wx.Colour(242, 223, 206)
-        second_color = wx.Colour(64, 1, 1)
+        main_color = wx.Colour(228, 228, 228)
+        second_color = wx.Colour(161, 183, 168)
 
         self.synthesis_panel = SynthesisPanel(
-            self, self.statusBar, main_color, second_color)
+            self, self.statusBar, main_color, second_color, self.find_models())
         self.recognition_panel = RecognitionPanel(
             self, self.statusBar, main_color, second_color)
-
+        self.panel = "recognition"
         self.synthesis_panel.Hide()
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
@@ -40,22 +35,79 @@ class Frame(wx.Frame):
         self.sizer.SetMinSize(1400, 700)
         self.SetSizerAndFit(self.sizer)
 
-        menuBar = wx.MenuBar()
-        menu = wx.Menu()
-        menu.Append(wx.ID_EXIT, "E&xit\tAlt-X", "Exit this simple sample")
-
-        # bind the menu event to an event handler
-        self.Bind(wx.EVT_MENU, self.Menu_Close, id=wx.ID_EXIT)
-        self.Bind(wx.EVT_CLOSE, self.onClose)
+        self.Bind(wx.EVT_CLOSE, self.on_close)
         self.Bind(EVT_CHANGE_PANEL_EVENT, self.on_switch_panels)
 
-        menuBar.Append(menu, "&Options")
-        self.SetMenuBar(menuBar)
+        menuBar = wx.MenuBar()
+        # ------------------ menu - File ------------------ #
+        file_menu = wx.Menu()
+        file_menu.Append(wx.ID_SAVE, "S&ave\tAlt-S", helpString="Save result")
 
-    def Menu_Close(self, event):
+        file_menu.Append(wx.ID_OPEN, "L&aod\tAlt-L", helpString="Laod text")
+
+        menuBar.Append(file_menu, "&File")
+        # ------------------ menu - File ------------------ #
+
+        # ------------------ menu - Options ------------------ #
+        option_menu = wx.Menu()
+        option_menu.Append(wx.ID_EXIT, "E&xit\tAlt-X",
+                           "Exit this simple sample")
+
+        menuBar.Append(option_menu, "&Options")
+        # ------------------ menu - Options ------------------ #
+
+        # ------------------ menu - About ------------------ #
+        about_menu = wx.Menu()
+        about_menu.Append(wx.ID_ABOUT, "A&bout the project\tAlt-A",
+                          "Show informations about the application")
+
+        about_menu.Append(100, "Au&tors\tAlt-U",
+                          "Show informations about the application authors")
+
+        menuBar.Append(about_menu, "&About")
+        # ------------------ menu - About ------------------ #
+        self.SetMenuBar(menuBar)
+        self.Bind(wx.EVT_MENU, self.menuhandler)
+
+    def find_models(self):
+        return os.listdir('./data/synthesis_models')
+
+    def menuhandler(self, event):
+        id = event.GetId()
+        if id == wx.ID_ABOUT:
+            self.show_informations(event)
+        elif id == wx.ID_EXIT:
+            self.menu_close(event)
+        elif id == wx.ID_EXIT:
+            self.menu_close(event)
+        elif id == wx.ID_SAVE:
+            self.save(event)
+        elif id == 100:
+            self.show_authors(event)
+        elif id == wx.ID_OPEN:
+            self.load_text(event)
+
+    def load_text(self, event):
+        with wx.FileDialog(self, 'Load file', wildcard='Text files (*.txt)|*.txt', style=wx.FD_OPEN) as fd:
+            if fd.ShowModal() == wx.ID_OK:
+                filename = fd.GetPath()
+                txt = read_from_file(filename)
+                if self.panel == "synthesis":
+                    self.synthesis_panel.editname.SetValue(txt)
+                else:
+                    self.recognition_panel.editname.SetValue(txt)
+
+    def show_informations(self, event):
+        wx.MessageBox('This is the application created for Bachelor Thesis at Warsow University of Technology Faculty of Mathematics and Information Science.', 'Informations', wx.OK)
+
+    def show_authors(self, event):
+        wx.MessageBox(
+            'The authors of the application are: \n - Martin Mrugała \n - Patryk Walczak \n - Bartłomiej Żyła', 'Authors', wx.OK)
+
+    def menu_close(self, event):
         self.Close()
 
-    def onClose(self, event):
+    def on_close(self, event):
         event.Skip()
         # dlg = wx.MessageDialog(
         #     None, "Do you want to exit?", 'See you later?', wx.YES_NO | wx.ICON_QUESTION)
@@ -66,16 +118,49 @@ class Frame(wx.Frame):
 
     def on_switch_panels(self, event):
         if self.synthesis_panel.IsShown():
-            self.recognition_panel.editname.SetValue(self.synthesis_panel.editname.GetValue())
+            self.recognition_panel.editname.SetValue(
+                self.synthesis_panel.editname.GetValue())
             self.synthesis_panel.Hide()
             self.recognition_panel.Show()
             self.statusBar.SetStatusText("Recognition Mode")
+            self.panel = "recognition"
         else:
-            self.synthesis_panel.editname.SetValue(self.recognition_panel.editname.GetValue())
+            self.synthesis_panel.editname.SetValue(
+                self.recognition_panel.editname.GetValue())
             self.synthesis_panel.Show()
             self.recognition_panel.Hide()
             self.statusBar.SetStatusText("Synthesis Mode")
+            self.panel = "synthesis"
         self.Layout()
+
+    def save(self, event):
+        """
+        Saves created image
+        """
+        if self.panel == "synthesis":
+            with wx.FileDialog(self, 'Save image', wildcard='PNG files (*.png)|*.png', style=wx.FD_SAVE) as fd:
+                if fd.ShowModal() == wx.ID_OK:
+                    filename = fd.GetPath()
+                    img = self.synthesis_panel.imageCtrl.GetBitmap()
+                    if len(filename) > 0:
+                        self.statusBar.SetStatusText('Saving...')
+                        img.SaveFile(filename, wx.BITMAP_TYPE_PNG)
+                        self.statusBar.SetStatusText('File saved.')
+                    txt = self.synthesis_panel.editname.GetValue()
+                    if len(txt) > 0:
+                        self.statusBar.SetStatusText('Saving...')
+                        filename = str.replace(filename, '.png', '.txt')
+                        ensure_create_and_append_file(filename, txt)
+                        self.statusBar.SetStatusText('File saved.')
+        elif self.panel == "recognition":
+            with wx.FileDialog(self, 'Save text', wildcard='text files (*.txt)|*.txt', style=wx.FD_SAVE) as fd:
+                if fd.ShowModal() == wx.ID_OK:
+                    filename = fd.GetPath()
+                    txt = self.synthesis_panel.editname.GetValue()
+                    if len(txt) > 0:
+                        self.statusBar.SetStatusText('Saving...')
+                        ensure_create_and_append_file(filename, txt)
+                        self.statusBar.SetStatusText('File saved.')
 
 
 class Application(wx.App):

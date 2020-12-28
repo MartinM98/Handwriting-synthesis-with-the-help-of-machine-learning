@@ -4,7 +4,7 @@ from src.image_processing.letters import extract, correct
 from src.image_processing.resize import resize_directory, combine_directory, resize_skeletons_directory
 from src.synthesis.process import process_directory
 from src.image_processing.automated_functions import process_dataset
-from src.file_handler.file_handler import get_absolute_path
+from src.file_handler.file_handler import combine_paths, get_absolute_path
 import wx
 import os
 import enum
@@ -23,7 +23,7 @@ class ImageSize(enum.Enum):
 
 
 class SynthesisPanel(wx.Panel):
-    def __init__(self, parent, statusBar, main_color, second_color):
+    def __init__(self, parent, statusBar, main_color, second_color, models):
         self.use_synthesis = True
         wx.Panel.__init__(self, parent)
         # self.Bind(wx.EVT_SIZE, self.on_resize)
@@ -54,18 +54,9 @@ class SynthesisPanel(wx.Panel):
         self.sizer_2.Add(self.button_load, 0,
                          wx.TOP | wx.LEFT | wx.ALL, border=5)
 
-        path = get_absolute_path(
-            'src/graphical_interface/buttons/save_button.png')
-        pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
-        self.button_save = wx.BitmapButton(
-            self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
-        self.Bind(wx.EVT_BUTTON, self.on_save_click, self.button_save)
-        self.sizer_2.Add(self.button_save, 0,
-                         wx.TOP | wx.LEFT | wx.ALL, border=5)
-
-        self.styles = ['Style 1', 'Style 2', 'Style 3']
+        self.styles = models
         self.combobox = wx.ComboBox(
-            self.upper_panel, choices=self.styles, value='Style 1', size=(80, -1))
+            self.upper_panel, choices=self.styles, value=self.styles[0], size=(80, -1))
         self.combobox.Bind(wx.EVT_COMBOBOX, self.on_combo)
         self.sizer_2.Add(self.combobox, 0,
                          wx.CENTER | wx.LEFT | wx.ALL, border=5)
@@ -90,6 +81,15 @@ class SynthesisPanel(wx.Panel):
         self.sizer_2.Add(self.checkbox, 0, wx.CENTER | wx.ALL, border=5)
 
         path = get_absolute_path(
+            'src/graphical_interface/buttons/save_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
+        self.button_save = wx.BitmapButton(
+            self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
+        self.Bind(wx.EVT_BUTTON, parent.save, self.button_save)
+        self.sizer_2.Add(self.button_save, 0,
+                         wx.TOP | wx.LEFT | wx.ALL, border=5)
+
+        path = get_absolute_path(
             'src/graphical_interface/buttons/render_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
         self.button_render = wx.BitmapButton(
@@ -112,35 +112,37 @@ class SynthesisPanel(wx.Panel):
 
         # ------------------ hSizer2 ------------------ #
 
-        self.hSizer2.AddStretchSpacer()
+        self.hSizer2.AddStretchSpacer(1)
         self.editname = wx.TextCtrl(
             self, value='Test', style=wx.TE_MULTILINE)
         self.editname.SetMinSize(
             (300, 300))
-        self.hSizer2.Add(self.editname, 2, wx.EXPAND, border=10)
+        self.hSizer2.Add(self.editname, 30, wx.EXPAND, border=10)
 
-        self.hSizer2.AddStretchSpacer()
+        self.hSizer2.AddStretchSpacer(1)
 
         self.image_size = ImageSize.Medium
         img = wx.Image(self.image_size.value[0], self.image_size.value[1])
         self.imageCtrl = wx.StaticBitmap(self, wx.ID_ANY,
                                          wx.Bitmap(img))
-        self.hSizer2.Add(self.imageCtrl, 5, wx.CENTER, border=10)
+        self.hSizer2.Add(self.imageCtrl, 50, wx.CENTER, border=10)
 
-        self.hSizer2.AddStretchSpacer()
+        self.hSizer2.AddStretchSpacer(1)
         # ------------------ hSizer2 ------------------ #
 
-        self.hSizer3.AddStretchSpacer()
-        self.hSizer4.AddStretchSpacer()
+        self.hSizer3.AddStretchSpacer(1)
+        self.hSizer4.AddStretchSpacer(1)
 
         self.mainSizer.Add(self.hSizer1, 0, wx.EXPAND)
         self.mainSizer.Add(self.hSizer3, 1, wx.EXPAND)
-        self.mainSizer.Add(self.hSizer2, 10, wx.EXPAND)
+        self.mainSizer.Add(self.hSizer2, 30, wx.EXPAND)
         self.mainSizer.Add(self.hSizer4, 1, wx.EXPAND)
         self.SetSizerAndFit(self.mainSizer)
 
     def on_combo(self, event):
-        print("selected " + self.combobox.GetValue() + " from Combobox")
+        path = combine_paths('./data/synthesis_models',
+                             self.combobox.GetValue())
+        print(path)
 
     def on_image_size_combo(self, event):
         size = self.image_size_combobox.GetValue()
@@ -207,7 +209,8 @@ class SynthesisPanel(wx.Panel):
         """
         Creates new dataset from pictures from selected directory
         """
-        md = wx.MessageDialog(self, message='Do you want to use the advanced mode?', caption='Advanced mode', style=wx.YES_NO)
+        md = wx.MessageDialog(self, message='Do you want to use the advanced mode?',
+                              caption='Advanced mode', style=wx.YES_NO)
         options = []
         if md.ShowModal() == wx.ID_YES:
             ld = LoadDialog(None)
@@ -245,94 +248,3 @@ class SynthesisPanel(wx.Panel):
         os.system(train_command)
         export_command = 'python src/synthesis/pix2pix.py --mode export --output_dir src/graphical_interface/export/ --checkpoint src/graphical_interface/model/ --which_direction BtoA'
         os.system(export_command)
-
-    def on_save_click(self, event):
-        """
-        Saves created image
-        """
-        with wx.FileDialog(self, 'Save image', wildcard='PNG files (*.png)|*.png', style=wx.FD_SAVE) as fd:
-            if fd.ShowModal() == wx.ID_OK:
-                filename = fd.GetPath()
-                img = self.imageCtrl.GetBitmap()
-                if len(filename) > 0:
-                    self.statusBar.SetStatusText("Saving...")
-                    img.SaveFile(filename, wx.BITMAP_TYPE_PNG)
-                    self.statusBar.SetStatusText("File saved.")
-
-
-class Frame(wx.Frame):
-    """
-    This is MyFrame.  It just shows a few controls on a wxPanel,
-    and has a simple menu.
-    """
-
-    def __init__(self, parent, title, position, size):
-        wx.Frame.__init__(self, parent, -1, title,
-                          pos=position, size=size)
-
-        self.editname = wx.TextCtrl(
-            self, value="Testing", style=wx.TE_MULTILINE)
-        self.editname.SetMinSize(
-            (300, 300))
-        self.editname.SetSize(
-            (900, 600))
-
-        self.statusBar = self.CreateStatusBar()
-        self.statusBar.SetStatusText("Synthesis Mode")
-
-        main_color = wx.Colour(242, 223, 206)
-        second_color = wx.Colour(64, 1, 1)
-
-        self.synthesis_panel = SynthesisPanel(
-            self, self.editname, self.statusBar, main_color, second_color)
-
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.synthesis_panel, 1, wx.EXPAND)
-        self.sizer.SetMinSize(1400, 700)
-        self.SetSizerAndFit(self.sizer)
-
-        menuBar = wx.MenuBar()
-        menu = wx.Menu()
-        menu.Append(wx.ID_EXIT, "E&xit\tAlt-X", "Exit this simple sample")
-
-        # bind the menu event to an event handler
-        self.Bind(wx.EVT_MENU, self.Menu_Close, id=wx.ID_EXIT)
-        self.Bind(wx.EVT_CLOSE, self.onClose)
-
-        menuBar.Append(menu, "&Options")
-        self.SetMenuBar(menuBar)
-
-    def Menu_Close(self, event):
-        self.Close()
-
-    def onClose(self, event):
-        event.Skip()
-        # dlg = wx.MessageDialog(
-        #     None, "Do you want to exit?", 'See you later?', wx.YES_NO | wx.ICON_QUESTION)
-        # result = dlg.ShowModal()
-
-        # if result == wx.ID_YES:
-        #     event.Skip()
-
-    def on_switch_panels(self, event):
-        if self.synthesis_panel.IsShown():
-            self.synthesis_panel.Hide()
-            self.recognition_panel.Show()
-            self.statusBar.SetStatusText("Recognition Mode")
-        else:
-            self.synthesis_panel.Show()
-            self.recognition_panel.Hide()
-            self.statusBar.SetStatusText("Synthesis Mode")
-        self.Layout()
-
-
-class Application(wx.App):
-    def OnInit(self):
-        frame = Frame(None, "Bachelor Project", (150, 150), (1280, 720))
-        frame.Show()
-        return True
-
-
-if __name__ == '__main__':
-    app = Application(redirect=False)  # TODO change to True at the end
-    app.MainLoop()

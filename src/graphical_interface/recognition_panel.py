@@ -1,5 +1,6 @@
 from src.graphical_interface.common import ChangePanelEvent
 from src.file_handler.file_handler import get_absolute_path
+# from src.graphical_interface.common import resource_path
 import wx
 import os
 
@@ -28,6 +29,7 @@ class RecognitionPanel(wx.Panel):
 
         path = get_absolute_path(
             'src/graphical_interface/buttons/read_button.png')
+        print(path)
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
         self.button_read = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
@@ -68,7 +70,7 @@ class RecognitionPanel(wx.Panel):
 
         mainSizer.Add(hSizer1, 0, wx.EXPAND)
         mainSizer.Add(hSizer3, 1, wx.CENTER | wx.EXPAND)
-        mainSizer.Add(hSizer2, 10, wx.CENTER | wx.EXPAND)
+        mainSizer.Add(hSizer2, 30, wx.CENTER | wx.EXPAND)
         mainSizer.Add(hSizer4, 1, wx.CENTER | wx.EXPAND)
         self.SetSizerAndFit(mainSizer)
 
