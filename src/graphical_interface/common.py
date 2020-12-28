@@ -1,5 +1,5 @@
 import wx.lib.newevent
-from src.file_handler.file_handler import get_absolute_path
+# from src.file_handler.file_handler import get_absolute_path
 import sys
 import os
 
