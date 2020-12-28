@@ -277,12 +277,12 @@ def prepare_letters(input: str):
         dir_skel = dir_dataset + '/' + dir + '/skel/'
         dir_filtered = dir_dataset + '/' + dir + '/filtered/'
         dir_destination = get_absolute_path('./src/graphical_interface/synthesis/skeletons/')
-        length = len(
-            [filename for filename in os.listdir(dir_dataset + '/' + dir) if filename.endswith('.png')]) - 1
-        if length == -1:
+        if not os.path.isdir(dir_dataset + '/' + dir):
             print('There is no instance of letter ', letter)
             i += 1
             continue
+        length = len(
+            [filename for filename in os.listdir(dir_dataset + '/' + dir) if filename.endswith('.png')]) - 1
         if length == 0:
             image = cv2.imread(dir_skel + '0.png')
             cv2.imwrite(f"{dir_destination}{str(i)}.png", image)
