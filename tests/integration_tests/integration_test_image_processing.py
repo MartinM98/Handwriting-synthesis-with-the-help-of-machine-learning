@@ -18,7 +18,7 @@ from src.image_processing.common_functions.common_functions import get_parts
 
 # ------------ automated_functions.py ------------
 # from src.image_processing.automated_functions import gabor_filter_automated
-from src.image_processing.automated_functions import skeletonize_automated
+# from src.image_processing.automated_functions import skeletonize_automated
 from src.image_processing.automated_functions import process_dataset
 
 # ------------ binary_search_filter.py ------------
@@ -137,12 +137,12 @@ class ImageProcessingIntegrationTests(unittest.TestCase):
     #         self.assertTupleEqual(results[1].shape, (62, 51))
     #         self.assertTupleEqual(results[0].shape, (29, 29))
 
-    def test_skeletonize_automated(self):
-        results = skeletonize_automated(
-            get_absolute_path('tests/data/skeletonization'))
-        self.assertEqual(len(results), 2)
-        # self.assertTupleEqual(results[1].shape, (62, 51))
-        # self.assertTupleEqual(results[0].shape, (29, 29))
+    # def test_skeletonize_automated(self):
+    #     results = skeletonize_automated(
+    #         get_absolute_path('tests/data/skeletonization'))
+    #     self.assertEqual(len(results), 2)
+    #     # self.assertTupleEqual(results[1].shape, (62, 51))
+    #     # self.assertTupleEqual(results[0].shape, (29, 29))
 
     @unittest.skip("work in progress")
     def test_process_dataset(self):
