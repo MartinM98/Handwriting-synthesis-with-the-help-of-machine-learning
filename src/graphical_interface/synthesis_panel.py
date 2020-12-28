@@ -219,9 +219,9 @@ class SynthesisPanel(wx.Panel):
             path + '/letters_dataset', path + '/training_dataset/skeletons')
         combine_directory(path + '/training_dataset/letters',
                           path + '/training_dataset/skeletons', path + '/training_dataset/combined')
-        train_command = 'python ../synthesis/pix2pix.py --mode train --output_dir ./model/ --max_epochs 100 --input_dir ./training_dataset/combined --which_direction BtoA --ngf 32 --ndf 32'
+        train_command = 'python src/synthesis/pix2pix.py --mode train --output_dir src/graphical_interface/model/ --max_epochs 400 --input_dir src/graphical_interface/training_dataset/combined --which_direction BtoA --ngf 8 --ndf 8'
         os.system(train_command)
-        export_command = 'python ../synthesis/pix2pix.py --mode export --output_dir ./export/ --checkpoint ./model/ --which_direction BtoA'
+        export_command = 'python src/synthesis/pix2pix.py --mode export --output_dir src/graphical_interface/export/ --checkpoint src/graphical_interface/model/ --which_direction BtoA'
         os.system(export_command)
 
     def on_save_click(self, event):
