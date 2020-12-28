@@ -9,7 +9,8 @@ import wx
 import os
 import enum
 from src.graphical_interface.load_dialog import LoadDialog
-from src.image_processing.automated_functions import process_options
+from src.graphical_interface.model_dialog import ModelDialog
+from src.image_processing.automated_functions import process_options, process_model_options
 from src.file_handler.file_handler import remove_dir_with_content
 from src.file_handler.file_handler import ensure_create_dir
 
@@ -219,7 +220,16 @@ class SynthesisPanel(wx.Panel):
             path + '/letters_dataset', path + '/training_dataset/skeletons')
         combine_directory(path + '/training_dataset/letters',
                           path + '/training_dataset/skeletons', path + '/training_dataset/combined')
-        train_command = 'python src/synthesis/pix2pix.py --mode train --output_dir src/graphical_interface/model/ --max_epochs 400 --input_dir src/graphical_interface/training_dataset/combined --which_direction BtoA --ngf 8 --ndf 8'
+
+        options = []
+        md = ModelDialog(None, title='Model settings', size=(300, 200))
+        if md.ShowModal() == wx.ID_CANCEL:
+            md.Destroy()
+            return
+        options = process_model_options(md)
+        md.Destroy()
+
+        train_command = 'python src/synthesis/pix2pix.py --mode train --output_dir src/graphical_interface/model/ --max_epochs ' + str(options[0]) + ' --input_dir src/graphical_interface/training_dataset/combined --which_direction BtoA --ngf ' + str(options[1]) + ' --ndf ' + str(options[2])
         os.system(train_command)
         export_command = 'python src/synthesis/pix2pix.py --mode export --output_dir src/graphical_interface/export/ --checkpoint src/graphical_interface/model/ --which_direction BtoA'
         os.system(export_command)
