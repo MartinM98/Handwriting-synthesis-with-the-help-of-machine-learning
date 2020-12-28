@@ -70,7 +70,8 @@ class Frame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.menuhandler)
 
     def find_models(self):
-        return os.listdir('./data/synthesis_models')
+        entries = [name for name in os.listdir('./data/synthesis_models') if not name.startswith('.')]
+        return sorted(entries, key=lambda x: int(os.path.splitext(x)[0]))
 
     def menuhandler(self, event):
         id = event.GetId()
