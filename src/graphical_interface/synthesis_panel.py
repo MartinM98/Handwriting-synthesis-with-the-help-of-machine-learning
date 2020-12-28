@@ -12,6 +12,7 @@ from src.graphical_interface.load_dialog import LoadDialog
 from src.image_processing.automated_functions import process_options
 from src.file_handler.file_handler import remove_dir_with_content
 from src.file_handler.file_handler import ensure_create_dir
+from src.image_processing.automated_functions import prepare_letters
 
 
 class ImageSize(enum.Enum):
@@ -163,10 +164,19 @@ class SynthesisPanel(wx.Panel):
         # self.Refresh()
         self.Layout()
 
+    def clear_directories_render(self):
+        remove_dir_with_content(get_absolute_path('./src/graphical_interface/synthesis/synthesized/'))
+        remove_dir_with_content(get_absolute_path('./src/graphical_interface/synthesis/skeletons/'))
+        ensure_create_dir(get_absolute_path('./src/graphical_interface/synthesis/skeletons/'))
+        ensure_create_dir(get_absolute_path('./src/graphical_interface/synthesis/synthesized/'))
+
     def on_render_click(self, event):
         """
         Creates a handwriting imitation image
         """
+        self.clear_directories_render()
+        prepare_letters(self.editname.GetValue())
+
         use_gpu = self.checkbox.GetValue()
         if (self.use_synthesis):
             process_directory(get_absolute_path(
@@ -182,7 +192,7 @@ class SynthesisPanel(wx.Panel):
         self.imageCtrl.SetBitmap(PIL2wx(img))
         self.Layout()
 
-    def clear_directories(self, path):
+    def clear_directories_load(self, path):
         remove_dir_with_content(path + '/letters_dataset')
         remove_dir_with_content(path + '/training_dataset')
         ensure_create_dir(path + '/training_dataset')
@@ -206,7 +216,7 @@ class SynthesisPanel(wx.Panel):
         md.Destroy()
 
         path = get_absolute_path('src/graphical_interface/')
-        self.clear_directories(path)
+        self.clear_directories_load(path)
 
         dir = extract(self, path)
         if dir is None:
