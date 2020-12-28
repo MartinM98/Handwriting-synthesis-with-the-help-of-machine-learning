@@ -17,7 +17,7 @@ from src.image_processing.common_functions.common_functions import resize_and_sh
 from src.image_processing.common_functions.common_functions import get_parts
 
 # ------------ automated_functions.py ------------
-from src.image_processing.automated_functions import gabor_filter_automated
+# from src.image_processing.automated_functions import gabor_filter_automated
 from src.image_processing.automated_functions import skeletonize_automated
 from src.image_processing.automated_functions import process_dataset
 
@@ -126,16 +126,16 @@ class ImageProcessingIntegrationTests(unittest.TestCase):
 
     # ------------ automated_functions.py ------------
 
-    def test_gabor_filter_automated(self):
-        results = gabor_filter_automated(
-            get_absolute_path('tests/data/gabor_filter'))
-        self.assertEqual(len(results), 2)
-        if results[0].shape == (62, 51):
-            self.assertTupleEqual(results[0].shape, (62, 51))
-            self.assertTupleEqual(results[1].shape, (29, 29))
-        else:
-            self.assertTupleEqual(results[1].shape, (62, 51))
-            self.assertTupleEqual(results[0].shape, (29, 29))
+    # def test_gabor_filter_automated(self):
+    #     results = gabor_filter_automated(
+    #         get_absolute_path('tests/data/gabor_filter'))
+    #     self.assertEqual(len(results), 2)
+    #     if results[0].shape == (62, 51):
+    #         self.assertTupleEqual(results[0].shape, (62, 51))
+    #         self.assertTupleEqual(results[1].shape, (29, 29))
+    #     else:
+    #         self.assertTupleEqual(results[1].shape, (62, 51))
+    #         self.assertTupleEqual(results[0].shape, (29, 29))
 
     def test_skeletonize_automated(self):
         results = skeletonize_automated(
