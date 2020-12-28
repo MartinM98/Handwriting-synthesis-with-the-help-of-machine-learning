@@ -46,6 +46,8 @@ def get_shift(p1: list, p2: list):
     """
     x_m = 0
     y_m = 0
+    if (len(p1) == 0) or (len(p2) == 0):
+        return (0, 0)
     for point in p1:
         x_m += point[0]
         y_m += point[1]

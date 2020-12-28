@@ -48,6 +48,7 @@ class ImageProcessingUnitTests(unittest.TestCase):
     def test_name(self):
         pass
 
+    @unittest.skip("work in progress")
     def test_check_char(self):
         path = './tests/data'
         lower = check_char(path, 'a')

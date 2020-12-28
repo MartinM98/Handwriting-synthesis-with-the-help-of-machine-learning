@@ -26,12 +26,15 @@ def skeletonize_image(image: np.ndarray = None, path: str = None):
 
     image = invert(image)
     warnings.filterwarnings("ignore")
-    image = image > filters.threshold_otsu(image)
+    try:
+        image = image > filters.threshold_otsu(image)
 
-    skeleton = skeletonize(image)
-    skeleton = invert(skeleton)
+        skeleton = skeletonize(image)
+        skeleton = invert(skeleton)
 
-    image = cv2.cvtColor(skeleton, cv2.COLOR_BGR2GRAY)
-    _, image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+        image = cv2.cvtColor(skeleton, cv2.COLOR_BGR2GRAY)
+        _, image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
+    except ValueError:
+        print('Skeletonization failed!')
 
     return image

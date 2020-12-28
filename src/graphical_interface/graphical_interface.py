@@ -14,12 +14,12 @@ class Frame(wx.Frame):
         wx.Frame.__init__(self, parent, -1, title,
                           pos=position, size=size)
 
-        self.editname = wx.TextCtrl(
-            self, value="Testing", style=wx.TE_MULTILINE)
-        self.editname.SetMinSize(
-            (300, 300))
-        self.editname.SetSize(
-            (900, 600))
+        # self.editname = wx.TextCtrl(
+        #     self, value="Testing", style=wx.TE_MULTILINE)
+        # self.editname.SetMinSize(
+        #     (300, 300))
+        # self.editname.SetSize(
+        #     (900, 600))
 
         self.statusBar = self.CreateStatusBar()
         self.statusBar.SetStatusText("Synthesis Mode")
@@ -28,9 +28,10 @@ class Frame(wx.Frame):
         second_color = wx.Colour(64, 1, 1)
 
         self.synthesis_panel = SynthesisPanel(
-            self, self.editname, self.statusBar, main_color, second_color)
+            self, self.statusBar, main_color, second_color)
         self.recognition_panel = RecognitionPanel(
-            self, self.editname, self.statusBar, main_color, second_color)
+            self, self.statusBar, main_color, second_color)
+
         self.synthesis_panel.Hide()
 
         self.sizer = wx.BoxSizer(wx.VERTICAL)
@@ -65,10 +66,12 @@ class Frame(wx.Frame):
 
     def on_switch_panels(self, event):
         if self.synthesis_panel.IsShown():
+            self.recognition_panel.editname.SetValue(self.synthesis_panel.editname.GetValue())
             self.synthesis_panel.Hide()
             self.recognition_panel.Show()
             self.statusBar.SetStatusText("Recognition Mode")
         else:
+            self.synthesis_panel.editname.SetValue(self.recognition_panel.editname.GetValue())
             self.synthesis_panel.Show()
             self.recognition_panel.Hide()
             self.statusBar.SetStatusText("Synthesis Mode")
