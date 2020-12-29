@@ -1,5 +1,5 @@
 import os
-from src.file_handler.file_handler import ensure_create_and_append_file, read_from_file
+from src.file_handler.file_handler import ensure_create_and_append_file, get_absolute_path, read_from_file
 from src.graphical_interface.common import EVT_CHANGE_PANEL_EVENT
 import wx
 from src.graphical_interface.recognition_panel import RecognitionPanel
@@ -68,9 +68,13 @@ class Frame(wx.Frame):
         # ------------------ menu - About ------------------ #
         self.SetMenuBar(menuBar)
         self.Bind(wx.EVT_MENU, self.menuhandler)
+        path = get_absolute_path("img/Bachelor_Thesis.ico")
+        icon = wx.Icon(path, wx.BITMAP_TYPE_ICO)
+        self.SetIcon(icon)
 
     def find_models(self):
-        entries = [name for name in os.listdir('./data/synthesis_models') if not name.startswith('.')]
+        entries = [name for name in os.listdir(
+            './data/synthesis_models') if not name.startswith('.')]
         return sorted(entries, key=lambda x: int(os.path.splitext(x)[0]))
 
     def menuhandler(self, event):

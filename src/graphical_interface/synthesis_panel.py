@@ -46,8 +46,8 @@ class SynthesisPanel(wx.Panel):
         self.sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
 
         path = get_absolute_path(
-            'src/graphical_interface/buttons/load_button.png')
-        pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
+            'img/load_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.button_load = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
         self.Bind(wx.EVT_BUTTON, self.on_load_click, self.button_load)
@@ -81,8 +81,8 @@ class SynthesisPanel(wx.Panel):
         self.sizer_2.Add(self.checkbox, 0, wx.CENTER | wx.ALL, border=5)
 
         path = get_absolute_path(
-            'src/graphical_interface/buttons/save_button.png')
-        pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
+            'img/save_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.button_save = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
         self.Bind(wx.EVT_BUTTON, parent.save, self.button_save)
@@ -90,8 +90,8 @@ class SynthesisPanel(wx.Panel):
                          wx.TOP | wx.LEFT | wx.ALL, border=5)
 
         path = get_absolute_path(
-            'src/graphical_interface/buttons/render_button.png')
-        pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
+            'img/render_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.button_render = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
         self.Bind(wx.EVT_BUTTON, self.on_render_click, self.button_render)
@@ -100,8 +100,8 @@ class SynthesisPanel(wx.Panel):
         self.sizer_2.AddStretchSpacer()
 
         path = get_absolute_path(
-            'src/graphical_interface/buttons/recognition_button.png')
-        pic = wx.Bitmap(path, wx.BITMAP_TYPE_ANY)
+            'img/recognition_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.change_panel = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
         self.Bind(wx.EVT_BUTTON, self.on_change_panel, self.change_panel)
@@ -121,7 +121,7 @@ class SynthesisPanel(wx.Panel):
 
         self.hSizer2.AddStretchSpacer(1)
 
-        self.image_size = ImageSize.Medium
+        self.image_size = ImageSize.Large
         img = wx.Image(self.image_size.value[0], self.image_size.value[1])
         self.imageCtrl = wx.StaticBitmap(self, wx.ID_ANY,
                                          wx.Bitmap(img))
@@ -168,10 +168,14 @@ class SynthesisPanel(wx.Panel):
         self.Layout()
 
     def clear_directories_render(self):
-        remove_dir_with_content(get_absolute_path('./src/graphical_interface/synthesis/synthesized/'))
-        remove_dir_with_content(get_absolute_path('./src/graphical_interface/synthesis/skeletons/'))
-        ensure_create_dir(get_absolute_path('./src/graphical_interface/synthesis/skeletons/'))
-        ensure_create_dir(get_absolute_path('./src/graphical_interface/synthesis/synthesized/'))
+        remove_dir_with_content(get_absolute_path(
+            './src/graphical_interface/synthesis/synthesized/'))
+        remove_dir_with_content(get_absolute_path(
+            './src/graphical_interface/synthesis/skeletons/'))
+        ensure_create_dir(get_absolute_path(
+            './src/graphical_interface/synthesis/skeletons/'))
+        ensure_create_dir(get_absolute_path(
+            './src/graphical_interface/synthesis/synthesized/'))
 
     def on_render_click(self, event):
         """
@@ -247,7 +251,9 @@ class SynthesisPanel(wx.Panel):
         options = process_model_options(md)
         md.Destroy()
 
-        train_command = 'python src/synthesis/pix2pix.py --mode train --output_dir src/graphical_interface/model/ --max_epochs ' + str(options[0]) + ' --input_dir src/graphical_interface/training_dataset/combined --which_direction BtoA --ngf ' + str(options[1]) + ' --ndf ' + str(options[2])
+        train_command = 'python src/synthesis/pix2pix.py --mode train --output_dir src/graphical_interface/model/ --max_epochs ' + \
+            str(options[0]) + ' --input_dir src/graphical_interface/training_dataset/combined --which_direction BtoA --ngf ' + \
+            str(options[1]) + ' --ndf ' + str(options[2])
         os.system(train_command)
         export_command = 'python src/synthesis/pix2pix.py --mode export --output_dir src/graphical_interface/export/ --checkpoint src/graphical_interface/model/ --which_direction BtoA'
         os.system(export_command)
