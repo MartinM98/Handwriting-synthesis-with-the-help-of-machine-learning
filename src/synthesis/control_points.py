@@ -304,7 +304,7 @@ def produce_bspline(path_to_skeleton: str, path_to_control_points: str, path_to_
     letter3 = []
     for line in letter2:
         letter3.append(list(dict.fromkeys(line)))
-    path_to_save = combine_paths(get_absolute_path('./src/graphical_interface/synthesis/skeletons/'), str(idx) + '.png')
+    path_to_save = combine_paths(get_absolute_path('./data/synthesis/skeletons/'), str(idx) + '.png')
     width = max(image_control_points.shape[0], image_control_points2.shape[0])
     height = max(image_control_points.shape[1], image_control_points2.shape[1])
     bspline_image = draw_letter(result, image_size=(width, height), skeleton_flag=True, show_flag=False)

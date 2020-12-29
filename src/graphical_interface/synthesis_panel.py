@@ -25,6 +25,7 @@ class ImageSize(enum.Enum):
 class SynthesisPanel(wx.Panel):
     def __init__(self, parent, statusBar, main_color, second_color, models):
         self.use_synthesis = True
+        self.path_to_model = './data/synthesis_models/1'
         wx.Panel.__init__(self, parent)
         # self.Bind(wx.EVT_SIZE, self.on_resize)
         self.statusBar = statusBar
@@ -140,9 +141,7 @@ class SynthesisPanel(wx.Panel):
         self.SetSizerAndFit(self.mainSizer)
 
     def on_combo(self, event):
-        path = combine_paths('./data/synthesis_models',
-                             self.combobox.GetValue())
-        print(path)
+        self.path_to_model = combine_paths('./data/synthesis_models', self.combobox.GetValue())
 
     def on_image_size_combo(self, event):
         size = self.image_size_combobox.GetValue()
@@ -169,31 +168,30 @@ class SynthesisPanel(wx.Panel):
 
     def clear_directories_render(self):
         remove_dir_with_content(get_absolute_path(
-            './src/graphical_interface/synthesis/synthesized/'))
+            './data/synthesis/synthesized/'))
         remove_dir_with_content(get_absolute_path(
-            './src/graphical_interface/synthesis/skeletons/'))
+            './data/synthesis/skeletons/'))
         ensure_create_dir(get_absolute_path(
-            './src/graphical_interface/synthesis/skeletons/'))
+            './data/synthesis/skeletons/'))
         ensure_create_dir(get_absolute_path(
-            './src/graphical_interface/synthesis/synthesized/'))
+            './data/synthesis/synthesized/'))
 
     def on_render_click(self, event):
         """
         Creates a handwriting imitation image
         """
         self.clear_directories_render()
-        prepare_letters(self.editname.GetValue())
+        prepare_letters(self.editname.GetValue(), combine_paths(self.path_to_model, 'letters_dataset'))
 
         use_gpu = self.checkbox.GetValue()
         if (self.use_synthesis):
-            process_directory(get_absolute_path(
-                './src/graphical_interface/export'), get_absolute_path('./src/graphical_interface/synthesis/skeletons/'), use_gpu)
+            process_directory(combine_paths(self.path_to_model, 'export'), './data/synthesis/skeletons/', use_gpu)
             text_renderer = TextImageRenderAllDifferentWidths(
-                get_absolute_path('./src/graphical_interface/synthesis/synthesized/'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
+                './data/synthesis/synthesized/', self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
             img = text_renderer.create_synth_image()
         else:
             text_renderer = TextImageRenderAllDifferentWidths(
-                get_absolute_path('./src/graphical_interface/letters_dataset/'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
+                combine_paths(self.path_to_model, 'letters_dataset'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
             img = text_renderer.create_image()
 
         self.imageCtrl.SetBitmap(PIL2wx(img))
