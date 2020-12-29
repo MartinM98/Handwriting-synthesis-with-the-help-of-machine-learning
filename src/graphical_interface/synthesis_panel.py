@@ -24,6 +24,7 @@ class ImageSize(enum.Enum):
 
 class SynthesisPanel(wx.Panel):
     def __init__(self, parent, statusBar, main_color, second_color, models):
+        self.parent = parent
         self.use_synthesis = True
         self.path_to_model = './data/synthesis_models/1'
         wx.Panel.__init__(self, parent)
@@ -56,6 +57,7 @@ class SynthesisPanel(wx.Panel):
                          wx.TOP | wx.LEFT | wx.ALL, border=5)
 
         self.styles = models
+        self.styles.append('*New font*')
         self.combobox = wx.ComboBox(
             self.upper_panel, choices=self.styles, value=self.styles[0], size=(80, -1))
         self.combobox.Bind(wx.EVT_COMBOBOX, self.on_combo)
@@ -141,7 +143,20 @@ class SynthesisPanel(wx.Panel):
         self.SetSizerAndFit(self.mainSizer)
 
     def on_combo(self, event):
-        self.path_to_model = combine_paths('./data/synthesis_models', self.combobox.GetValue())
+        if(self.combobox.GetValue() != '*New font*'):
+            self.path_to_model = combine_paths('./data/synthesis_models', self.combobox.GetValue())
+        else:
+            current = self.new_font()
+            self.combobox.Clear()
+            self.combobox.Append(self.parent.find_models())
+            self.combobox.Append('*New font*')
+            self.path_to_model = combine_paths('./data/synthesis_models', current)
+
+    def new_font(self):
+        styles = self.parent.find_models()
+        new = str(int(styles[-1]) + 1)
+        ensure_create_dir('./data/synthesis_models/' + new)
+        return new
 
     def on_image_size_combo(self, event):
         size = self.image_size_combobox.GetValue()
@@ -176,26 +191,35 @@ class SynthesisPanel(wx.Panel):
         ensure_create_dir(get_absolute_path(
             './data/synthesis/synthesized/'))
 
+    def check_model(self):
+        if (os.path.isdir(combine_paths(self.path_to_model, 'letters_dataset')) and os.path.isdir(combine_paths(self.path_to_model, 'export'))):
+            return True
+        else:
+            return False
+
     def on_render_click(self, event):
         """
         Creates a handwriting imitation image
         """
-        self.clear_directories_render()
-        prepare_letters(self.editname.GetValue(), combine_paths(self.path_to_model, 'letters_dataset'))
+        if (self.check_model()):
+            self.clear_directories_render()
+            prepare_letters(self.editname.GetValue(), combine_paths(self.path_to_model, 'letters_dataset'))
 
-        use_gpu = self.checkbox.GetValue()
-        if (self.use_synthesis):
-            process_directory(combine_paths(self.path_to_model, 'export'), './data/synthesis/skeletons/', use_gpu)
-            text_renderer = TextImageRenderAllDifferentWidths(
-                './data/synthesis/synthesized/', self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
-            img = text_renderer.create_synth_image()
+            use_gpu = self.checkbox.GetValue()
+            if (self.use_synthesis):
+                process_directory(combine_paths(self.path_to_model, 'export'), './data/synthesis/skeletons/', use_gpu)
+                text_renderer = TextImageRenderAllDifferentWidths(
+                    './data/synthesis/synthesized/', self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
+                img = text_renderer.create_synth_image()
+            else:
+                text_renderer = TextImageRenderAllDifferentWidths(
+                    combine_paths(self.path_to_model, 'letters_dataset'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
+                img = text_renderer.create_image()
+
+            self.imageCtrl.SetBitmap(PIL2wx(img))
+            self.Layout()
         else:
-            text_renderer = TextImageRenderAllDifferentWidths(
-                combine_paths(self.path_to_model, 'letters_dataset'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
-            img = text_renderer.create_image()
-
-        self.imageCtrl.SetBitmap(PIL2wx(img))
-        self.Layout()
+            print('Model or dataset does not exist')
 
     def clear_directories_load(self, path):
         remove_dir_with_content(path + '/letters_dataset')
