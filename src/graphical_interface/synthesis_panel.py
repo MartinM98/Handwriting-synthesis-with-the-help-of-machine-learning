@@ -24,6 +24,7 @@ class ImageSize(enum.Enum):
 
 class SynthesisPanel(wx.Panel):
     def __init__(self, parent, statusBar, main_color, second_color, models):
+        self.parent = parent
         self.use_synthesis = True
         self.path_to_model = './data/synthesis_models/1'
         wx.Panel.__init__(self, parent)
@@ -56,6 +57,7 @@ class SynthesisPanel(wx.Panel):
                          wx.TOP | wx.LEFT | wx.ALL, border=5)
 
         self.styles = models
+        self.styles.append('*New font*')
         self.combobox = wx.ComboBox(
             self.upper_panel, choices=self.styles, value=self.styles[0], size=(80, -1))
         self.combobox.Bind(wx.EVT_COMBOBOX, self.on_combo)
@@ -141,7 +143,20 @@ class SynthesisPanel(wx.Panel):
         self.SetSizerAndFit(self.mainSizer)
 
     def on_combo(self, event):
-        self.path_to_model = combine_paths('./data/synthesis_models', self.combobox.GetValue())
+        if(self.combobox.GetValue() != '*New font*'):
+            self.path_to_model = combine_paths('./data/synthesis_models', self.combobox.GetValue())
+        else:
+            current = self.new_font()
+            self.combobox.Clear()
+            self.combobox.Append(self.parent.find_models())
+            self.combobox.Append('*New font*')
+            self.path_to_model = combine_paths('./data/synthesis_models', current)
+
+    def new_font(self):
+        styles = self.parent.find_models()
+        new = str(int(styles[-1]) + 1)
+        ensure_create_dir('./data/synthesis_models/' + new)
+        return new
 
     def on_image_size_combo(self, event):
         size = self.image_size_combobox.GetValue()
