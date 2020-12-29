@@ -48,12 +48,21 @@ class SynthesisPanel(wx.Panel):
         self.sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
 
         path = get_absolute_path(
-            'img/load_button.png')
+            'img/load_dataset_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
-        self.button_load = wx.BitmapButton(
+        self.button_load_dataset = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
-        self.Bind(wx.EVT_BUTTON, self.on_load_click, self.button_load)
-        self.sizer_2.Add(self.button_load, 0,
+        self.Bind(wx.EVT_BUTTON, self.on_load_click, self.button_load_dataset)
+        self.sizer_2.Add(self.button_load_dataset, 0,
+                         wx.TOP | wx.LEFT | wx.ALL, border=5)
+
+        path = get_absolute_path(
+            'img/generate_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
+        self.button_generate_font = wx.BitmapButton(
+            self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
+        self.Bind(wx.EVT_BUTTON, self.on_generate, self.button_generate_font)
+        self.sizer_2.Add(self.button_generate_font, 0,
                          wx.TOP | wx.LEFT | wx.ALL, border=5)
 
         self.styles = models
@@ -73,7 +82,7 @@ class SynthesisPanel(wx.Panel):
 
         self.image_sizes = ['Small', 'Medium', 'Large']
         self.image_size_combobox = wx.ComboBox(
-            self.upper_panel, choices=self.image_sizes, value='Medium', size=(80, -1))
+            self.upper_panel, choices=self.image_sizes, value='Large', size=(80, -1))
         self.image_size_combobox.Bind(
             wx.EVT_COMBOBOX, self.on_image_size_combo)
         self.sizer_2.Add(self.image_size_combobox, 0,
@@ -228,6 +237,9 @@ class SynthesisPanel(wx.Panel):
         ensure_create_dir(path + '/training_dataset/letters')
         ensure_create_dir(path + '/training_dataset/skeletons')
         ensure_create_dir(path + '/training_dataset/combined')
+
+    def on_generate(self, event):
+        print('generate')
 
     def on_load_click(self, event):
         """
