@@ -43,7 +43,7 @@ class Frame(wx.Frame):
         file_menu = wx.Menu()
         file_menu.Append(wx.ID_SAVE, "S&ave\tAlt-S", helpString="Save result")
 
-        file_menu.Append(wx.ID_OPEN, "L&aod\tAlt-L", helpString="Laod text")
+        file_menu.Append(wx.ID_OPEN, "L&oad\tAlt-L", helpString="Load text")
 
         menuBar.Append(file_menu, "&File")
         # ------------------ menu - File ------------------ #
@@ -170,7 +170,7 @@ class Frame(wx.Frame):
 
 class Application(wx.App):
     def OnInit(self):
-        frame = Frame(None, "Bachelor Project", (150, 150), (1280, 720))
+        frame = Frame(None, "Scripturam", (150, 150), (1280, 720))
         frame.Show()
         return True
 

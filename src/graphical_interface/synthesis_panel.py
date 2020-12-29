@@ -4,7 +4,7 @@ from src.image_processing.letters import extract, correct
 from src.image_processing.resize import resize_directory, combine_directory, resize_skeletons_directory
 from src.synthesis.process import process_directory
 from src.image_processing.automated_functions import process_dataset
-from src.file_handler.file_handler import combine_paths, get_absolute_path
+from src.file_handler.file_handler import combine_paths, ensure_create_and_append_file, get_absolute_path, read_from_file
 import wx
 import os
 import enum
@@ -46,12 +46,21 @@ class SynthesisPanel(wx.Panel):
         self.sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
 
         path = get_absolute_path(
-            'img/load_button.png')
+            'img/load_dataset_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
-        self.button_load = wx.BitmapButton(
+        self.button_load_dataset = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
-        self.Bind(wx.EVT_BUTTON, self.on_load_click, self.button_load)
-        self.sizer_2.Add(self.button_load, 0,
+        self.Bind(wx.EVT_BUTTON, self.on_load_click, self.button_load_dataset)
+        self.sizer_2.Add(self.button_load_dataset, 0,
+                         wx.TOP | wx.LEFT | wx.ALL, border=5)
+
+        path = get_absolute_path(
+            'img/generate_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
+        self.button_generate_font = wx.BitmapButton(
+            self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
+        self.Bind(wx.EVT_BUTTON, self.on_generate, self.button_generate_font)
+        self.sizer_2.Add(self.button_generate_font, 0,
                          wx.TOP | wx.LEFT | wx.ALL, border=5)
 
         self.styles = models
@@ -70,7 +79,7 @@ class SynthesisPanel(wx.Panel):
 
         self.image_sizes = ['Small', 'Medium', 'Large']
         self.image_size_combobox = wx.ComboBox(
-            self.upper_panel, choices=self.image_sizes, value='Medium', size=(80, -1))
+            self.upper_panel, choices=self.image_sizes, value='Large', size=(80, -1))
         self.image_size_combobox.Bind(
             wx.EVT_COMBOBOX, self.on_image_size_combo)
         self.sizer_2.Add(self.image_size_combobox, 0,
@@ -207,6 +216,9 @@ class SynthesisPanel(wx.Panel):
         ensure_create_dir(path + '/training_dataset/skeletons')
         ensure_create_dir(path + '/training_dataset/combined')
 
+    def on_generate(self, event):
+        print('generate')
+
     def on_load_click(self, event):
         """
         Creates new dataset from pictures from selected directory
@@ -257,3 +269,172 @@ class SynthesisPanel(wx.Panel):
         os.system(train_command)
         export_command = 'python src/synthesis/pix2pix.py --mode export --output_dir src/graphical_interface/export/ --checkpoint src/graphical_interface/model/ --which_direction BtoA'
         os.system(export_command)
+
+
+class Frame(wx.Frame):
+    """
+    This is MyFrame.  It just shows a few controls on a wxPanel,
+    and has a simple menu.
+    """
+
+    def __init__(self, parent, title, position, size):
+        wx.Frame.__init__(self, parent, -1, title,
+                          pos=position, size=size)
+
+        self.statusBar = self.CreateStatusBar()
+        self.statusBar.SetStatusText("Synthesis Mode")
+
+        main_color = wx.Colour(228, 228, 228)
+        second_color = wx.Colour(161, 183, 168)
+
+        self.synthesis_panel = SynthesisPanel(
+            self, self.statusBar, main_color, second_color, self.find_models())
+        self.panel = "synthesis"
+
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer.Add(self.synthesis_panel, 1, wx.EXPAND)
+        self.sizer.SetMinSize(1400, 700)
+        self.SetSizerAndFit(self.sizer)
+
+        self.Bind(wx.EVT_CLOSE, self.on_close)
+
+        menuBar = wx.MenuBar()
+        # ------------------ menu - File ------------------ #
+        file_menu = wx.Menu()
+        file_menu.Append(wx.ID_SAVE, "S&ave\tAlt-S", helpString="Save result")
+
+        file_menu.Append(wx.ID_OPEN, "L&oad\tAlt-L", helpString="Load text")
+
+        menuBar.Append(file_menu, "&File")
+        # ------------------ menu - File ------------------ #
+
+        # ------------------ menu - Options ------------------ #
+        option_menu = wx.Menu()
+        option_menu.Append(wx.ID_EXIT, "E&xit\tAlt-X",
+                           "Exit this simple sample")
+
+        menuBar.Append(option_menu, "&Options")
+        # ------------------ menu - Options ------------------ #
+
+        # ------------------ menu - About ------------------ #
+        about_menu = wx.Menu()
+        about_menu.Append(wx.ID_ABOUT, "A&bout the project\tAlt-A",
+                          "Show informations about the application")
+
+        about_menu.Append(100, "Au&tors\tAlt-U",
+                          "Show informations about the application authors")
+
+        menuBar.Append(about_menu, "&About")
+        # ------------------ menu - About ------------------ #
+        self.SetMenuBar(menuBar)
+        self.Bind(wx.EVT_MENU, self.menuhandler)
+        path = get_absolute_path("img/Bachelor_Thesis.ico")
+        icon = wx.Icon(path, wx.BITMAP_TYPE_ICO)
+        self.SetIcon(icon)
+
+    def find_models(self):
+        entries = [name for name in os.listdir(
+            './data/synthesis_models') if not name.startswith('.')]
+        return sorted(entries, key=lambda x: int(os.path.splitext(x)[0]))
+
+    def menuhandler(self, event):
+        id = event.GetId()
+        if id == wx.ID_ABOUT:
+            self.show_informations(event)
+        elif id == wx.ID_EXIT:
+            self.menu_close(event)
+        elif id == wx.ID_EXIT:
+            self.menu_close(event)
+        elif id == wx.ID_SAVE:
+            self.save(event)
+        elif id == 100:
+            self.show_authors(event)
+        elif id == wx.ID_OPEN:
+            self.load_text(event)
+
+    def load_text(self, event):
+        with wx.FileDialog(self, 'Load file', wildcard='Text files (*.txt)|*.txt', style=wx.FD_OPEN) as fd:
+            if fd.ShowModal() == wx.ID_OK:
+                filename = fd.GetPath()
+                txt = read_from_file(filename)
+                if self.panel == "synthesis":
+                    self.synthesis_panel.editname.SetValue(txt)
+                else:
+                    self.recognition_panel.editname.SetValue(txt)
+
+    def show_informations(self, event):
+        wx.MessageBox('This is the application created for Bachelor Thesis at Warsow University of Technology Faculty of Mathematics and Information Science.', 'Informations', wx.OK)
+
+    def show_authors(self, event):
+        wx.MessageBox(
+            'The authors of the application are: \n - Martin Mrugała \n - Patryk Walczak \n - Bartłomiej Żyła', 'Authors', wx.OK)
+
+    def menu_close(self, event):
+        self.Close()
+
+    def on_close(self, event):
+        event.Skip()
+        # dlg = wx.MessageDialog(
+        #     None, "Do you want to exit?", 'See you later?', wx.YES_NO | wx.ICON_QUESTION)
+        # result = dlg.ShowModal()
+
+        # if result == wx.ID_YES:
+        #     event.Skip()
+
+    def on_switch_panels(self, event):
+        if self.synthesis_panel.IsShown():
+            self.recognition_panel.editname.SetValue(
+                self.synthesis_panel.editname.GetValue())
+            self.synthesis_panel.Hide()
+            self.recognition_panel.Show()
+            self.statusBar.SetStatusText("Recognition Mode")
+            self.panel = "recognition"
+        else:
+            self.synthesis_panel.editname.SetValue(
+                self.recognition_panel.editname.GetValue())
+            self.synthesis_panel.Show()
+            self.recognition_panel.Hide()
+            self.statusBar.SetStatusText("Synthesis Mode")
+            self.panel = "synthesis"
+        self.Layout()
+
+    def save(self, event):
+        """
+        Saves created image
+        """
+        if self.panel == "synthesis":
+            with wx.FileDialog(self, 'Save image', wildcard='PNG files (*.png)|*.png', style=wx.FD_SAVE) as fd:
+                if fd.ShowModal() == wx.ID_OK:
+                    filename = fd.GetPath()
+                    img = self.synthesis_panel.imageCtrl.GetBitmap()
+                    if len(filename) > 0:
+                        self.statusBar.SetStatusText('Saving...')
+                        img.SaveFile(filename, wx.BITMAP_TYPE_PNG)
+                        self.statusBar.SetStatusText('File saved.')
+                    txt = self.synthesis_panel.editname.GetValue()
+                    if len(txt) > 0:
+                        self.statusBar.SetStatusText('Saving...')
+                        filename = str.replace(filename, '.png', '.txt')
+                        ensure_create_and_append_file(filename, txt)
+                        self.statusBar.SetStatusText('File saved.')
+        elif self.panel == "recognition":
+            with wx.FileDialog(self, 'Save text', wildcard='text files (*.txt)|*.txt', style=wx.FD_SAVE) as fd:
+                if fd.ShowModal() == wx.ID_OK:
+                    filename = fd.GetPath()
+                    txt = self.synthesis_panel.editname.GetValue()
+                    if len(txt) > 0:
+                        self.statusBar.SetStatusText('Saving...')
+                        ensure_create_and_append_file(filename, txt)
+                        self.statusBar.SetStatusText('File saved.')
+
+
+class Application(wx.App):
+    def OnInit(self):
+        frame = Frame(None, "Scripturam", (150, 150), (1280, 720))
+        frame.Show()
+        return True
+
+
+if __name__ == '__main__':
+    app = Application(redirect=False)  # TODO change to True at the end
+    app.MainLoop()
