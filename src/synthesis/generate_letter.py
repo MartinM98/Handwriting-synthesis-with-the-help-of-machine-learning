@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 import math
 import sys
+import random
 
 
 def dist(p1: tuple, p2: tuple):
@@ -29,7 +30,12 @@ def mid_point(p1: tuple, p2: tuple):
     Returns:
         (tuple): the midpoint between the given two points.
     """
-    return (math.floor((p1[0] + p2[0]) / 2), math.floor((p1[1] + p2[1]) / 2))
+    part = 10
+    x = math.floor((p1[0] + p2[0]) / 2)
+    y = math.floor((p1[1] + p2[1]) / 2)
+    x += x * random.randrange(-part, part + 1) / 100
+    y += y * random.randrange(-part, part + 1) / 100
+    return (x, y)
 
 
 def get_shift(p1: list, p2: list):
@@ -109,7 +115,7 @@ def generate_points(p1: list, p2: list):
     return p3
 
 
-def generate_letter(path: str, path2: str):
+def generate_letter(img1: np.ndarray, img2: np.ndarray):
     """
     Main function generating a new letter.
 
@@ -120,14 +126,10 @@ def generate_letter(path: str, path2: str):
     Returns:
         (list): List of points of the generated letter.
     """
-    img1 = cv2.imread(path)
     if len(img1.shape) == 3:
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-    img1 = cv2.rotate(img1, cv2.cv2.ROTATE_90_CLOCKWISE)
-    img2 = cv2.imread(path2)
     if len(img2.shape) == 3:
         img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
-    img2 = cv2.rotate(img2, cv2.cv2.ROTATE_90_CLOCKWISE)
     l1 = []
     for ix, iy in np.ndindex(img1.shape):
         if(img1[ix, iy] == 0):

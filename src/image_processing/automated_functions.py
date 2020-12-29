@@ -10,7 +10,6 @@ from src.image_processing.common_functions.common_functions import get_dir
 from src.image_processing.common_functions.common_functions import get_image
 from src.image_processing.gabor_filter import gabor_filter
 from src.synthesis.control_points import produce_imitation, produce_bspline
-from src.graphical_interface.load_dialog import LoadDialog
 from src.graphical_interface.model_dialog import ModelDialog
 from src.image_processing.consecutive_filter import consecutive
 from src.image_processing.random_filter import random_filter
@@ -85,7 +84,7 @@ def skeletonize_automated(directory: str = None):
     return results
 
 
-def create_skeletons_and_control_points(directory: str, options: list = None):
+def create_skeletons_and_control_points(directory: str):
     """
     Applies skeletonization and gabor filter to the given dataset
     with the standard structure.
@@ -110,7 +109,6 @@ def create_skeletons_and_control_points(directory: str, options: list = None):
                     cv2.imwrite(dir3 + filename + '.png', skeleton)
                     gabor = gabor_filter(path=dir3 + filename + '.png')
                     cv2.imwrite(dir4 + filename + '.png', gabor)
-                    filter_points_based_on_options(gabor, options, dir4 + filename)
 
 
 def create_bsplines(directory: str, options: list = None):
@@ -139,26 +137,6 @@ def create_bsplines(directory: str, options: list = None):
                     idx = random.randint(0, length)
                 produce_imitation(
                     path_to_skeleton=dir3 + files[i], path_to_control_points=dir4 + files[i], path_to_control_points2=dir4 + files[idx], idx=idx)
-
-
-def filter_points_based_on_options(gabor: np.ndarray, options: list, path: str):
-    """
-    Filters control points based on options.
-
-    Args:
-        gabor (np.ndarray): image with control points.
-        options (list): list of options.
-        path (str): path to the destination of the images.
-    """
-    if len(options) > 0:
-        if (options[0] is not None) and (options[1] is not None):
-            try_filter_points_consecutive(gabor, path, options[0], options[1])
-
-        if (options[2] is not None) and (options[3] is not None):
-            try_filter_points_random(gabor, path, options[2], options[3])
-
-        if (options[4] is not None) and (options[5] is not None):
-            try_filter_points_bs(gabor, path, options[4], options[5])
 
 
 def try_filter_points_consecutive(gabor: np.ndarray, path: str, n: int, k: int):
@@ -218,57 +196,75 @@ def try_filter_points_bs(gabor: np.ndarray, path: str, n: int, k: int):
         print('BS error error (', path + '_bs.png')
 
 
-def process_options(ld: LoadDialog):
+def prepare_images(path_skeleton: str, path_control_points: str, path_control_points2: str, n: int, k: int, option: str):
     """
-    Creates a list of options in the advanced mode of load process.
+    Prepares images for letter generation. Filters control points based on the option.
 
     Args:
-       directory (LoadDialog): Instance of custom class LoadDialog.
+       path_skeleton (str): Path to the image with skeleton of the base letter.
+       path_skeleton (str): Path to the image with control points of the base letter.
+       path_skeleton (str): Path to the image with control points of the second letter.
+       n (int): a scalar determining number of
+            subparts of the image. The image is divided into
+            n x n subparts with equal sizes.
+       k (int): the number of points that should be selected.
+       option (str): Option describing the filtering.
 
     Returns:
-        list : list of options retrieved from the LoadDialog class
+        (np.ndarray): Image with skeleton of the base letter.
+        (np.ndarray): Image with filtered control points of the base letter.
+        (np.ndarray): Image with filtered control points of the second letter.
     """
-    options = []
-    if is_int(ld.consecutive_n.GetValue()):
-        options.append(int(ld.consecutive_n.GetValue()))
-    else:
-        options.append(None)
-
-    if is_int(ld.consecutive_k.GetValue()):
-        options.append(int(ld.consecutive_k.GetValue()))
-    else:
-        options.append(None)
-
-    if is_int(ld.random_n.GetValue()):
-        options.append(int(ld.random_n.GetValue()))
-    else:
-        options.append(None)
-
-    if is_int(ld.random_k.GetValue()):
-        options.append(int(ld.random_k.GetValue()))
-    else:
-        options.append(None)
-
-    if is_int(ld.bs_n.GetValue()):
-        options.append(int(ld.bs_n.GetValue()))
-    else:
-        options.append(None)
-
-    if is_int(ld.bs_k.GetValue()):
-        options.append(int(ld.bs_k.GetValue()))
-    else:
-        options.append(None)
-
-    return options
+    image = cv2.imread(path_skeleton)
+    image = cv2.rotate(image, cv2.cv2.ROTATE_90_CLOCKWISE)
+    image_control_points = cv2.imread(path_control_points)
+    image_control_points = cv2.rotate(image_control_points, cv2.cv2.ROTATE_90_CLOCKWISE)
+    image_control_points2 = cv2.imread(path_control_points2)
+    image_control_points2 = cv2.rotate(image_control_points2, cv2.cv2.ROTATE_90_CLOCKWISE)
+    if (n > 0) and (k > 0):
+        image_control_points = filter_image(image_control_points, option, n, k)
+        image_control_points2 = filter_image(image_control_points2, option, n, k)
+    return image, image_control_points, image_control_points2
 
 
-def prepare_letters(input: str, path: str):
+def filter_image(image: np.ndarray, option: str, n: int, k: int):
+    """
+    Applies an appropriate filtering of control opints based on the option argument.
+
+    Args:
+       image (np.ndarray): Input image with control points.
+       option (str): Option describing the filtering.
+        n (int): a scalar determining number of
+        subparts of the image. The image is divided into
+        n x n subparts with equal sizes.
+        k (int): the number of points that should be selected.
+
+    Returns:
+        (np.ndarray): Filtered image.
+    """
+    image2 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    if option == 'Original':
+        return image
+    if option == 'Consecutive':
+        return consecutive(image2, n, k)
+    if option == 'Random':
+        return random_filter(image2, n, k)
+    if option == 'BS':
+        return binary_search_filter(image2, n, k)
+
+
+def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_options: int, option: str):
     """
     Prepares and saves b-splines for given input string in the appropriate directory.
 
     Args:
        input (str): String for which the b-splines have to be generated.
        path (str): Path to the dataset
+       n_advanced_options (int): a scalar determining number of
+            subparts of the image. The image is divided into
+            n x n subparts with equal sizes.
+       k_advanced_options (int): the number of points that should be selected.
+       option (str): Option of filtering.
     """
     i = 0
     for letter in input:
@@ -298,7 +294,8 @@ def prepare_letters(input: str, path: str):
         idx2 = idx1
         while idx1 == idx2:
             idx2 = random.randint(0, length)
-        produce_bspline(path_to_skeleton=dir_skel + files[idx1], path_to_control_points=dir_filtered + files[idx1], path_to_control_points2=dir_filtered + files[idx2], idx=i)
+        image, image_control_points, image_control_points2 = prepare_images(dir_skel + files[idx1], dir_filtered + files[idx1], dir_filtered + files[idx2], n_advanced_options, k_advanced_options, option)
+        produce_bspline(image=image, image_control_points=image_control_points, image_control_points2=image_control_points2, idx=i)
         i += 1
 
 
@@ -343,8 +340,7 @@ def process_dataset(directory: str = None, options: list = None):
     if directory is None:
         directory = get_dir()
 
-    create_skeletons_and_control_points(directory=directory, options=options)
-    create_bsplines(directory=directory, options=options)
+    create_skeletons_and_control_points(directory=directory)
 
 
 if __name__ == "__main__":
