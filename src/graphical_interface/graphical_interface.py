@@ -61,7 +61,7 @@ class Frame(wx.Frame):
         about_menu.Append(wx.ID_ABOUT, "A&bout the project\tAlt-A",
                           "Show informations about the application")
 
-        about_menu.Append(100, "Au&tors\tAlt-U",
+        about_menu.Append(100, "Au&thors\tAlt-U",
                           "Show informations about the application authors")
 
         menuBar.Append(about_menu, "&About")
