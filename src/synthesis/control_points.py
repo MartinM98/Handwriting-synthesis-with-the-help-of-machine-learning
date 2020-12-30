@@ -269,7 +269,7 @@ def produce_imitation(path_to_skeleton: str, path_to_control_points: str, path_t
                 image_size=(width, height), skeleton_flag=True)
 
 
-def produce_bspline(path_to_skeleton: str, path_to_control_points: str, path_to_control_points2: str, idx: int, font_size: int = None):
+def produce_bspline(image: np.ndarray, image_control_points: np.ndarray, image_control_points2: np.ndarray, idx: int, font_size: int = None):
     """
     Produce imitation of the letter form the skeleton.
 
@@ -279,14 +279,7 @@ def produce_bspline(path_to_skeleton: str, path_to_control_points: str, path_to_
     Returns:
         np.ndarray: a generated bspline.
     """
-    image = cv2.imread(path_to_skeleton)
-    image = cv2.rotate(image, cv2.cv2.ROTATE_90_CLOCKWISE)
-    image_control_points = cv2.imread(path_to_control_points)
-    image_control_points = cv2.rotate(
-        image_control_points, cv2.cv2.ROTATE_90_CLOCKWISE)
-    image_control_points2 = cv2.imread(path_to_control_points2)
-    image_control_points2 = cv2.rotate(
-        image_control_points2, cv2.cv2.ROTATE_90_CLOCKWISE)
+
     control_points = find_control_points(image_control_points)
     height, width, _ = image.shape
     if font_size is not None:
@@ -295,11 +288,10 @@ def produce_bspline(path_to_skeleton: str, path_to_control_points: str, path_to_
     vertices, edges = skeleton_to_graph(image)
     remove_cycles(vertices, edges)
     result = list()
-    result = get_sequences(list(edges))
+    result = get_sequences2(list(edges))
     # result = list(r for r in result if len(r) > 2)
     letter = left_only_control_points(result, control_points)
-    new_letter = generate_letter(
-        path_to_control_points, path_to_control_points2)
+    new_letter = generate_letter(image_control_points, image_control_points2)
     letter2 = match_points(letter, new_letter)
     letter3 = []
     for line in letter2:
@@ -307,7 +299,7 @@ def produce_bspline(path_to_skeleton: str, path_to_control_points: str, path_to_
     path_to_save = combine_paths(get_absolute_path('./data/synthesis/skeletons/'), str(idx) + '.png')
     width = max(image_control_points.shape[0], image_control_points2.shape[0])
     height = max(image_control_points.shape[1], image_control_points2.shape[1])
-    bspline_image = draw_letter(result, image_size=(width, height), skeleton_flag=True, show_flag=False)
+    bspline_image = draw_letter(letter3, image_size=(width, height), skeleton_flag=True, show_flag=False)
     bspline_image = resize_image('', 256, 256, image=bspline_image)
     cv2.imwrite(path_to_save, bspline_image)
 

@@ -8,12 +8,12 @@ from src.file_handler.file_handler import combine_paths, get_absolute_path
 import wx
 import os
 import enum
-from src.graphical_interface.load_dialog import LoadDialog
 from src.graphical_interface.model_dialog import ModelDialog
-from src.image_processing.automated_functions import process_options, process_model_options
+from src.image_processing.automated_functions import process_model_options
 from src.file_handler.file_handler import remove_dir_with_content
 from src.file_handler.file_handler import ensure_create_dir
 from src.image_processing.automated_functions import prepare_letters
+from src.graphical_interface.load_dialog import LoadDialog
 
 
 class ImageSize(enum.Enum):
@@ -27,6 +27,8 @@ class SynthesisPanel(wx.Panel):
         self.parent = parent
         self.use_synthesis = True
         self.path_to_model = './data/synthesis_models/1'
+        self.n_advanced_options = 0
+        self.k_advanced_options = 0
         wx.Panel.__init__(self, parent)
         # self.Bind(wx.EVT_SIZE, self.on_resize)
         self.statusBar = statusBar
@@ -109,6 +111,17 @@ class SynthesisPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.on_render_click, self.button_render)
         self.sizer_2.Add(self.button_render, 0, wx.RIGHT | wx.ALL, border=5)
 
+        self.filter_combobox = wx.ComboBox(self.upper_panel, choices=['Original', 'Consecutive', 'Random', 'BS'], value='Original', size=(110, -1))
+        self.sizer_2.Add(self.filter_combobox, 0, wx.CENTER | wx.LEFT | wx.ALL, border=5)
+
+        path = get_absolute_path(
+            'img/recognition_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
+        self.advanced_options = wx.BitmapButton(
+            self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
+        self.Bind(wx.EVT_BUTTON, self.on_advanced_options, self.advanced_options)
+        self.sizer_2.Add(self.advanced_options, 0, wx.RIGHT | wx.ALL, border=5)
+
         self.sizer_2.AddStretchSpacer()
 
         path = get_absolute_path(
@@ -176,6 +189,16 @@ class SynthesisPanel(wx.Panel):
         elif size == self.image_sizes[2]:
             self.resize_image(ImageSize.Large)
 
+    def on_advanced_options(self, event):
+        ld = LoadDialog(self, title='Advanced options', size=(250, 150))
+        ld.set_options(self.n_advanced_options, self.k_advanced_options)
+        if ld.ShowModal() == wx.ID_CANCEL:
+            ld.Destroy()
+            return
+        self.n_advanced_options = int(ld.n.GetValue())
+        self.k_advanced_options = int(ld.k.GetValue())
+        ld.Destroy()
+
     def on_change_panel(self, event):
         evt = ChangePanelEvent()
         wx.PostEvent(self.Parent, evt)
@@ -212,7 +235,7 @@ class SynthesisPanel(wx.Panel):
         """
         if (self.check_model()):
             self.clear_directories_render()
-            prepare_letters(self.editname.GetValue(), combine_paths(self.path_to_model, 'letters_dataset'))
+            prepare_letters(self.editname.GetValue(), combine_paths(self.path_to_model, 'letters_dataset'), self.n_advanced_options, self.k_advanced_options, self.filter_combobox.GetValue())
 
             use_gpu = self.checkbox.GetValue()
             if (self.use_synthesis):
@@ -245,31 +268,22 @@ class SynthesisPanel(wx.Panel):
         """
         Creates new dataset from pictures from selected directory
         """
-        md = wx.MessageDialog(self, message='Do you want to use the advanced mode?',
-                              caption='Advanced mode', style=wx.YES_NO)
-        options = []
-        if md.ShowModal() == wx.ID_YES:
-            ld = LoadDialog(None)
-            if ld.ShowModal() == wx.ID_CANCEL:
-                ld.Destroy()
-                return
-            options = process_options(ld)
-            ld.Destroy()
-        md.Destroy()
         dd = wx.DirDialog(self, 'Choose a directory')
         if dd.ShowModal() != wx.ID_OK:
             dd.Destroy()
             return
         directory = dd.GetPath()
         dd.Destroy()
-        path = get_absolute_path('src/graphical_interface/')
+        path = get_absolute_path('./data/synthesis_models/')
+        idx_new = len([entry for entry in os.listdir(path) if os.path.isdir(path + entry)])
+        path = './data/synthesis_models/' + str(idx_new + 1)
+        ensure_create_dir(path)
         self.clear_directories_load(path)
-
         dir = extract(directory, path)
         if dir is None:
             return
         correct(self, dir)
-        process_dataset(path + '/letters_dataset', options)
+        process_dataset(path + '/letters_dataset')
         resize_directory(path + '/letters_dataset',
                          path + '/training_dataset/letters')
         resize_skeletons_directory(
