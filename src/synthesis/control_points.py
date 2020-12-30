@@ -299,7 +299,7 @@ def produce_bspline(image: np.ndarray, image_control_points: np.ndarray, image_c
     path_to_save = combine_paths(get_absolute_path('./data/synthesis/skeletons/'), str(idx) + '.png')
     width = max(image_control_points.shape[0], image_control_points2.shape[0])
     height = max(image_control_points.shape[1], image_control_points2.shape[1])
-    bspline_image = draw_letter(letter3, image_size=(width, height), skeleton_flag=True, show_flag=False)
+    bspline_image = draw_letter(letter, image_size=(width, height), skeleton_flag=True, show_flag=False)
     bspline_image = resize_image('', 256, 256, image=bspline_image)
     cv2.imwrite(path_to_save, bspline_image)
 
