@@ -119,7 +119,7 @@ class SynthesisPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.on_advanced_options,
                   self.advanced_options)
         self.sizer_2.Add(self.advanced_options, 0, wx.RIGHT | wx.ALL, border=5)
-        
+
         self.sizer_2.AddStretchSpacer()
 
         path = get_absolute_path(
