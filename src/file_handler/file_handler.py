@@ -210,7 +210,7 @@ def remove_dir_with_content(dir_path: str):
     Args:
         dir_path (str): Path to directory.
     """
-    try:
+    if(os.path.isdir(dir_path)):
         shutil.rmtree(dir_path)
-    except OSError as e:
-        print("Error: %s : %s" % (dir_path, e.strerror))
+    else:
+        print(dir_path + " does not exist")

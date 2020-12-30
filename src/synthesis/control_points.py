@@ -11,6 +11,7 @@ from glob import glob
 from src.synthesis.generate_letter import generate_letter
 from src.file_handler.file_handler import get_file_name
 from src.image_processing.resize import resize_image
+import os
 
 
 def is_neighbour_pixel(p1: tuple, p2: tuple):
@@ -279,7 +280,6 @@ def produce_bspline(image: np.ndarray, image_control_points: np.ndarray, image_c
     Returns:
         np.ndarray: a generated bspline.
     """
-
     control_points = find_control_points(image_control_points)
     height, width, _ = image.shape
     if font_size is not None:
@@ -302,7 +302,7 @@ def produce_bspline(image: np.ndarray, image_control_points: np.ndarray, image_c
         width = max(image_control_points.shape[0], image_control_points2.shape[0])
         height = max(image_control_points.shape[1], image_control_points2.shape[1])
         letter = letter3
-    path_to_save = combine_paths(get_absolute_path('./data/synthesis/skeletons/'), str(idx) + '.png')
+    path_to_save = combine_paths('./data/synthesis/skeletons/', str(idx) + '.png')
     bspline_image = draw_letter(letter, image_size=(width, height), skeleton_flag=True, show_flag=False)
     bspline_image = resize_image('', 256, 256, image=bspline_image)
     cv2.imwrite(path_to_save, bspline_image)

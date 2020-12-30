@@ -15,7 +15,6 @@ from src.image_processing.consecutive_filter import consecutive
 from src.image_processing.random_filter import random_filter
 from src.image_processing.binary_search_filter import binary_search_filter
 from src.image_processing.common_functions.common_functions import is_int
-from src.file_handler.file_handler import get_absolute_path
 from src.image_processing.resize import resize_image
 from src.image_processing.common_functions.common_functions import prepare_blank_image
 
@@ -273,7 +272,7 @@ def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_o
     for letter in input:
         if ord(letter) == 32:
             blank = prepare_blank_image((font_size, font_size * 3))
-            cv2.imwrite(f"{get_absolute_path('./data/synthesis/synthesized/')}/{str(i)}.png", blank)
+            cv2.imwrite(f"{'./data/synthesis/synthesized/'}/{str(i)}.png", blank)
             i += 1
             continue
         dir = letter
@@ -281,7 +280,7 @@ def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_o
             dir = letter + '2'
         dir_skel = path + '/' + dir + '/skel/'
         dir_filtered = path + '/' + dir + '/filtered/'
-        dir_destination = get_absolute_path('./data/synthesis/skeletons/')
+        dir_destination = './data/synthesis/skeletons/'
         if not os.path.isdir(path + '/' + dir):
             print('There is no instance of letter ', letter)
             i += 1
