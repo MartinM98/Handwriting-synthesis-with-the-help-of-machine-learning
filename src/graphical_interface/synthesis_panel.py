@@ -252,16 +252,45 @@ class SynthesisPanel(wx.Panel):
         else:
             print('Model or dataset does not exist')
 
-    def clear_directories_load(self, path):
-        remove_dir_with_content(path + '/letters_dataset')
+    def clear_directories_generate(self, path):
         remove_dir_with_content(path + '/training_dataset')
+        remove_dir_with_content(self.path_to_model + '/export')
         ensure_create_dir(path + '/training_dataset')
         ensure_create_dir(path + '/training_dataset/letters')
         ensure_create_dir(path + '/training_dataset/skeletons')
         ensure_create_dir(path + '/training_dataset/combined')
 
+    def clear_directories_load(self, path):
+        remove_dir_with_content(path + '/letters_dataset')
+        ensure_create_dir(path + '/letters_dataset')
+
     def on_generate(self, event):
-        print('generate')
+        """
+        Creates new model based on pictures from dataset
+        """
+        self.clear_directories_generate('./data')
+        resize_directory(self.path_to_model + '/letters_dataset',
+                         './data/training_dataset/letters')
+        resize_skeletons_directory(
+            self.path_to_model + '/letters_dataset', './data/training_dataset/skeletons')
+        combine_directory('./data/training_dataset/letters',
+                          './data/training_dataset/skeletons', './data/training_dataset/combined')
+
+        options = []
+        md = ModelDialog(self, title='Model settings', size=(300, 200))
+        if md.ShowModal() == wx.ID_CANCEL:
+            md.Destroy()
+            return
+        options = process_model_options(md)
+        md.Destroy()
+
+        train_command = 'python ./pix2pix.py --mode train --output_dir ./data/model/ --max_epochs ' + \
+            str(options[0]) + ' --input_dir ./data/training_dataset/combined --which_direction BtoA --ngf ' + \
+            str(options[1]) + ' --ndf ' + str(options[2])
+        os.system(train_command)
+        export_command = 'python ./pix2pix.py --mode export --output_dir ' + self.path_to_model + '/export/ --checkpoint ./data/model/ --which_direction BtoA'
+        os.system(export_command)
+        remove_dir_with_content('./data/model')
 
     def on_load_click(self, event):
         """
@@ -273,35 +302,9 @@ class SynthesisPanel(wx.Panel):
             return
         directory = dd.GetPath()
         dd.Destroy()
-        path = get_absolute_path('./data/synthesis_models/')
-        idx_new = len([entry for entry in os.listdir(
-            path) if os.path.isdir(path + entry)])
-        path = path + str(idx_new + 1)
-        ensure_create_dir(path)
-        self.clear_directories_load(path)
-        dir = extract(directory, path)
+        self.clear_directories_load(self.path_to_model)
+        dir = extract(directory, self.path_to_model)
         if dir is None:
             return
         correct(self, dir)
-        process_dataset(path + '/letters_dataset')
-        resize_directory(path + '/letters_dataset',
-                         path + '/training_dataset/letters')
-        resize_skeletons_directory(
-            path + '/letters_dataset', path + '/training_dataset/skeletons')
-        combine_directory(path + '/training_dataset/letters',
-                          path + '/training_dataset/skeletons', path + '/training_dataset/combined')
-
-        options = []
-        md = ModelDialog(self, title='Model settings', size=(300, 200))
-        if md.ShowModal() == wx.ID_CANCEL:
-            md.Destroy()
-            return
-        options = process_model_options(md)
-        md.Destroy()
-
-        train_command = 'python src/synthesis/pix2pix.py --mode train --output_dir src/graphical_interface/model/ --max_epochs ' + \
-            str(options[0]) + ' --input_dir src/graphical_interface/training_dataset/combined --which_direction BtoA --ngf ' + \
-            str(options[1]) + ' --ndf ' + str(options[2])
-        os.system(train_command)
-        export_command = 'python src/synthesis/pix2pix.py --mode export --output_dir src/graphical_interface/export/ --checkpoint src/graphical_interface/model/ --which_direction BtoA'
-        os.system(export_command)
+        process_dataset(self.path_to_model + '/letters_dataset')

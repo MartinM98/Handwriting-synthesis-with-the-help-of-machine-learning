@@ -66,10 +66,11 @@ def crop_image(image_path: str, output_path: str):
     """
     img = cv2.imread(image_path, cv2.COLOR_BGR2GRAY)
     points = np.column_stack(np.where(img < 240))
-    cropped = img[np.min(points[:, 0]): np.max(
-        points[:, 0]), np.min(points[:, 1]): np.max(points[:, 0])]
-
-    cv2.imwrite(output_path, cropped)
+    if(len(points) > 0):
+        cropped = img[np.min(points[:, 0]): np.max(
+            points[:, 0]), np.min(points[:, 1]): np.max(points[:, 1])]
+        if(cropped.shape[0] != 0 and cropped.shape[1] != 0):
+            cv2.imwrite(output_path, cropped)
 
 
 def resize_directory(input_path: str, output_path: str):
