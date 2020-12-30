@@ -17,6 +17,7 @@ from src.image_processing.binary_search_filter import binary_search_filter
 from src.image_processing.common_functions.common_functions import is_int
 from src.file_handler.file_handler import get_absolute_path
 from src.image_processing.resize import resize_image
+from src.image_processing.common_functions.common_functions import prepare_blank_image
 
 
 def gabor_filter_automated(directory: str = None):
@@ -253,7 +254,7 @@ def filter_image(image: np.ndarray, option: str, n: int, k: int):
         return binary_search_filter(image2, n, k)
 
 
-def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_options: int, option: str):
+def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_options: int, option: str, font_size: int):
     """
     Prepares and saves b-splines for given input string in the appropriate directory.
 
@@ -265,9 +266,15 @@ def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_o
             n x n subparts with equal sizes.
        k_advanced_options (int): the number of points that should be selected.
        option (str): Option of filtering.
+       font_size (int): Size of the font.
     """
     i = 0
     for letter in input:
+        if ord(letter) == 32:
+            blank = prepare_blank_image((font_size, font_size * 3))
+            cv2.imwrite(f"{get_absolute_path('./data/synthesis/synthesized/')}/{str(i)}.png", blank)
+            i += 1
+            continue
         dir = letter
         if letter.islower():
             dir = letter + '2'
