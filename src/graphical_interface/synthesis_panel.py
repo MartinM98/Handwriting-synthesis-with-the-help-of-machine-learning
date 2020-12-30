@@ -1,3 +1,9 @@
+from src.image_processing.automated_functions import prepare_letters
+from src.file_handler.file_handler import ensure_create_dir
+from src.file_handler.file_handler import remove_dir_with_content
+from src.image_processing.automated_functions import process_model_options
+from src.graphical_interface.model_dialog import ModelDialog
+from src.graphical_interface.load_dialog import LoadDialog
 from src.graphical_interface.create_text import TextImageRenderAllDifferentWidths
 from src.graphical_interface.common import ChangePanelEvent, ImageSize, PIL2wx
 from src.image_processing.letters import extract, correct
@@ -7,17 +13,15 @@ from src.image_processing.automated_functions import process_dataset
 from src.file_handler.file_handler import combine_paths, get_absolute_path
 import wx
 import os
-from src.graphical_interface.load_dialog import LoadDialog
-from src.graphical_interface.model_dialog import ModelDialog
-from src.image_processing.automated_functions import process_options, process_model_options
-from src.file_handler.file_handler import remove_dir_with_content
-from src.file_handler.file_handler import ensure_create_dir
-from src.image_processing.automated_functions import prepare_letters
 
 
 class SynthesisPanel(wx.Panel):
     def __init__(self, parent, statusBar, main_color, second_color, models):
+        self.parent = parent
         self.use_synthesis = True
+        self.path_to_model = './data/synthesis_models/1'
+        self.n_advanced_options = 0
+        self.k_advanced_options = 0
         wx.Panel.__init__(self, parent)
         # self.Bind(wx.EVT_SIZE, self.on_resize)
         self.statusBar = statusBar
@@ -58,6 +62,7 @@ class SynthesisPanel(wx.Panel):
                          wx.TOP | wx.LEFT | wx.ALL, border=5)
 
         self.styles = models
+        self.styles.append('*New font*')
         self.combobox = wx.ComboBox(
             self.upper_panel, choices=self.styles, value=self.styles[0], size=(80, -1))
         self.combobox.Bind(wx.EVT_COMBOBOX, self.on_combo)
@@ -99,6 +104,20 @@ class SynthesisPanel(wx.Panel):
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
         self.Bind(wx.EVT_BUTTON, self.on_render_click, self.button_render)
         self.sizer_2.Add(self.button_render, 0, wx.RIGHT | wx.ALL, border=5)
+
+        self.filter_combobox = wx.ComboBox(self.upper_panel, choices=[
+                                           'Original', 'Consecutive', 'Random', 'BS'], value='Original', size=(110, -1))
+        self.sizer_2.Add(self.filter_combobox, 0,
+                         wx.CENTER | wx.LEFT | wx.ALL, border=5)
+
+        path = get_absolute_path(
+            'img/recognition_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
+        self.advanced_options = wx.BitmapButton(
+            self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
+        self.Bind(wx.EVT_BUTTON, self.on_advanced_options,
+                  self.advanced_options)
+        self.sizer_2.Add(self.advanced_options, 0, wx.RIGHT | wx.ALL, border=5)
 
         self.sizer_2.AddStretchSpacer()
 
@@ -143,9 +162,22 @@ class SynthesisPanel(wx.Panel):
         self.SetSizerAndFit(self.mainSizer)
 
     def on_combo(self, event):
-        path = combine_paths('./data/synthesis_models',
-                             self.combobox.GetValue())
-        print(path)
+        if(self.combobox.GetValue() != '*New font*'):
+            self.path_to_model = combine_paths(
+                './data/synthesis_models', self.combobox.GetValue())
+        else:
+            current = self.new_font()
+            self.combobox.Clear()
+            self.combobox.Append(self.parent.find_models())
+            self.combobox.Append('*New font*')
+            self.path_to_model = combine_paths(
+                './data/synthesis_models', current)
+
+    def new_font(self):
+        styles = self.parent.find_models()
+        new = str(int(styles[-1]) + 1)
+        ensure_create_dir('./data/synthesis_models/' + new)
+        return new
 
     def chane_image_size(self, size):
         self.resize_image(size)
@@ -155,6 +187,16 @@ class SynthesisPanel(wx.Panel):
         #     self.resize_image(ImageSize.Medium)
         # elif size == self.image_sizes[2]:
         #     self.resize_image(ImageSize.Large)
+
+    def on_advanced_options(self, event):
+        ld = LoadDialog(self, title='Advanced options', size=(250, 150))
+        ld.set_options(self.n_advanced_options, self.k_advanced_options)
+        if ld.ShowModal() == wx.ID_CANCEL:
+            ld.Destroy()
+            return
+        self.n_advanced_options = int(ld.n.GetValue())
+        self.k_advanced_options = int(ld.k.GetValue())
+        ld.Destroy()
 
     def on_change_panel(self, event):
         evt = ChangePanelEvent()
@@ -170,34 +212,44 @@ class SynthesisPanel(wx.Panel):
 
     def clear_directories_render(self):
         remove_dir_with_content(get_absolute_path(
-            './src/graphical_interface/synthesis/synthesized/'))
+            './data/synthesis/synthesized/'))
         remove_dir_with_content(get_absolute_path(
-            './src/graphical_interface/synthesis/skeletons/'))
+            './data/synthesis/skeletons/'))
         ensure_create_dir(get_absolute_path(
-            './src/graphical_interface/synthesis/skeletons/'))
+            './data/synthesis/skeletons/'))
         ensure_create_dir(get_absolute_path(
-            './src/graphical_interface/synthesis/synthesized/'))
+            './data/synthesis/synthesized/'))
+
+    def check_model(self):
+        if (os.path.isdir(combine_paths(self.path_to_model, 'letters_dataset')) and os.path.isdir(combine_paths(self.path_to_model, 'export'))):
+            return True
+        else:
+            return False
 
     def on_render_click(self, event):
         """
         Creates a handwriting imitation image
         """
-        self.clear_directories_render()
-        prepare_letters(self.editname.GetValue())
+        if (self.check_model()):
+            self.clear_directories_render()
+            prepare_letters(self.editname.GetValue(), combine_paths(self.path_to_model, 'letters_dataset'),
+                            self.n_advanced_options, self.k_advanced_options, self.filter_combobox.GetValue())
 
-        if (self.use_synthesis):
-            process_directory(get_absolute_path(
-                './src/graphical_interface/export'), get_absolute_path('./src/graphical_interface/synthesis/skeletons/'), self.use_gpu)
-            text_renderer = TextImageRenderAllDifferentWidths(
-                get_absolute_path('./src/graphical_interface/synthesis/synthesized/'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
-            img = text_renderer.create_synth_image()
+            if (self.use_synthesis):
+                process_directory(combine_paths(
+                    self.path_to_model, 'export'), './data/synthesis/skeletons/', self.use_gpu)
+                text_renderer = TextImageRenderAllDifferentWidths(
+                    './data/synthesis/synthesized/', self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
+                img = text_renderer.create_synth_image()
+            else:
+                text_renderer = TextImageRenderAllDifferentWidths(
+                    combine_paths(self.path_to_model, 'letters_dataset'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
+                img = text_renderer.create_image()
+
+            self.imageCtrl.SetBitmap(PIL2wx(img))
+            self.Layout()
         else:
-            text_renderer = TextImageRenderAllDifferentWidths(
-                get_absolute_path('./src/graphical_interface/letters_dataset/'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
-            img = text_renderer.create_image()
-
-        self.imageCtrl.SetBitmap(PIL2wx(img))
-        self.Layout()
+            print('Model or dataset does not exist')
 
     def clear_directories_load(self, path):
         remove_dir_with_content(path + '/letters_dataset')
@@ -214,31 +266,23 @@ class SynthesisPanel(wx.Panel):
         """
         Creates new dataset from pictures from selected directory
         """
-        md = wx.MessageDialog(self, message='Do you want to use the advanced mode?',
-                              caption='Advanced mode', style=wx.YES_NO)
-        options = []
-        if md.ShowModal() == wx.ID_YES:
-            ld = LoadDialog(None)
-            if ld.ShowModal() == wx.ID_CANCEL:
-                ld.Destroy()
-                return
-            options = process_options(ld)
-            ld.Destroy()
-        md.Destroy()
         dd = wx.DirDialog(self, 'Choose a directory')
         if dd.ShowModal() != wx.ID_OK:
             dd.Destroy()
             return
         directory = dd.GetPath()
         dd.Destroy()
-        path = get_absolute_path('src/graphical_interface/')
+        path = get_absolute_path('./data/synthesis_models/')
+        idx_new = len([entry for entry in os.listdir(
+            path) if os.path.isdir(path + entry)])
+        path = './data/synthesis_models/' + str(idx_new + 1)
+        ensure_create_dir(path)
         self.clear_directories_load(path)
-
         dir = extract(directory, path)
         if dir is None:
             return
         correct(self, dir)
-        process_dataset(path + '/letters_dataset', options)
+        process_dataset(path + '/letters_dataset')
         resize_directory(path + '/letters_dataset',
                          path + '/training_dataset/letters')
         resize_skeletons_directory(

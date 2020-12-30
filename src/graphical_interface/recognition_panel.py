@@ -29,7 +29,6 @@ class RecognitionPanel(wx.Panel):
 
         path = get_absolute_path(
             'img/read_button.png')
-        print(path)
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.button_read = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))

@@ -69,7 +69,6 @@ class TextImageRenderAllDifferentWidths:
             if self.current_width + img.width >= self.width:
                 self.current_width = 0
                 self.current_line += 1
-            print(self.text_to_render[int(letter[:-4])])
             letter_to_int = ord(self.text_to_render[int(letter[:-4])])
             self.concatenate_vertical(result_image, img, letter_to_int)
             self.current_width = self.current_width + img.width
