@@ -99,5 +99,5 @@ class RecognitionPanel(wx.Panel):
                     os.remove(textfile)
 
     def export_tesseract(self):
-        path_to_model = get_absolute_path('./data/recognition_model/')
+        path_to_model = './data/recognition_model/'
         os.environ["TESSDATA_PREFIX"] = path_to_model

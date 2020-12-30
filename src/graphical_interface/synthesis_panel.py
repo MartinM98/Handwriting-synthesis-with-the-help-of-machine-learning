@@ -203,14 +203,11 @@ class SynthesisPanel(wx.Panel):
         self.Layout()
 
     def clear_directories_render(self):
-        remove_dir_with_content(get_absolute_path(
-            './data/synthesis/synthesized/'))
-        remove_dir_with_content(get_absolute_path(
-            './data/synthesis/skeletons/'))
-        ensure_create_dir(get_absolute_path(
-            './data/synthesis/skeletons/'))
-        ensure_create_dir(get_absolute_path(
-            './data/synthesis/synthesized/'))
+        remove_dir_with_content('./data/synthesis/synthesized')
+        remove_dir_with_content('./data/synthesis/skeletons')
+        print('')
+        ensure_create_dir('./data/synthesis/skeletons')
+        ensure_create_dir('./data/synthesis/synthesized')
 
     def check_model(self):
         if (os.path.isdir(combine_paths(self.path_to_model, 'letters_dataset')) and os.path.isdir(combine_paths(self.path_to_model, 'export'))):
@@ -224,9 +221,10 @@ class SynthesisPanel(wx.Panel):
         """
         if (self.check_model()):
             self.clear_directories_render()
+            print("Preparing skeletons")
             prepare_letters(self.editname.GetValue(), combine_paths(self.path_to_model, 'letters_dataset'),
                             self.n_advanced_options, self.k_advanced_options, self.filter_type, int(self.font_size_combobox.GetValue()), self.match_with_other)
-
+            print("Rendering text")
             if (self.use_synthesis):
                 process_directory(combine_paths(
                     self.path_to_model, 'export'), './data/synthesis/skeletons/', self.use_gpu)
@@ -238,6 +236,7 @@ class SynthesisPanel(wx.Panel):
                     combine_paths(self.path_to_model, 'letters_dataset'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
                 img = text_renderer.create_image()
 
+            print("Text rendered")
             self.imageCtrl.SetBitmap(PIL2wx(img))
             self.Layout()
         else:
