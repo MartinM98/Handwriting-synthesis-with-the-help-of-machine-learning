@@ -44,7 +44,7 @@ class SynthesisPanel(wx.Panel):
         self.sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
 
         path = get_absolute_path(
-            'img/load_dataset_button.png')
+            'resources/load_dataset_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.button_load_dataset = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
@@ -53,7 +53,7 @@ class SynthesisPanel(wx.Panel):
                          wx.TOP | wx.LEFT | wx.ALL, border=5)
 
         path = get_absolute_path(
-            'img/generate_button.png')
+            'resources/generate_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.button_generate_font = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
@@ -89,7 +89,7 @@ class SynthesisPanel(wx.Panel):
         # self.sizer_2.Add(self.checkbox, 0, wx.CENTER | wx.ALL, border=5)
 
         path = get_absolute_path(
-            'img/save_button.png')
+            'resources/save_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.button_save = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
@@ -98,7 +98,7 @@ class SynthesisPanel(wx.Panel):
                          wx.TOP | wx.LEFT | wx.ALL, border=5)
 
         path = get_absolute_path(
-            'img/render_button.png')
+            'resources/render_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.button_render = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
@@ -111,7 +111,7 @@ class SynthesisPanel(wx.Panel):
                          wx.CENTER | wx.LEFT | wx.ALL, border=5)
 
         path = get_absolute_path(
-            'img/recognition_button.png')
+            'resources/recognition_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.advanced_options = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
@@ -122,7 +122,7 @@ class SynthesisPanel(wx.Panel):
         self.sizer_2.AddStretchSpacer()
 
         path = get_absolute_path(
-            'img/recognition_button.png')
+            'resources/recognition_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.change_panel = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
