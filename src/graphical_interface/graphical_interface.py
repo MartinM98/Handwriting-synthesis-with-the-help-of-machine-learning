@@ -87,11 +87,10 @@ class Frame(wx.Frame):
 
         self.synthesize_menu = wx.Menu()
         self.match_with_other = False
-        self.use_control_point_bar = self.synthesize_menu.Append(121, "Match",
-                                                                 "Match with other instance of the letter in letter generation", wx.ITEM_CHECK)
+        # self.use_control_point_bar = self.synthesize_menu.Append(121, "Match",
+        #                                                          "Match with other instance of the letter in letter generation", wx.ITEM_CHECK)
 
-        advanced_option_menu.Append(
-            121, 'Synthesisze options', self.synthesize_menu)
+        advanced_option_menu.Append(121, "Use matching", "Match with other instance of the letter in letter generation", wx.ITEM_CHECK)
 
         self.option_menu.Append(110, 'Advanced', advanced_option_menu)
         self.option_menu.Enable(110, False)

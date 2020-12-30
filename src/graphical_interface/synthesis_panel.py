@@ -75,8 +75,9 @@ class SynthesisPanel(wx.Panel):
         self.font_size_combobox = wx.ComboBox(
             self.upper_panel, choices=self.font_sizes, value='10', size=(80, -1))
         self.font_size_combobox.Bind(wx.EVT_COMBOBOX, self.on_combo)
-        self.sizer_2.Add(self.font_size_combobox, 0,
-                         wx.CENTER | wx.LEFT | wx.ALL, border=5)
+        self.font_size_combobox.Hide()
+        # self.sizer_2.Add(self.font_size_combobox, 0,
+        #                  wx.CENTER | wx.LEFT | wx.ALL, border=5)
 
         # self.image_sizes = ['Small', 'Medium', 'Large']
         # self.image_size_combobox = wx.ComboBox(
