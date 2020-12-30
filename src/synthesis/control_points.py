@@ -265,7 +265,7 @@ def produce_imitation(path_to_skeleton: str, path_to_control_points: str, path_t
     path_to_save = combine_paths(path_to_save, file_name)
     width = max(image_control_points.shape[0], image_control_points2.shape[0])
     height = max(image_control_points.shape[1], image_control_points2.shape[1])
-    draw_letter(result, path_to_save_file=path_to_save,
+    draw_letter(letter3, path_to_save_file=path_to_save,
                 image_size=(width, height), skeleton_flag=True)
 
 
@@ -288,7 +288,7 @@ def produce_bspline(image: np.ndarray, image_control_points: np.ndarray, image_c
     vertices, edges = skeleton_to_graph(image)
     remove_cycles(vertices, edges)
     result = list()
-    result = get_sequences2(list(edges))
+    result = get_sequences(list(edges))
     # result = list(r for r in result if len(r) > 2)
     letter = left_only_control_points(result, control_points)
     new_letter = generate_letter(image_control_points, image_control_points2)

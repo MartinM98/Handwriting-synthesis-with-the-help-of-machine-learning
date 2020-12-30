@@ -2,9 +2,9 @@ import wx
 from wx.lib import sized_controls
 
 
-class LoadDialog(sized_controls.SizedDialog):
+class OptionsDialog(sized_controls.SizedDialog):
     def __init__(self, *args, **kwargs):
-        super(LoadDialog, self).__init__(*args, **kwargs)
+        super(OptionsDialog, self).__init__(*args, **kwargs)
         pane = self.GetContentsPane()
         pane.SetSizerType("grid", {"cols": 2})
 
@@ -71,5 +71,5 @@ class Validator(wx.Validator):
 
 if __name__ == "__main__":
     app = wx.App(False)
-    dlg = LoadDialog(None, title='Advanced options', size=(250, 150))
+    dlg = OptionsDialog(None, title='Advanced options', size=(250, 150))
     result = dlg.ShowModal()

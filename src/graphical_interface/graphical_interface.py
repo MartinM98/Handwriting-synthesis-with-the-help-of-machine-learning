@@ -72,13 +72,17 @@ class Frame(wx.Frame):
 
         filters_menu = wx.Menu()
         filters_menu.Append(113, "Original",
-                            "Large size of image", wx.ITEM_RADIO)
-        filters_menu.Append(114, "Cons",
-                            "Medium size of image", wx.ITEM_RADIO)
+                            "The control points are not filterd", wx.ITEM_RADIO)
+        filters_menu.Append(114, "Consecutive",
+                            "The consecutive filter is applied to the control points", wx.ITEM_RADIO)
+        filters_menu.Append(115, "Random",
+                            "The random filter is applied to the control points", wx.ITEM_RADIO)
+        filters_menu.Append(116, "BS",
+                            "The binary search filter is applied to the control points", wx.ITEM_RADIO)
 
         advanced_option_menu.Append(112, 'Filters', filters_menu)
 
-        advanced_option_menu.Append(111, "Test", helpString="Test")
+        advanced_option_menu.Append(111, "Filter options", helpString="Filter options")
 
         self.option_menu.Append(110, 'Advanced', advanced_option_menu)
         self.option_menu.Enable(110, False)
@@ -137,11 +141,15 @@ class Frame(wx.Frame):
             else:
                 self.synthesis_panel.use_gpu = True
         elif id == 111:
-            print('test')
+            self.synthesis_panel.on_advanced_options()
         elif id == 113:
-            print('opcja1')
+            self.filter_type = 'Original'
         elif id == 114:
-            print('opcja2')
+            self.filter_type = 'Consecutive'
+        elif id == 115:
+            self.filter_type = 'Random'
+        elif id == 116:
+            self.filter_type = 'BS'
 
     def load_text(self, event):
         with wx.FileDialog(self, 'Load file', wildcard='Text files (*.txt)|*.txt', style=wx.FD_OPEN) as fd:

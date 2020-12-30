@@ -3,7 +3,7 @@ from src.file_handler.file_handler import ensure_create_dir
 from src.file_handler.file_handler import remove_dir_with_content
 from src.image_processing.automated_functions import process_model_options
 from src.graphical_interface.model_dialog import ModelDialog
-from src.graphical_interface.load_dialog import LoadDialog
+from src.graphical_interface.options_dialog import OptionsDialog
 from src.graphical_interface.create_text import TextImageRenderAllDifferentWidths
 from src.graphical_interface.common import ChangePanelEvent, ImageSize, PIL2wx
 from src.image_processing.letters import extract, correct
@@ -22,6 +22,7 @@ class SynthesisPanel(wx.Panel):
         self.path_to_model = './data/synthesis_models/1'
         self.n_advanced_options = 0
         self.k_advanced_options = 0
+        self.filter_type = 'Original'
         wx.Panel.__init__(self, parent)
         # self.Bind(wx.EVT_SIZE, self.on_resize)
         self.statusBar = statusBar
@@ -118,7 +119,7 @@ class SynthesisPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.on_advanced_options,
                   self.advanced_options)
         self.sizer_2.Add(self.advanced_options, 0, wx.RIGHT | wx.ALL, border=5)
-
+        
         self.sizer_2.AddStretchSpacer()
 
         path = get_absolute_path(
@@ -188,15 +189,15 @@ class SynthesisPanel(wx.Panel):
         # elif size == self.image_sizes[2]:
         #     self.resize_image(ImageSize.Large)
 
-    def on_advanced_options(self, event):
-        ld = LoadDialog(self, title='Advanced options', size=(250, 150))
-        ld.set_options(self.n_advanced_options, self.k_advanced_options)
-        if ld.ShowModal() == wx.ID_CANCEL:
-            ld.Destroy()
+    def on_advanced_options(self):
+        od = OptionsDialog(self, title='Advanced options', size=(250, 150))
+        od.set_options(self.n_advanced_options, self.k_advanced_options)
+        if od.ShowModal() == wx.ID_CANCEL:
+            od.Destroy()
             return
-        self.n_advanced_options = int(ld.n.GetValue())
-        self.k_advanced_options = int(ld.k.GetValue())
-        ld.Destroy()
+        self.n_advanced_options = int(od.n.GetValue())
+        self.k_advanced_options = int(od.k.GetValue())
+        od.Destroy()
 
     def on_change_panel(self, event):
         evt = ChangePanelEvent()
@@ -233,7 +234,7 @@ class SynthesisPanel(wx.Panel):
         if (self.check_model()):
             self.clear_directories_render()
             prepare_letters(self.editname.GetValue(), combine_paths(self.path_to_model, 'letters_dataset'),
-                            self.n_advanced_options, self.k_advanced_options, self.filter_combobox.GetValue())
+                            self.n_advanced_options, self.k_advanced_options, self.filter_type, int(self.font_size_combobox.GetValue()))
 
             if (self.use_synthesis):
                 process_directory(combine_paths(
@@ -275,7 +276,7 @@ class SynthesisPanel(wx.Panel):
         path = get_absolute_path('./data/synthesis_models/')
         idx_new = len([entry for entry in os.listdir(
             path) if os.path.isdir(path + entry)])
-        path = './data/synthesis_models/' + str(idx_new + 1)
+        path = path + str(idx_new + 1)
         ensure_create_dir(path)
         self.clear_directories_load(path)
         dir = extract(directory, path)
