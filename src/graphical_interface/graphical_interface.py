@@ -111,7 +111,7 @@ class Frame(wx.Frame):
             './data/synthesis_models') if not name.startswith('.')]
         return sorted(entries, key=lambda x: int(os.path.splitext(x)[0]))
 
-    def menuhandler(self, event):
+    def menuhandler(self, event):  # noqa: C901
         id = event.GetId()
         if id == wx.ID_ABOUT:
             self.show_informations(event)
