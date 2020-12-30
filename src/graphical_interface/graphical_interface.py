@@ -82,10 +82,23 @@ class Frame(wx.Frame):
 
         advanced_option_menu.Append(112, 'Filters', filters_menu)
 
-        advanced_option_menu.Append(111, "Filter options", helpString="Filter options")
+        advanced_option_menu.Append(
+            111, "Filter options", helpString="Filter options")
+
+        self.synthesize_menu = wx.Menu()
+        self.use_control_points = False
+        self.use_control_point_bar = self.synthesize_menu.Append(121, "Use control points",
+                                                                 "TODO", wx.ITEM_CHECK)
+        self.use_matching = False
+        self.use_matching_bar = self.synthesize_menu.Append(122, "Use matching",
+                                                            "TODO", wx.ITEM_CHECK)
+
+        advanced_option_menu.Append(
+            120, 'Synthesisze options', self.synthesize_menu)
 
         self.option_menu.Append(110, 'Advanced', advanced_option_menu)
         self.option_menu.Enable(110, False)
+
         self.option_menu.AppendSeparator()
 
         self.option_menu.Append(wx.ID_EXIT, "E&xit\tAlt-X",
@@ -150,6 +163,22 @@ class Frame(wx.Frame):
             self.filter_type = 'Random'
         elif id == 116:
             self.filter_type = 'BS'
+        elif id == 121:
+            print('use control points')
+            # if self.use_control_points:
+            #     self.use_control_points = False
+            #     self.use_matching_bar = False
+            #     self.use_matching = False
+            # else:
+            #     self.use_control_points = True
+        elif id == 122:
+            print('use mathcing')
+            # if self.use_matching:
+            #     self.use_matching = False
+            # else:
+            #     self.use_matching = True
+            #     self.use_control_point_bar = True
+            #     self.use_control_points = True
 
     def load_text(self, event):
         with wx.FileDialog(self, 'Load file', wildcard='Text files (*.txt)|*.txt', style=wx.FD_OPEN) as fd:
