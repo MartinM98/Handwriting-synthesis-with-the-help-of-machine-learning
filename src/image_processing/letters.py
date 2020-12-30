@@ -2,6 +2,7 @@
 import os
 from PIL import Image
 import wx
+from src.image_processing.resize import crop_image
 
 
 def check_char(path, char: str):
@@ -64,6 +65,7 @@ def extract(directory, path=None):
                     os.mkdir(letterdir)
                     count = 0
                 im1.save(letterdir + str(count) + '.png')
+                crop_image(letterdir + str(count) + '.png', letterdir + str(count) + '.png')
 
             file1.close()
             return letters
