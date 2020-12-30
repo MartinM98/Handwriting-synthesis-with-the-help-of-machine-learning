@@ -1,5 +1,5 @@
 from src.graphical_interface.create_text import TextImageRenderAllDifferentWidths
-from src.graphical_interface.common import ChangePanelEvent, PIL2wx
+from src.graphical_interface.common import ChangePanelEvent, ImageSize, PIL2wx
 from src.image_processing.letters import extract, correct
 from src.image_processing.resize import resize_directory, combine_directory, resize_skeletons_directory
 from src.synthesis.process import process_directory
@@ -7,19 +7,12 @@ from src.image_processing.automated_functions import process_dataset
 from src.file_handler.file_handler import combine_paths, get_absolute_path
 import wx
 import os
-import enum
 from src.graphical_interface.load_dialog import LoadDialog
 from src.graphical_interface.model_dialog import ModelDialog
 from src.image_processing.automated_functions import process_options, process_model_options
 from src.file_handler.file_handler import remove_dir_with_content
 from src.file_handler.file_handler import ensure_create_dir
 from src.image_processing.automated_functions import prepare_letters
-
-
-class ImageSize(enum.Enum):
-    Small = (450, 300)
-    Medium = (675, 450)
-    Large = (900, 600)
 
 
 class SynthesisPanel(wx.Panel):
@@ -29,6 +22,7 @@ class SynthesisPanel(wx.Panel):
         # self.Bind(wx.EVT_SIZE, self.on_resize)
         self.statusBar = statusBar
         self.SetBackgroundColour(main_color)
+        self.use_gpu = False
 
         # create some sizers
         self.mainSizer = wx.BoxSizer(wx.VERTICAL)
@@ -77,17 +71,17 @@ class SynthesisPanel(wx.Panel):
         self.sizer_2.Add(self.font_size_combobox, 0,
                          wx.CENTER | wx.LEFT | wx.ALL, border=5)
 
-        self.image_sizes = ['Small', 'Medium', 'Large']
-        self.image_size_combobox = wx.ComboBox(
-            self.upper_panel, choices=self.image_sizes, value='Large', size=(80, -1))
-        self.image_size_combobox.Bind(
-            wx.EVT_COMBOBOX, self.on_image_size_combo)
-        self.sizer_2.Add(self.image_size_combobox, 0,
-                         wx.CENTER | wx.LEFT | wx.ALL, border=5)
+        # self.image_sizes = ['Small', 'Medium', 'Large']
+        # self.image_size_combobox = wx.ComboBox(
+        #     self.upper_panel, choices=self.image_sizes, value='Large', size=(80, -1))
+        # self.image_size_combobox.Bind(
+        #     wx.EVT_COMBOBOX, self.on_image_size_combo)
+        # self.sizer_2.Add(self.image_size_combobox, 0,
+        #                  wx.CENTER | wx.LEFT | wx.ALL, border=5)
 
-        self.checkbox = wx.CheckBox(self.upper_panel, label='use GPU')
-        self.checkbox.SetForegroundColour("white")
-        self.sizer_2.Add(self.checkbox, 0, wx.CENTER | wx.ALL, border=5)
+        # self.checkbox = wx.CheckBox(self.upper_panel, label='use GPU')
+        # self.checkbox.SetForegroundColour("white")
+        # self.sizer_2.Add(self.checkbox, 0, wx.CENTER | wx.ALL, border=5)
 
         path = get_absolute_path(
             'img/save_button.png')
@@ -153,14 +147,14 @@ class SynthesisPanel(wx.Panel):
                              self.combobox.GetValue())
         print(path)
 
-    def on_image_size_combo(self, event):
-        size = self.image_size_combobox.GetValue()
-        if size == self.image_sizes[0]:
-            self.resize_image(ImageSize.Small)
-        elif size == self.image_sizes[1]:
-            self.resize_image(ImageSize.Medium)
-        elif size == self.image_sizes[2]:
-            self.resize_image(ImageSize.Large)
+    def chane_image_size(self, size):
+        self.resize_image(size)
+        # if size == self.image_sizes[0]:
+        #     self.resize_image(ImageSize.Small)
+        # elif size == self.image_sizes[1]:
+        #     self.resize_image(ImageSize.Medium)
+        # elif size == self.image_sizes[2]:
+        #     self.resize_image(ImageSize.Large)
 
     def on_change_panel(self, event):
         evt = ChangePanelEvent()
@@ -172,8 +166,6 @@ class SynthesisPanel(wx.Panel):
         img = self.imageCtrl.GetBitmap().ConvertToImage()
         img = img.Scale(size.value[0], size.value[1])
         self.imageCtrl.SetBitmap(wx.Bitmap(img))
-        # self.Update()
-        # self.Refresh()
         self.Layout()
 
     def clear_directories_render(self):
@@ -193,10 +185,9 @@ class SynthesisPanel(wx.Panel):
         self.clear_directories_render()
         prepare_letters(self.editname.GetValue())
 
-        use_gpu = self.checkbox.GetValue()
         if (self.use_synthesis):
             process_directory(get_absolute_path(
-                './src/graphical_interface/export'), get_absolute_path('./src/graphical_interface/synthesis/skeletons/'), use_gpu)
+                './src/graphical_interface/export'), get_absolute_path('./src/graphical_interface/synthesis/skeletons/'), self.use_gpu)
             text_renderer = TextImageRenderAllDifferentWidths(
                 get_absolute_path('./src/graphical_interface/synthesis/synthesized/'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
             img = text_renderer.create_synth_image()

@@ -1,6 +1,6 @@
 import os
 from src.file_handler.file_handler import ensure_create_and_append_file, get_absolute_path, read_from_file
-from src.graphical_interface.common import EVT_CHANGE_PANEL_EVENT
+from src.graphical_interface.common import EVT_CHANGE_PANEL_EVENT, ImageSize
 import wx
 from src.graphical_interface.recognition_panel import RecognitionPanel
 from src.graphical_interface.synthesis_panel import SynthesisPanel
@@ -49,11 +49,45 @@ class Frame(wx.Frame):
         # ------------------ menu - File ------------------ #
 
         # ------------------ menu - Options ------------------ #
-        option_menu = wx.Menu()
-        option_menu.Append(wx.ID_EXIT, "E&xit\tAlt-X",
-                           "Exit this simple sample")
+        self.option_menu = wx.Menu()
 
-        menuBar.Append(option_menu, "&Options")
+        size_menu = wx.Menu()
+        size_menu.Append(108, "Large",
+                         "Large size of image", wx.ITEM_RADIO)
+        size_menu.Append(107, "Medium",
+                         "Medium size of image", wx.ITEM_RADIO)
+        size_menu.Append(106, "Small",
+                         "Small size of image", wx.ITEM_RADIO)
+
+        self.option_menu.Append(105, 'Image size', size_menu)
+        self.option_menu.Enable(105, False)
+
+        self.option_menu.Append(
+            104, 'Use GPU', 'Use GPU in synthesize', wx.ITEM_CHECK)
+        self.option_menu.Enable(104, False)
+
+        self.option_menu.AppendSeparator()
+
+        advanced_option_menu = wx.Menu()
+
+        filters_menu = wx.Menu()
+        filters_menu.Append(113, "Original",
+                            "Large size of image", wx.ITEM_RADIO)
+        filters_menu.Append(114, "Cons",
+                            "Medium size of image", wx.ITEM_RADIO)
+
+        advanced_option_menu.Append(112, 'Filters', filters_menu)
+
+        advanced_option_menu.Append(111, "Test", helpString="Test")
+
+        self.option_menu.Append(110, 'Advanced', advanced_option_menu)
+        self.option_menu.Enable(110, False)
+        self.option_menu.AppendSeparator()
+
+        self.option_menu.Append(wx.ID_EXIT, "E&xit\tAlt-X",
+                                "Exit this simple sample")
+
+        menuBar.Append(self.option_menu, "&Options")
         # ------------------ menu - Options ------------------ #
 
         # ------------------ menu - About ------------------ #
@@ -91,6 +125,23 @@ class Frame(wx.Frame):
             self.show_authors(event)
         elif id == wx.ID_OPEN:
             self.load_text(event)
+        elif id == 106:
+            self.synthesis_panel.chane_image_size(ImageSize.Small)
+        elif id == 107:
+            self.synthesis_panel.chane_image_size(ImageSize.Medium)
+        elif id == 108:
+            self.synthesis_panel.chane_image_size(ImageSize.Large)
+        elif id == 104:
+            if self.synthesis_panel.use_gpu:
+                self.synthesis_panel.use_gpu = False
+            else:
+                self.synthesis_panel.use_gpu = True
+        elif id == 111:
+            print('test')
+        elif id == 113:
+            print('opcja1')
+        elif id == 114:
+            print('opcja2')
 
     def load_text(self, event):
         with wx.FileDialog(self, 'Load file', wildcard='Text files (*.txt)|*.txt', style=wx.FD_OPEN) as fd:
@@ -129,6 +180,9 @@ class Frame(wx.Frame):
             self.recognition_panel.Show()
             self.statusBar.SetStatusText("Recognition Mode")
             self.panel = "recognition"
+            self.option_menu.Enable(105, False)
+            self.option_menu.Enable(104, False)
+            self.option_menu.Enable(110, False)
         else:
             self.synthesis_panel.editname.SetValue(
                 self.recognition_panel.editname.GetValue())
@@ -136,6 +190,9 @@ class Frame(wx.Frame):
             self.recognition_panel.Hide()
             self.statusBar.SetStatusText("Synthesis Mode")
             self.panel = "synthesis"
+            self.option_menu.Enable(105, True)
+            self.option_menu.Enable(104, True)
+            self.option_menu.Enable(110, True)
         self.Layout()
 
     def save(self, event):
