@@ -11,7 +11,6 @@ from glob import glob
 from src.synthesis.generate_letter import generate_letter
 from src.file_handler.file_handler import get_file_name
 from src.image_processing.resize import resize_image
-import os
 
 
 def is_neighbour_pixel(p1: tuple, p2: tuple):
