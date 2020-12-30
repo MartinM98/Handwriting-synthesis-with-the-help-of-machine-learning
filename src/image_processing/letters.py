@@ -24,6 +24,8 @@ def check_char(path, char: str):
         return path + '/asterisk/'
     elif char == '"':
         return path + '/quote/'
+    elif char == '~':
+        return path + '/tilde/'
     else:
         if char.islower():
             return path + '/' + char + '2/'
@@ -45,7 +47,7 @@ def extract(directory, path=None):
             im = Image.open(image)
             width, height = im.size
 
-            command = 'tesseract ' + image + ' ' + image[:-4] + ' -l engnew makebox'
+            command = 'tesseract ' + image + ' ' + image[:-4] + ' -l engnew makebox quiet'
             os.system(command)
 
             boxfilename = image[:-3] + 'box'
@@ -68,7 +70,7 @@ def extract(directory, path=None):
                 crop_image(letterdir + str(count) + '.png', letterdir + str(count) + '.png')
 
             file1.close()
-            return letters
+    return letters
 
 
 def correct(_self, path=None):
