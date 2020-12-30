@@ -106,7 +106,7 @@ class Frame(wx.Frame):
         # ------------------ menu - About ------------------ #
         self.SetMenuBar(menuBar)
         self.Bind(wx.EVT_MENU, self.menuhandler)
-        path = get_absolute_path("img/Bachelor_Thesis.ico")
+        path = get_absolute_path("resources/Bachelor_Thesis.ico")
         icon = wx.Icon(path, wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
 

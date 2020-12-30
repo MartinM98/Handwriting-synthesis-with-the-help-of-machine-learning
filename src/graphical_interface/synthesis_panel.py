@@ -45,7 +45,7 @@ class SynthesisPanel(wx.Panel):
         self.sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
 
         path = get_absolute_path(
-            'img/load_dataset_button.png')
+            'resources/load_dataset_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.button_load_dataset = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
@@ -54,7 +54,7 @@ class SynthesisPanel(wx.Panel):
                          wx.TOP | wx.LEFT | wx.ALL, border=5)
 
         path = get_absolute_path(
-            'img/generate_button.png')
+            'resources/generate_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.button_generate_font = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
@@ -90,7 +90,7 @@ class SynthesisPanel(wx.Panel):
         # self.sizer_2.Add(self.checkbox, 0, wx.CENTER | wx.ALL, border=5)
 
         path = get_absolute_path(
-            'img/save_button.png')
+            'resources/save_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.button_save = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
@@ -99,17 +99,31 @@ class SynthesisPanel(wx.Panel):
                          wx.TOP | wx.LEFT | wx.ALL, border=5)
 
         path = get_absolute_path(
-            'img/render_button.png')
+            'resources/render_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.button_render = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
         self.Bind(wx.EVT_BUTTON, self.on_render_click, self.button_render)
         self.sizer_2.Add(self.button_render, 0, wx.RIGHT | wx.ALL, border=5)
 
+        self.filter_combobox = wx.ComboBox(self.upper_panel, choices=[
+                                           'Original', 'Consecutive', 'Random', 'BS'], value='Original', size=(110, -1))
+        self.sizer_2.Add(self.filter_combobox, 0,
+                         wx.CENTER | wx.LEFT | wx.ALL, border=5)
+
+        path = get_absolute_path(
+            'resources/recognition_button.png')
+        pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
+        self.advanced_options = wx.BitmapButton(
+            self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
+        self.Bind(wx.EVT_BUTTON, self.on_advanced_options,
+                  self.advanced_options)
+        self.sizer_2.Add(self.advanced_options, 0, wx.RIGHT | wx.ALL, border=5)
+
         self.sizer_2.AddStretchSpacer()
 
         path = get_absolute_path(
-            'img/recognition_button.png')
+            'resources/recognition_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.change_panel = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))

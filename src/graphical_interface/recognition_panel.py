@@ -28,7 +28,7 @@ class RecognitionPanel(wx.Panel):
         sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
 
         path = get_absolute_path(
-            'img/read_button.png')
+            'resources/read_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.button_read = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
@@ -40,7 +40,7 @@ class RecognitionPanel(wx.Panel):
         sizer_2.AddStretchSpacer()
 
         path = get_absolute_path(
-            'img/synthesis_button.png')
+            'resources/synthesis_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.change_panel = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
