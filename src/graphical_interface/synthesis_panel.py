@@ -1,5 +1,11 @@
+from src.image_processing.automated_functions import prepare_letters
+from src.file_handler.file_handler import ensure_create_dir
+from src.file_handler.file_handler import remove_dir_with_content
+from src.image_processing.automated_functions import process_model_options
+from src.graphical_interface.model_dialog import ModelDialog
+from src.graphical_interface.load_dialog import LoadDialog
 from src.graphical_interface.create_text import TextImageRenderAllDifferentWidths
-from src.graphical_interface.common import ChangePanelEvent, PIL2wx
+from src.graphical_interface.common import ChangePanelEvent, ImageSize, PIL2wx
 from src.image_processing.letters import extract, correct
 from src.image_processing.resize import resize_directory, combine_directory, resize_skeletons_directory
 from src.synthesis.process import process_directory
@@ -7,19 +13,6 @@ from src.image_processing.automated_functions import process_dataset
 from src.file_handler.file_handler import combine_paths, get_absolute_path
 import wx
 import os
-import enum
-from src.graphical_interface.model_dialog import ModelDialog
-from src.image_processing.automated_functions import process_model_options
-from src.file_handler.file_handler import remove_dir_with_content
-from src.file_handler.file_handler import ensure_create_dir
-from src.image_processing.automated_functions import prepare_letters
-from src.graphical_interface.load_dialog import LoadDialog
-
-
-class ImageSize(enum.Enum):
-    Small = (450, 300)
-    Medium = (675, 450)
-    Large = (900, 600)
 
 
 class SynthesisPanel(wx.Panel):
@@ -33,6 +26,7 @@ class SynthesisPanel(wx.Panel):
         # self.Bind(wx.EVT_SIZE, self.on_resize)
         self.statusBar = statusBar
         self.SetBackgroundColour(main_color)
+        self.use_gpu = False
 
         # create some sizers
         self.mainSizer = wx.BoxSizer(wx.VERTICAL)
@@ -82,17 +76,17 @@ class SynthesisPanel(wx.Panel):
         self.sizer_2.Add(self.font_size_combobox, 0,
                          wx.CENTER | wx.LEFT | wx.ALL, border=5)
 
-        self.image_sizes = ['Small', 'Medium', 'Large']
-        self.image_size_combobox = wx.ComboBox(
-            self.upper_panel, choices=self.image_sizes, value='Large', size=(80, -1))
-        self.image_size_combobox.Bind(
-            wx.EVT_COMBOBOX, self.on_image_size_combo)
-        self.sizer_2.Add(self.image_size_combobox, 0,
-                         wx.CENTER | wx.LEFT | wx.ALL, border=5)
+        # self.image_sizes = ['Small', 'Medium', 'Large']
+        # self.image_size_combobox = wx.ComboBox(
+        #     self.upper_panel, choices=self.image_sizes, value='Large', size=(80, -1))
+        # self.image_size_combobox.Bind(
+        #     wx.EVT_COMBOBOX, self.on_image_size_combo)
+        # self.sizer_2.Add(self.image_size_combobox, 0,
+        #                  wx.CENTER | wx.LEFT | wx.ALL, border=5)
 
-        self.checkbox = wx.CheckBox(self.upper_panel, label='use GPU')
-        self.checkbox.SetForegroundColour("white")
-        self.sizer_2.Add(self.checkbox, 0, wx.CENTER | wx.ALL, border=5)
+        # self.checkbox = wx.CheckBox(self.upper_panel, label='use GPU')
+        # self.checkbox.SetForegroundColour("white")
+        # self.sizer_2.Add(self.checkbox, 0, wx.CENTER | wx.ALL, border=5)
 
         path = get_absolute_path(
             'img/save_button.png')
@@ -111,15 +105,18 @@ class SynthesisPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.on_render_click, self.button_render)
         self.sizer_2.Add(self.button_render, 0, wx.RIGHT | wx.ALL, border=5)
 
-        self.filter_combobox = wx.ComboBox(self.upper_panel, choices=['Original', 'Consecutive', 'Random', 'BS'], value='Original', size=(110, -1))
-        self.sizer_2.Add(self.filter_combobox, 0, wx.CENTER | wx.LEFT | wx.ALL, border=5)
+        self.filter_combobox = wx.ComboBox(self.upper_panel, choices=[
+                                           'Original', 'Consecutive', 'Random', 'BS'], value='Original', size=(110, -1))
+        self.sizer_2.Add(self.filter_combobox, 0,
+                         wx.CENTER | wx.LEFT | wx.ALL, border=5)
 
         path = get_absolute_path(
             'img/recognition_button.png')
         pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
         self.advanced_options = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
-        self.Bind(wx.EVT_BUTTON, self.on_advanced_options, self.advanced_options)
+        self.Bind(wx.EVT_BUTTON, self.on_advanced_options,
+                  self.advanced_options)
         self.sizer_2.Add(self.advanced_options, 0, wx.RIGHT | wx.ALL, border=5)
 
         self.sizer_2.AddStretchSpacer()
@@ -166,13 +163,15 @@ class SynthesisPanel(wx.Panel):
 
     def on_combo(self, event):
         if(self.combobox.GetValue() != '*New font*'):
-            self.path_to_model = combine_paths('./data/synthesis_models', self.combobox.GetValue())
+            self.path_to_model = combine_paths(
+                './data/synthesis_models', self.combobox.GetValue())
         else:
             current = self.new_font()
             self.combobox.Clear()
             self.combobox.Append(self.parent.find_models())
             self.combobox.Append('*New font*')
-            self.path_to_model = combine_paths('./data/synthesis_models', current)
+            self.path_to_model = combine_paths(
+                './data/synthesis_models', current)
 
     def new_font(self):
         styles = self.parent.find_models()
@@ -180,14 +179,14 @@ class SynthesisPanel(wx.Panel):
         ensure_create_dir('./data/synthesis_models/' + new)
         return new
 
-    def on_image_size_combo(self, event):
-        size = self.image_size_combobox.GetValue()
-        if size == self.image_sizes[0]:
-            self.resize_image(ImageSize.Small)
-        elif size == self.image_sizes[1]:
-            self.resize_image(ImageSize.Medium)
-        elif size == self.image_sizes[2]:
-            self.resize_image(ImageSize.Large)
+    def chane_image_size(self, size):
+        self.resize_image(size)
+        # if size == self.image_sizes[0]:
+        #     self.resize_image(ImageSize.Small)
+        # elif size == self.image_sizes[1]:
+        #     self.resize_image(ImageSize.Medium)
+        # elif size == self.image_sizes[2]:
+        #     self.resize_image(ImageSize.Large)
 
     def on_advanced_options(self, event):
         ld = LoadDialog(self, title='Advanced options', size=(250, 150))
@@ -209,8 +208,6 @@ class SynthesisPanel(wx.Panel):
         img = self.imageCtrl.GetBitmap().ConvertToImage()
         img = img.Scale(size.value[0], size.value[1])
         self.imageCtrl.SetBitmap(wx.Bitmap(img))
-        # self.Update()
-        # self.Refresh()
         self.Layout()
 
     def clear_directories_render(self):
@@ -235,11 +232,12 @@ class SynthesisPanel(wx.Panel):
         """
         if (self.check_model()):
             self.clear_directories_render()
-            prepare_letters(self.editname.GetValue(), combine_paths(self.path_to_model, 'letters_dataset'), self.n_advanced_options, self.k_advanced_options, self.filter_combobox.GetValue())
+            prepare_letters(self.editname.GetValue(), combine_paths(self.path_to_model, 'letters_dataset'),
+                            self.n_advanced_options, self.k_advanced_options, self.filter_combobox.GetValue())
 
-            use_gpu = self.checkbox.GetValue()
             if (self.use_synthesis):
-                process_directory(combine_paths(self.path_to_model, 'export'), './data/synthesis/skeletons/', use_gpu)
+                process_directory(combine_paths(
+                    self.path_to_model, 'export'), './data/synthesis/skeletons/', self.use_gpu)
                 text_renderer = TextImageRenderAllDifferentWidths(
                     './data/synthesis/synthesized/', self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
                 img = text_renderer.create_synth_image()
@@ -275,7 +273,8 @@ class SynthesisPanel(wx.Panel):
         directory = dd.GetPath()
         dd.Destroy()
         path = get_absolute_path('./data/synthesis_models/')
-        idx_new = len([entry for entry in os.listdir(path) if os.path.isdir(path + entry)])
+        idx_new = len([entry for entry in os.listdir(
+            path) if os.path.isdir(path + entry)])
         path = './data/synthesis_models/' + str(idx_new + 1)
         ensure_create_dir(path)
         self.clear_directories_load(path)
