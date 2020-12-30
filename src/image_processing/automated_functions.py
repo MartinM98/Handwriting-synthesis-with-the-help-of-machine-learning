@@ -254,7 +254,7 @@ def filter_image(image: np.ndarray, option: str, n: int, k: int):
         return binary_search_filter(image2, n, k)
 
 
-def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_options: int, option: str, font_size: int):
+def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_options: int, option: str, font_size: int, match_with_other: bool):
     """
     Prepares and saves b-splines for given input string in the appropriate directory.
 
@@ -267,6 +267,7 @@ def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_o
        k_advanced_options (int): the number of points that should be selected.
        option (str): Option of filtering.
        font_size (int): Size of the font.
+       match_with_other (bool): a flag indicating if letters should be matched with eachother
     """
     i = 0
     for letter in input:
@@ -302,7 +303,7 @@ def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_o
         while idx1 == idx2:
             idx2 = random.randint(0, length)
         image, image_control_points, image_control_points2 = prepare_images(dir_skel + files[idx1], dir_filtered + files[idx1], dir_filtered + files[idx2], n_advanced_options, k_advanced_options, option)
-        produce_bspline(image=image, image_control_points=image_control_points, image_control_points2=image_control_points2, idx=i)
+        produce_bspline(image=image, image_control_points=image_control_points, image_control_points2=image_control_points2, idx=i, match_with_other=match_with_other)
         i += 1
 
 

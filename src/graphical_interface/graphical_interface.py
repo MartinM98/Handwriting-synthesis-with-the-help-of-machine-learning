@@ -86,15 +86,12 @@ class Frame(wx.Frame):
             111, "Filter options", helpString="Filter options")
 
         self.synthesize_menu = wx.Menu()
-        self.use_control_points = False
-        self.use_control_point_bar = self.synthesize_menu.Append(121, "Use control points",
-                                                                 "TODO", wx.ITEM_CHECK)
-        self.use_matching = False
-        self.use_matching_bar = self.synthesize_menu.Append(122, "Use matching",
-                                                            "TODO", wx.ITEM_CHECK)
+        self.match_with_other = False
+        self.use_control_point_bar = self.synthesize_menu.Append(121, "Match",
+                                                                 "Match with other instance of the letter in letter generation", wx.ITEM_CHECK)
 
         advanced_option_menu.Append(
-            120, 'Synthesisze options', self.synthesize_menu)
+            121, 'Synthesisze options', self.synthesize_menu)
 
         self.option_menu.Append(110, 'Advanced', advanced_option_menu)
         self.option_menu.Enable(110, False)
@@ -164,21 +161,7 @@ class Frame(wx.Frame):
         elif id == 116:
             self.filter_type = 'BS'
         elif id == 121:
-            print('use control points')
-            # if self.use_control_points:
-            #     self.use_control_points = False
-            #     self.use_matching_bar = False
-            #     self.use_matching = False
-            # else:
-            #     self.use_control_points = True
-        elif id == 122:
-            print('use mathcing')
-            # if self.use_matching:
-            #     self.use_matching = False
-            # else:
-            #     self.use_matching = True
-            #     self.use_control_point_bar = True
-            #     self.use_control_points = True
+            self.synthesis_panel.change_match_flag()
 
     def load_text(self, event):
         with wx.FileDialog(self, 'Load file', wildcard='Text files (*.txt)|*.txt', style=wx.FD_OPEN) as fd:
