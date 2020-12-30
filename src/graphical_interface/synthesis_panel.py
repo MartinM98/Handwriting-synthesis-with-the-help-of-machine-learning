@@ -23,6 +23,7 @@ class SynthesisPanel(wx.Panel):
         self.n_advanced_options = 0
         self.k_advanced_options = 0
         self.filter_type = 'Original'
+        self.match_with_other = False
         wx.Panel.__init__(self, parent)
         # self.Bind(wx.EVT_SIZE, self.on_resize)
         self.statusBar = statusBar
@@ -106,20 +107,6 @@ class SynthesisPanel(wx.Panel):
         self.Bind(wx.EVT_BUTTON, self.on_render_click, self.button_render)
         self.sizer_2.Add(self.button_render, 0, wx.RIGHT | wx.ALL, border=5)
 
-        self.filter_combobox = wx.ComboBox(self.upper_panel, choices=[
-                                           'Original', 'Consecutive', 'Random', 'BS'], value='Original', size=(110, -1))
-        self.sizer_2.Add(self.filter_combobox, 0,
-                         wx.CENTER | wx.LEFT | wx.ALL, border=5)
-
-        path = get_absolute_path(
-            'resources/recognition_button.png')
-        pic = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
-        self.advanced_options = wx.BitmapButton(
-            self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
-        self.Bind(wx.EVT_BUTTON, self.on_advanced_options,
-                  self.advanced_options)
-        self.sizer_2.Add(self.advanced_options, 0, wx.RIGHT | wx.ALL, border=5)
-
         self.sizer_2.AddStretchSpacer()
 
         path = get_absolute_path(
@@ -189,6 +176,9 @@ class SynthesisPanel(wx.Panel):
         # elif size == self.image_sizes[2]:
         #     self.resize_image(ImageSize.Large)
 
+    def change_match_flag(self):
+        self.match_with_other = not self.match_with_other
+
     def on_advanced_options(self):
         od = OptionsDialog(self, title='Advanced options', size=(250, 150))
         od.set_options(self.n_advanced_options, self.k_advanced_options)
@@ -234,7 +224,7 @@ class SynthesisPanel(wx.Panel):
         if (self.check_model()):
             self.clear_directories_render()
             prepare_letters(self.editname.GetValue(), combine_paths(self.path_to_model, 'letters_dataset'),
-                            self.n_advanced_options, self.k_advanced_options, self.filter_type, int(self.font_size_combobox.GetValue()))
+                            self.n_advanced_options, self.k_advanced_options, self.filter_type, int(self.font_size_combobox.GetValue()), self.match_with_other)
 
             if (self.use_synthesis):
                 process_directory(combine_paths(

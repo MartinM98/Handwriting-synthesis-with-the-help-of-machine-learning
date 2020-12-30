@@ -30,7 +30,7 @@ def mid_point(p1: tuple, p2: tuple):
     Returns:
         (tuple): the midpoint between the given two points.
     """
-    part = 10
+    part = 1
     x = math.floor((p1[0] + p2[0]) / 2)
     y = math.floor((p1[1] + p2[1]) / 2)
     x += x * random.randrange(-part, part + 1) / 100

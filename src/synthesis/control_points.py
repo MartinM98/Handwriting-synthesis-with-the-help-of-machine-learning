@@ -269,7 +269,7 @@ def produce_imitation(path_to_skeleton: str, path_to_control_points: str, path_t
                 image_size=(width, height), skeleton_flag=True)
 
 
-def produce_bspline(image: np.ndarray, image_control_points: np.ndarray, image_control_points2: np.ndarray, idx: int, font_size: int = None):
+def produce_bspline(image: np.ndarray, image_control_points: np.ndarray, image_control_points2: np.ndarray, idx: int, match_with_other: bool, font_size: int = None):
     """
     Produce imitation of the letter form the skeleton.
 
@@ -291,14 +291,18 @@ def produce_bspline(image: np.ndarray, image_control_points: np.ndarray, image_c
     result = get_sequences(list(edges))
     # result = list(r for r in result if len(r) > 2)
     letter = left_only_control_points(result, control_points)
-    new_letter = generate_letter(image_control_points, image_control_points2)
-    letter2 = match_points(letter, new_letter)
-    letter3 = []
-    for line in letter2:
-        letter3.append(list(dict.fromkeys(line)))
+    width = image_control_points.shape[0]
+    height = image_control_points.shape[1]
+    if match_with_other:
+        new_letter = generate_letter(image_control_points, image_control_points2)
+        letter2 = match_points(letter, new_letter)
+        letter3 = []
+        for line in letter2:
+            letter3.append(list(dict.fromkeys(line)))
+        width = max(image_control_points.shape[0], image_control_points2.shape[0])
+        height = max(image_control_points.shape[1], image_control_points2.shape[1])
+        letter = letter3
     path_to_save = combine_paths(get_absolute_path('./data/synthesis/skeletons/'), str(idx) + '.png')
-    width = max(image_control_points.shape[0], image_control_points2.shape[0])
-    height = max(image_control_points.shape[1], image_control_points2.shape[1])
     bspline_image = draw_letter(letter, image_size=(width, height), skeleton_flag=True, show_flag=False)
     bspline_image = resize_image('', 256, 256, image=bspline_image)
     cv2.imwrite(path_to_save, bspline_image)
