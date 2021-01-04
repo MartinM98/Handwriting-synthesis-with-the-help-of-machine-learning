@@ -180,6 +180,9 @@ class SynthesisPanel(wx.Panel):
     def change_match_flag(self):
         self.match_with_other = not self.match_with_other
 
+    def change_filter_type(self, new_type):
+        self.filter_type = new_type
+
     def on_advanced_options(self):
         od = OptionsDialog(self, title='Advanced options', size=(250, 150))
         od.set_options(self.n_advanced_options, self.k_advanced_options)
