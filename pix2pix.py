@@ -45,6 +45,8 @@ parser.add_argument("--beta1", type=float, default=0.5, help="momentum term of a
 parser.add_argument("--l1_weight", type=float, default=100.0, help="weight on L1 term for generator gradient")
 parser.add_argument("--gan_weight", type=float, default=1.0, help="weight on GAN term for generator gradient")
 
+parser.add_argument("--use_gpu", type=str, default='False', choices=['True', 'False'], help="Flag whether to use GPU if possible")
+
 # export options
 parser.add_argument("--output_filetype", default="png", choices=["png", "jpeg"])
 a = parser.parse_args()
@@ -614,7 +616,12 @@ def main():  # noqa: C901
         restore_saver = tf.train.Saver()
         export_saver = tf.train.Saver()
 
-        with tf.Session() as sess:
+        if a.use_gpu == 'True':
+            config = tf.ConfigProto()
+        else:
+            config = tf.ConfigProto(device_count={'GPU': 0})
+
+        with tf.Session(config=config) as sess:
             sess.run(init_op)
             print("loading model from checkpoint")
             checkpoint = tf.train.latest_checkpoint(a.checkpoint)
@@ -711,9 +718,14 @@ def main():  # noqa: C901
 
     saver = tf.train.Saver(max_to_keep=1)
 
+    if a.use_gpu == 'True':
+        config = tf.ConfigProto()
+    else:
+        config = tf.ConfigProto(device_count={'GPU': 0})
+
     logdir = a.output_dir if (a.trace_freq > 0 or a.summary_freq > 0) else None
     sv = tf.train.Supervisor(logdir=logdir, save_summaries_secs=0, saver=None)
-    with sv.managed_session() as sess:
+    with sv.managed_session(config=config) as sess:
         print("parameter_count =", sess.run(parameter_count))
 
         if a.checkpoint is not None:
