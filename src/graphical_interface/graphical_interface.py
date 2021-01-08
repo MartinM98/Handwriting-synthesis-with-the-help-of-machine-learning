@@ -17,7 +17,7 @@ class Frame(wx.Frame):
                           pos=position, size=size)
 
         self.statusBar = self.CreateStatusBar()
-        self.statusBar.SetStatusText("Synthesis Mode")
+        self.statusBar.SetStatusText("Recognition Mode")
 
         main_color = wx.Colour(228, 228, 228)
         second_color = wx.Colour(161, 183, 168)
@@ -65,6 +65,10 @@ class Frame(wx.Frame):
         self.option_menu.Append(
             104, 'Use GPU', 'Use GPU in synthesize', wx.ITEM_CHECK)
         self.option_menu.Enable(104, False)
+
+        self.option_menu.Append(
+            103, 'Disable Synthesis', 'Disables the synthesis and uses only original images', wx.ITEM_CHECK)
+        self.option_menu.Enable(103, True)
 
         self.option_menu.AppendSeparator()
 
@@ -149,6 +153,11 @@ class Frame(wx.Frame):
                 self.synthesis_panel.use_gpu = False
             else:
                 self.synthesis_panel.use_gpu = True
+        elif id == 103:
+            if self.synthesis_panel.use_synthesis:
+                self.synthesis_panel.use_synthesis = False
+            else:
+                self.synthesis_panel.use_synthesis = True
         elif id == 111:
             self.synthesis_panel.on_advanced_options()
         elif id == 113:
@@ -226,13 +235,13 @@ class Frame(wx.Frame):
                     if len(filename) > 0:
                         self.statusBar.SetStatusText('Saving...')
                         img.SaveFile(filename, wx.BITMAP_TYPE_PNG)
-                        self.statusBar.SetStatusText('File saved.')
+                        self.statusBar.SetStatusText('File saved')
                     txt = self.synthesis_panel.editname.GetValue()
                     if len(txt) > 0:
                         self.statusBar.SetStatusText('Saving...')
                         filename = str.replace(filename, '.png', '.txt')
                         ensure_create_and_append_file(filename, txt)
-                        self.statusBar.SetStatusText('File saved.')
+                        self.statusBar.SetStatusText('File saved')
         elif self.panel == "recognition":
             with wx.FileDialog(self, 'Save text', wildcard='text files (*.txt)|*.txt', style=wx.FD_SAVE) as fd:
                 if fd.ShowModal() == wx.ID_OK:
@@ -241,7 +250,7 @@ class Frame(wx.Frame):
                     if len(txt) > 0:
                         self.statusBar.SetStatusText('Saving...')
                         ensure_create_and_append_file(filename, txt)
-                        self.statusBar.SetStatusText('File saved.')
+                        self.statusBar.SetStatusText('File saved')
 
 
 class Application(wx.App):

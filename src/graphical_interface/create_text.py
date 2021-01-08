@@ -5,6 +5,7 @@ from PIL import Image
 import math
 import random
 import os
+import unidecode
 from datetime import datetime
 
 
@@ -34,6 +35,7 @@ class TextImageRenderAllDifferentWidths:
             'RGB', (self.width, self.height), (255, 255, 255))
         random.seed(datetime.now())
         for letter in self.text_to_render:
+            letter = unidecode.unidecode(letter)
             letter_to_int = ord(letter)
             if letter_to_int != 32:
                 if letter_to_int == 46:
@@ -46,7 +48,16 @@ class TextImageRenderAllDifferentWidths:
                         self.directory_path, letter + '/')
                 if os.path.isdir(letter_path):
                     img = Image.open(letter_path + str(random.randint(
-                        0, len([name for name in os.listdir(letter_path)]) - 1)) + '.png')
+                        0, len([name for name in os.listdir(letter_path)]) - 3)) + '.png')
+                elif letter_to_int >= 65 and letter_to_int <= 90:
+                    letter_path = combine_paths(
+                        self.directory_path, letter.upper() + '2/')
+                    if os.path.isdir(letter_path):
+                        img = Image.open(letter_path + str(random.randint(
+                            0, len([name for name in os.listdir(letter_path)]) - 3)) + '.png')
+                    else:
+                        img = Image.new(
+                            'RGB', (self.font_width, self.line_capacity), (255, 255, 255))
                 else:
                     img = Image.new(
                         'RGB', (self.font_width, self.line_capacity), (255, 255, 255))

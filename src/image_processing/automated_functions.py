@@ -3,6 +3,7 @@ import os
 import cv2
 import random
 import numpy as np
+import unidecode
 from src.file_handler.file_handler import combine_paths, ensure_create_dir
 from src.image_processing.skeletonize import skeletonize_image
 from src.file_handler.file_handler import get_filename_without_extention
@@ -270,6 +271,7 @@ def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_o
     """
     i = 0
     for letter in input:
+        letter = unidecode.unidecode(letter)
         if ord(letter) == 32:
             blank = prepare_blank_image((font_size, font_size * 3))
             cv2.imwrite(f"{'./data/synthesis/synthesized/'}/{str(i)}.png", blank)
@@ -278,6 +280,11 @@ def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_o
         dir = letter
         if letter.islower():
             dir = letter + '2'
+        elif not os.path.isdir(path + '/' + dir):
+            print('There is no instance of letter ', letter)
+            print('Looking for lowercase ', letter)
+            dir = letter + '2'
+            letter = letter.lower()
         dir_skel = path + '/' + dir + '/skel/'
         dir_filtered = path + '/' + dir + '/filtered/'
         dir_destination = './data/synthesis/skeletons/'

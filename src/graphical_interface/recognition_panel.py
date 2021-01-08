@@ -85,8 +85,11 @@ class RecognitionPanel(wx.Panel):
         if self.is_tesseract_loaded is False:
             self.export_tesseract()
             self.is_tesseract_loaded = True
+            self.statusBar.SetStatusText('Recognition model loaded')
+        self.statusBar.SetStatusText('Choosing file...')
         with wx.FileDialog(self, 'Choose an image', wildcard='PNG files (*.png)|*.png') as fd:
             if fd.ShowModal() == wx.ID_OK:
+                self.statusBar.SetStatusText('Reading file...')
                 filename = fd.GetPath()
                 textfile = filename[:-4] + '.txt'
                 tesseract_command = 'tesseract ' + filename + \
@@ -97,6 +100,9 @@ class RecognitionPanel(wx.Panel):
                     self.editname.Value = f.read()[:-1]
                     f.close()
                     os.remove(textfile)
+                    self.statusBar.SetStatusText('File read')
+                else:
+                    self.statusBar.SetStatusText('Error during read')
 
     def export_tesseract(self):
         path_to_model = './data/recognition_model/'

@@ -5,4 +5,5 @@ scikit-image==0.16.2
 pytest==6.1.2
 tensorflow==2.4.0
 matplotlib==3.3.3
+Unidecode==1.1.2
 # wxPython==4.0.7
