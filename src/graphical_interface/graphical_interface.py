@@ -161,13 +161,13 @@ class Frame(wx.Frame):
         elif id == 111:
             self.synthesis_panel.on_advanced_options()
         elif id == 113:
-            self.filter_type = 'Original'
+            self.synthesis_panel.change_filter_type('Original')
         elif id == 114:
-            self.filter_type = 'Consecutive'
+            self.synthesis_panel.change_filter_type('Consecutive')
         elif id == 115:
-            self.filter_type = 'Random'
+            self.synthesis_panel.change_filter_type('Random')
         elif id == 116:
-            self.filter_type = 'BS'
+            self.synthesis_panel.change_filter_type('BS')
         elif id == 121:
             self.synthesis_panel.change_match_flag()
 
