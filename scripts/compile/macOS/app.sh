@@ -1,0 +1,1 @@
+python3 scripts/compile/macOS/app.sh py2app
