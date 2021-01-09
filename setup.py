@@ -6,7 +6,7 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
-    name='Handwriting Synthesis',
+    name='Scirpturam',
     version='1.0.0',
     description='The handwriting synthesis application.',
     long_description=long_description,
