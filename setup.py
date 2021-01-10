@@ -18,8 +18,8 @@ setup(
     ],
     packages=find_packages(),
     python_requires='>=3.8',
-    install_requires=['opencv-python', 'tensorflow',
-                      'scikit-image', 'matplotlib', 'Unidecode'],  # 'wxPython==4.0.7'
+    # install_requires=['opencv-python', 'tensorflow',
+    #                   'scikit-image', 'matplotlib', 'Unidecode'],  # 'wxPython==4.0.7'
     project_urls={
         'Bug Reports': 'https://github.com/MartinM98/Handwriting-synthesis-with-the-help-of-machine-learning/issues',
         'Source': 'https://github.com/MartinM98/Handwriting-synthesis-with-the-help-of-machine-learning',
