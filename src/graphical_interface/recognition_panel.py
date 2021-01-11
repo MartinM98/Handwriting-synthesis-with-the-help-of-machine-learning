@@ -92,8 +92,8 @@ class RecognitionPanel(wx.Panel):
                 self.statusBar.SetStatusText('Reading file...')
                 filename = fd.GetPath()
                 textfile = filename[:-4] + '.txt'
-                tesseract_command = 'tesseract ' + filename + \
-                    ' ' + filename[:-4] + ' -l engnew quiet'
+                tesseract_command = 'tesseract "' + filename + \
+                    '" "' + filename[:-4] + '" -l engnew quiet'
                 os.system(tesseract_command)
                 if os.path.isfile(textfile):
                     f = open(textfile, 'r')
