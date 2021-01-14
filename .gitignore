@@ -5,6 +5,8 @@ tests/report/*
 tests/logs/*
 tests/data/output/*
 src/graphical_interface/synthesis/synthesized/*
+data/synthesis/skeletons/*
+data/synthesis/synthesized/*
 
 ### OpenCV ###
 #OpenCV for Mac and Linux

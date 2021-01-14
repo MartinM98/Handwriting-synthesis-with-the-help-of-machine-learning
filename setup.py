@@ -6,7 +6,7 @@ here = pathlib.Path(__file__).parent.resolve()
 long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
-    name='Handwriting Synthesis',
+    name='Scirpturam',
     version='1.0.0',
     description='The handwriting synthesis application.',
     long_description=long_description,
@@ -18,8 +18,8 @@ setup(
     ],
     packages=find_packages(),
     python_requires='>=3.8',
-    install_requires=['opencv-python', 'tensorflow',
-                      'scikit-image', 'matplotlib', 'Unidecode'],  # 'wxPython==4.0.7'
+    # install_requires=['opencv-python', 'tensorflow',
+    #                   'scikit-image', 'matplotlib', 'Unidecode'],  # 'wxPython==4.0.7'
     project_urls={
         'Bug Reports': 'https://github.com/MartinM98/Handwriting-synthesis-with-the-help-of-machine-learning/issues',
         'Source': 'https://github.com/MartinM98/Handwriting-synthesis-with-the-help-of-machine-learning',

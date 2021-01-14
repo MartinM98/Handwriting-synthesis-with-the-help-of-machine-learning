@@ -3,11 +3,11 @@
 block_cipher = None
 
 
-a = Analysis(['..\\..\\src\\graphical_interface\\graphical_interface.py'],
-             pathex=['..\\..\\'],
+a = Analysis(['..\\..\\..\\src\\graphical_interface\\graphical_interface.py'],
+             pathex=['..\\..\\\\'],
              binaries=[],
-             datas=[('..\\..\\data\\','.\\data\\'),
-                ('..\\..\\resources\\','.\\resources\\')],
+             datas=[('..\\..\\..\\data\\','.\\data\\'),
+                ('..\\..\\..\\resources\\','.\\resources\\')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -28,7 +28,7 @@ exe = EXE(pyz,
           strip=False,
           upx=True,
           console=False,
-          icon='..\\..\\resources\\Bachelor_Thesis.ico' )
+          icon='..\\..\\..\\resources\\Bachelor_Thesis.ico' )
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,
