@@ -293,16 +293,21 @@ def produce_bspline(image: np.ndarray, image_control_points: np.ndarray, image_c
     width = image_control_points.shape[0]
     height = image_control_points.shape[1]
     if match_with_other:
-        new_letter = generate_letter(image_control_points, image_control_points2)
+        new_letter = generate_letter(
+            image_control_points, image_control_points2)
         letter2 = match_points(letter, new_letter)
         letter3 = []
         for line in letter2:
             letter3.append(list(dict.fromkeys(line)))
-        width = max(image_control_points.shape[0], image_control_points2.shape[0])
-        height = max(image_control_points.shape[1], image_control_points2.shape[1])
+        width = max(
+            image_control_points.shape[0], image_control_points2.shape[0])
+        height = max(
+            image_control_points.shape[1], image_control_points2.shape[1])
         letter = letter3
-    path_to_save = combine_paths('./data/synthesis/skeletons/', str(idx) + '.png')
-    bspline_image = draw_letter(letter, image_size=(width, height), skeleton_flag=True, show_flag=False)
+    path_to_save = combine_paths(
+        './data/synthesis/skeletons/', str(idx) + '.png')
+    bspline_image = draw_letter(letter, image_size=(
+        width, height), skeleton_flag=True, show_flag=False)
     bspline_image = resize_image('', 256, 256, image=bspline_image)
     cv2.imwrite(path_to_save, bspline_image)
 
@@ -360,24 +365,24 @@ def test():
     Testing
     """
     path_to_skeleton = get_absolute_path(
-        './src/graphical_interface/letters_dataset/A/skel/1_skel.png')
+        './src/synthesis/test_data/A_skel.png')
     path_to_control_points = get_absolute_path(
-        './src/graphical_interface/letters_dataset/A/skel/1_skel_control_points.png')
+        './src/synthesis/test_data/A_cpoints1.png')
     path_to_control_points2 = get_absolute_path(
-        './src/graphical_interface/letters_dataset/A/skel/2_skel_control_points.png')
+        './src/synthesis/test_data/A_cpoints2.png')
     image_skeleton = cv2.imread(path_to_skeleton)
-    image_skeleton = cv2.rotate(image_skeleton, cv2.cv2.ROTATE_90_CLOCKWISE)
+    image_skeleton = cv2.rotate(image_skeleton, cv2.ROTATE_90_CLOCKWISE)
     image_control_points = cv2.imread(path_to_control_points)
     image_control_points = cv2.rotate(
-        image_control_points, cv2.cv2.ROTATE_90_CLOCKWISE)
+        image_control_points, cv2.ROTATE_90_CLOCKWISE)
     image_control_points2 = cv2.imread(path_to_control_points2)
     image_control_points2 = cv2.rotate(
-        image_control_points2, cv2.cv2.ROTATE_90_CLOCKWISE)
+        image_control_points2, cv2.ROTATE_90_CLOCKWISE)
     vertices, edges = skeleton_to_graph(image_skeleton)
     control_points = find_control_points(image_control_points)
-    # draw_graph(vertices, edges)
+    draw_graph(vertices, edges)
     remove_cycles(vertices, edges)
-    # draw_graph(vertices, edges)
+    draw_graph(vertices, edges)
     result = get_sequences2(list(edges))
     # res = [r for r in result if len(r) > 2]
     print("control points", control_points, '\n')
@@ -385,7 +390,7 @@ def test():
     letter = left_only_control_points(result, control_points)
     print("letter", result, '\n')
     new_letter = generate_letter(
-        path_to_control_points, path_to_control_points2)
+        image_control_points, image_control_points2)
     letter2 = match_points(letter, new_letter)
     letter3 = []
     for line in letter2:
