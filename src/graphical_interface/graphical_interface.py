@@ -68,7 +68,7 @@ class Frame(wx.Frame):
 
         self.option_menu.Append(
             103, 'Disable Synthesis', 'Disables the synthesis and uses only original images', wx.ITEM_CHECK)
-        self.option_menu.Enable(103, True)
+        self.option_menu.Enable(103, False)
 
         self.option_menu.AppendSeparator()
 
@@ -182,11 +182,11 @@ class Frame(wx.Frame):
                     self.recognition_panel.editname.SetValue(txt)
 
     def show_informations(self, event):
-        wx.MessageBox('This is the application created for Bachelor Thesis at Warsow University of Technology Faculty of Mathematics and Information Science.', 'Informations', wx.OK)
+        wx.MessageBox('This is the application created for Bachelor Thesis at Warsaw University of Technology Faculty of Mathematics and Information Science.', 'Informations', wx.OK)
 
     def show_authors(self, event):
         wx.MessageBox(
-            'The authors of the application are: \n - Martin Mrugała \n - Patryk Walczak \n - Bartłomiej Żyła', 'Authors', wx.OK)
+            'The authors of the application are: \n - Martin Mrugała \n - Patryk Walczak \n - Bartłomiej Żyła \n with the supervision of Agnieszka Jastrzębska, Ph.D. Eng.', 'Authors', wx.OK)
 
     def menu_close(self, event):
         self.Close()
@@ -211,6 +211,7 @@ class Frame(wx.Frame):
             self.option_menu.Enable(105, False)
             self.option_menu.Enable(104, False)
             self.option_menu.Enable(110, False)
+            self.option_menu.Enable(103, False)
         else:
             self.synthesis_panel.editname.SetValue(
                 self.recognition_panel.editname.GetValue())
@@ -221,6 +222,7 @@ class Frame(wx.Frame):
             self.option_menu.Enable(105, True)
             self.option_menu.Enable(104, True)
             self.option_menu.Enable(110, True)
+            self.option_menu.Enable(103, True)
         self.Layout()
 
     def save(self, event):

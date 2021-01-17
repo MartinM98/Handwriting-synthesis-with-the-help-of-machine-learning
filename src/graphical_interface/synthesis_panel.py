@@ -295,12 +295,12 @@ class SynthesisPanel(wx.Panel):
         md.Destroy()
         self.statusBar.SetStatusText('Training model... (It may take a while)')
         print('TEST ' + str(self.use_gpu))
-        train_command = 'python ./pix2pix.py --mode train --output_dir ./data/model/ --max_epochs ' + \
+        train_command = 'python ./data/pix2pix.py --mode train --output_dir ./data/model/ --max_epochs ' + \
             str(options[0]) + ' --input_dir ./data/training_dataset/combined --which_direction BtoA --ngf ' + \
             str(options[1]) + ' --ndf ' + str(options[2]) + ' --use_gpu ' + str(self.use_gpu)
         os.system(train_command)
         self.statusBar.SetStatusText('Exporting model...')
-        export_command = 'python ./pix2pix.py --mode export --output_dir ' + self.path_to_model + '/export/ --checkpoint ./data/model/ --which_direction BtoA --use_gpu ' + str(self.use_gpu)
+        export_command = 'python ./data/pix2pix.py --mode export --output_dir ' + self.path_to_model + '/export/ --checkpoint ./data/model/ --which_direction BtoA --use_gpu ' + str(self.use_gpu)
         os.system(export_command)
         remove_dir_with_content('./data/model')
         if(self.check_model()):
