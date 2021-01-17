@@ -1,5 +1,5 @@
 import os
-from src.file_handler.file_handler import ensure_create_and_append_file, get_absolute_path, read_from_file
+from src.file_handler.file_handler import combine_paths, ensure_create_and_append_file, get_absolute_path, read_from_file
 from src.graphical_interface.common import EVT_CHANGE_PANEL_EVENT, ImageSize
 import wx
 from src.graphical_interface.recognition_panel import RecognitionPanel
@@ -267,5 +267,8 @@ class Application(wx.App):
 
 
 if __name__ == '__main__':
-    app = Application(redirect=False)  # TODO change to True at the end
+    path_to_logs = get_absolute_path('.')
+    path_to_logs = combine_paths(path_to_logs, "application_logs.txt")
+    print(path_to_logs)
+    app = Application(redirect=True, filename=path_to_logs)
     app.MainLoop()
