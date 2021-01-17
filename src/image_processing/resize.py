@@ -73,6 +73,26 @@ def crop_image(image_path: str, output_path: str):
             cv2.imwrite(output_path, cropped)
 
 
+def crop_image_return(input_image):
+    """
+    Cropps the image to the smallest possible rectangle and returns it
+
+    Args:
+        input_image : Image to be cropped
+
+    Returns:
+        (array): Cropped image
+    """
+    img = np.asarray(input_image)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
+    points = np.column_stack(np.where(img < 240))
+    if(len(points) > 0):
+        cropped = img[np.min(points[:, 0]): np.max(
+            points[:, 0]), np.min(points[:, 1]): np.max(points[:, 1])]
+        if(cropped.shape[0] != 0 and cropped.shape[1] != 0):
+            return cropped
+
+
 def resize_directory(input_path: str, output_path: str):
     """
     Resizes all images in given directory to given output directory

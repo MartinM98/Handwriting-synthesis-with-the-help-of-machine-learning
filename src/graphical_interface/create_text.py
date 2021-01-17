@@ -1,6 +1,7 @@
 # https://note.nkmk.me/en/python-pillow-concat-images/
 
 from src.file_handler.file_handler import combine_paths
+from src.image_processing.resize import crop_image_return
 from PIL import Image
 import math
 import random
@@ -11,10 +12,9 @@ from datetime import datetime
 
 # This class concatenates images with letters creating an image representing a given text
 class TextImageRenderAllDifferentWidths:
-    def __init__(self, directory_path: str, width: int, height: int, font_size: int, text_to_render: str):
+    def __init__(self, directory_path: str, width: int, font_size: int, text_to_render: str):
         self.directory_path = directory_path
         self.width = width
-        self.height = height
         self.font_size = font_size
         self.font_width = math.floor(font_size / 2)
         self.line_capacity = math.floor(width / self.font_width)
@@ -32,7 +32,7 @@ class TextImageRenderAllDifferentWidths:
     def create_image(self):
         # this example uses color images - one may use mode='L' for monochrome images
         result_image = Image.new(
-            'RGB', (self.width, self.height), (255, 255, 255))
+            'RGB', (self.width, 5000), (255, 255, 255))
         random.seed(datetime.now())
         for letter in self.text_to_render:
             letter = unidecode.unidecode(letter)
@@ -69,11 +69,14 @@ class TextImageRenderAllDifferentWidths:
                 self.current_line += 1
             self.concatenate_vertical(result_image, img, letter_to_int)
             self.current_width = self.current_width + img.width
-        return result_image
+        pil = Image.fromarray(crop_image_return(result_image))
+        result = Image.new('RGB', pil.size)
+        result.paste(pil)
+        return result
 
     def create_synth_image(self):
         result_image = Image.new(
-            'RGB', (self.width, self.height), (255, 255, 255))
+            'RGB', (self.width, 5000), (255, 255, 255))
         # random.seed(datetime.now())
         for letter in sorted(os.listdir(self.directory_path), key=lambda x: int(os.path.splitext(x)[0])):
             img = Image.open(combine_paths(self.directory_path, letter))
@@ -83,7 +86,10 @@ class TextImageRenderAllDifferentWidths:
             letter_to_int = ord(self.text_to_render[int(letter[:-4])])
             self.concatenate_vertical(result_image, img, letter_to_int)
             self.current_width = self.current_width + img.width
-        return result_image
+        pil = Image.fromarray(crop_image_return(result_image))
+        result = Image.new('RGB', pil.size)
+        result.paste(pil)
+        return result
 
     # This method is used for determining the dimensions of a letter
     def get_size_coefficients(self, letter):
