@@ -5,7 +5,7 @@ from src.image_processing.automated_functions import process_model_options
 from src.graphical_interface.model_dialog import ModelDialog
 from src.graphical_interface.options_dialog import OptionsDialog
 from src.graphical_interface.create_text import TextImageRenderAllDifferentWidths
-from src.graphical_interface.common import ChangePanelEvent, ImageSize, PIL2wx, np2wx
+from src.graphical_interface.common import ChangePanelEvent, ImageSize, PIL2wx
 from src.graphical_interface.bitmap_panel import BitmapPanel
 from src.image_processing.letters import extract, correct
 from src.image_processing.resize import resize_directory, combine_directory, resize_skeletons_directory
