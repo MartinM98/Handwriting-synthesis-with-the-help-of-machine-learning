@@ -25,5 +25,6 @@
     "python.linting.pylintArgs": [
         "--load-plugins"
     ],
-    "python.analysis.completeFunctionParens": true
+    "python.analysis.completeFunctionParens": true,
+    "git.ignoreLimitWarning": true
 }
