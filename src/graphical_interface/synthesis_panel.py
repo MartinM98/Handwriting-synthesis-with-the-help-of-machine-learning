@@ -6,7 +6,8 @@ from src.graphical_interface.model_dialog import ModelDialog
 from src.graphical_interface.options_dialog import OptionsDialog
 from src.graphical_interface.create_text import TextImageRenderAllDifferentWidths
 from src.graphical_interface.common import ChangePanelEvent, ImageSize, PIL2wx
-from src.image_processing.letters import extract, correct
+from src.image_processing.letters import extract
+from src.image_processing.correct_letters import correct
 from src.image_processing.resize import resize_directory, combine_directory, resize_skeletons_directory
 from src.synthesis.process import process_directory
 from src.image_processing.automated_functions import process_dataset
@@ -190,9 +191,12 @@ class SynthesisPanel(wx.Panel):
         self.statusBar.SetStatusText('Clearing directories...')
         remove_dir_with_content('./data/synthesis/synthesized')
         remove_dir_with_content('./data/synthesis/skeletons')
-        print('')
+        print('Directories removed')
+        self.statusBar.SetStatusText('Directories removed')
         ensure_create_dir('./data/synthesis/skeletons')
         ensure_create_dir('./data/synthesis/synthesized')
+        print('Directories created')
+        self.statusBar.SetStatusText('Directories created')
 
     def check_model(self):
         if (os.path.isdir(combine_paths(self.path_to_model, 'letters_dataset')) and os.path.isdir(combine_paths(self.path_to_model, 'export'))):
