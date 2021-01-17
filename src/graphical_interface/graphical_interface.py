@@ -1,5 +1,5 @@
 import os
-from src.file_handler.file_handler import ensure_remove_file, combine_paths, ensure_remove_file, get_absolute_path, read_from_file, write_to_file
+from src.file_handler.file_handler import combine_paths, ensure_remove_file, get_absolute_path, read_from_file, write_to_file
 from src.graphical_interface.common import EVT_CHANGE_PANEL_EVENT, ImageSize
 import wx
 from src.graphical_interface.recognition_panel import RecognitionPanel
