@@ -6,9 +6,8 @@ import os
 
 
 class RecognitionPanel(wx.Panel):
-    def __init__(self, parent, statusBar, main_color, second_color):
+    def __init__(self, parent, statusBar, main_color, second_color, font):
         self.is_tesseract_loaded = False
-        # self.use_synthesis = True
         wx.Panel.__init__(self, parent)
         self.statusBar = statusBar
         self.SetBackgroundColour(main_color)
@@ -33,8 +32,6 @@ class RecognitionPanel(wx.Panel):
         self.button_read = wx.BitmapButton(
             self.upper_panel, id=wx.ID_ANY, bitmap=pic, size=(pic.GetWidth() - 3, pic.GetHeight() - 3))
         self.Bind(wx.EVT_BUTTON, self.on_read_click, self.button_read)
-        # self.button_read.SetBackgroundColour(wx.Colour(217, 131, 26))
-        # self.button_read.SetToolTip("ToolTip")
         sizer_2.Add(self.button_read, 0, wx.TOP | wx.RIGHT | wx.ALL, border=5)
 
         sizer_2.AddStretchSpacer()
@@ -57,6 +54,7 @@ class RecognitionPanel(wx.Panel):
 
         self.editname = wx.TextCtrl(
             self, value='Test', style=wx.TE_MULTILINE)
+        self.editname.SetFont(font)
         self.editname.SetMinSize(
             (300, 300))
         hSizer2.Add(self.editname, 3, wx.EXPAND, border=10)

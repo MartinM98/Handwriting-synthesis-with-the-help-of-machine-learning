@@ -18,7 +18,7 @@ import wx.lib.scrolledpanel as scrolled
 
 
 class SynthesisPanel(scrolled.ScrolledPanel):
-    def __init__(self, parent, statusBar, main_color, second_color, models):
+    def __init__(self, parent, statusBar, main_color, second_color, models, font):
         self.parent = parent
         self.use_synthesis = True
         self.path_to_model = './data/synthesis_models/1'
@@ -27,7 +27,6 @@ class SynthesisPanel(scrolled.ScrolledPanel):
         self.filter_type = 'Original'
         self.match_with_other = False
         scrolled.ScrolledPanel.__init__(self, parent)
-        # self.Bind(wx.EVT_SIZE, self.on_resize)
         self.statusBar = statusBar
         self.SetBackgroundColour(main_color)
         self.use_gpu = False
@@ -78,20 +77,6 @@ class SynthesisPanel(scrolled.ScrolledPanel):
             self.upper_panel, choices=self.font_sizes, value='10', size=(80, -1))
         self.font_size_combobox.Bind(wx.EVT_COMBOBOX, self.on_combo)
         self.font_size_combobox.Hide()
-        # self.sizer_2.Add(self.font_size_combobox, 0,
-        #                  wx.CENTER | wx.LEFT | wx.ALL, border=5)
-
-        # self.image_sizes = ['Small', 'Medium', 'Large']
-        # self.image_size_combobox = wx.ComboBox(
-        #     self.upper_panel, choices=self.image_sizes, value='Large', size=(80, -1))
-        # self.image_size_combobox.Bind(
-        #     wx.EVT_COMBOBOX, self.on_image_size_combo)
-        # self.sizer_2.Add(self.image_size_combobox, 0,
-        #                  wx.CENTER | wx.LEFT | wx.ALL, border=5)
-
-        # self.checkbox = wx.CheckBox(self.upper_panel, label='use GPU')
-        # self.checkbox.SetForegroundColour("white")
-        # self.sizer_2.Add(self.checkbox, 0, wx.CENTER | wx.ALL, border=5)
 
         path = get_absolute_path(
             'resources/save_button.png')
@@ -130,6 +115,7 @@ class SynthesisPanel(scrolled.ScrolledPanel):
             self, value='Test', style=wx.TE_MULTILINE)
         self.editname.SetMinSize(
             (300, 300))
+        self.editname.SetFont(font)
         self.hSizer2.Add(self.editname, 30, wx.EXPAND, border=10)
 
         self.hSizer2.AddStretchSpacer(1)
@@ -174,12 +160,6 @@ class SynthesisPanel(scrolled.ScrolledPanel):
 
     def chane_image_size(self, size):
         self.resize_image(size)
-        # if size == self.image_sizes[0]:
-        #     self.resize_image(ImageSize.Small)
-        # elif size == self.image_sizes[1]:
-        #     self.resize_image(ImageSize.Medium)
-        # elif size == self.image_sizes[2]:
-        #     self.resize_image(ImageSize.Large)
 
     def change_match_flag(self):
         self.match_with_other = not self.match_with_other
@@ -247,7 +227,8 @@ class SynthesisPanel(scrolled.ScrolledPanel):
                 img = text_renderer.create_image()
 
             if np.mean(img) == 255:
-                self.statusBar.SetStatusText('There was an error or no input given')
+                self.statusBar.SetStatusText(
+                    'There was an error or no input given')
                 print("There was an error or no input given")
             else:
                 self.statusBar.SetStatusText('Text rendered')
@@ -300,16 +281,20 @@ class SynthesisPanel(scrolled.ScrolledPanel):
         print('TEST ' + str(self.use_gpu))
         train_command = 'python ./data/pix2pix.py --mode train --output_dir ./data/model/ --max_epochs ' + \
             str(options[0]) + ' --input_dir ./data/training_dataset/combined --which_direction BtoA --ngf ' + \
-            str(options[1]) + ' --ndf ' + str(options[2]) + ' --use_gpu ' + str(self.use_gpu)
+            str(options[1]) + ' --ndf ' + str(options[2]) + \
+            ' --use_gpu ' + str(self.use_gpu)
         os.system(train_command)
         self.statusBar.SetStatusText('Exporting model...')
-        export_command = 'python ./data/pix2pix.py --mode export --output_dir ' + self.path_to_model + '/export/ --checkpoint ./data/model/ --which_direction BtoA --use_gpu ' + str(self.use_gpu)
+        export_command = 'python ./data/pix2pix.py --mode export --output_dir ' + self.path_to_model + \
+            '/export/ --checkpoint ./data/model/ --which_direction BtoA --use_gpu ' + \
+            str(self.use_gpu)
         os.system(export_command)
         remove_dir_with_content('./data/model')
         if(self.check_model()):
             self.statusBar.SetStatusText('Model created successfully')
         else:
-            self.statusBar.SetStatusText('There was an error during model generation')
+            self.statusBar.SetStatusText(
+                'There was an error during model generation')
 
     def on_load_click(self, event):
         """

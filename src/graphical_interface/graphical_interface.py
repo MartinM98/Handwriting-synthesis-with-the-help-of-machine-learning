@@ -22,10 +22,13 @@ class Frame(wx.Frame):
         main_color = wx.Colour(228, 228, 228)
         second_color = wx.Colour(161, 183, 168)
 
+        font = wx.Font(20, wx.MODERN, wx.NORMAL,
+                       wx.NORMAL, False, 'Arial')
+
         self.synthesis_panel = SynthesisPanel(
-            self, self.statusBar, main_color, second_color, self.find_models())
+            self, self.statusBar, main_color, second_color, self.find_models(), font)
         self.recognition_panel = RecognitionPanel(
-            self, self.statusBar, main_color, second_color)
+            self, self.statusBar, main_color, second_color, font)
         self.panel = "recognition"
         self.synthesis_panel.Hide()
 
