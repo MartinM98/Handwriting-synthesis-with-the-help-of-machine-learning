@@ -17,7 +17,7 @@ import numpy as np
 
 
 class SynthesisPanel(wx.Panel):
-    def __init__(self, parent, statusBar, main_color, second_color, models):
+    def __init__(self, parent, statusBar, main_color, second_color, models, font):
         self.parent = parent
         self.use_synthesis = True
         self.path_to_model = './data/synthesis_models/1'
@@ -129,6 +129,7 @@ class SynthesisPanel(wx.Panel):
             self, value='Test', style=wx.TE_MULTILINE)
         self.editname.SetMinSize(
             (300, 300))
+        self.editname.SetFont(font)
         self.hSizer2.Add(self.editname, 30, wx.EXPAND, border=10)
 
         self.hSizer2.AddStretchSpacer(1)
@@ -244,7 +245,8 @@ class SynthesisPanel(wx.Panel):
                 img = text_renderer.create_image()
 
             if np.mean(img) == 255:
-                self.statusBar.SetStatusText('There was an error or no input given')
+                self.statusBar.SetStatusText(
+                    'There was an error or no input given')
                 print("There was an error or no input given")
             else:
                 self.statusBar.SetStatusText('Text rendered')
@@ -297,16 +299,20 @@ class SynthesisPanel(wx.Panel):
         print('TEST ' + str(self.use_gpu))
         train_command = 'python ./data/pix2pix.py --mode train --output_dir ./data/model/ --max_epochs ' + \
             str(options[0]) + ' --input_dir ./data/training_dataset/combined --which_direction BtoA --ngf ' + \
-            str(options[1]) + ' --ndf ' + str(options[2]) + ' --use_gpu ' + str(self.use_gpu)
+            str(options[1]) + ' --ndf ' + str(options[2]) + \
+            ' --use_gpu ' + str(self.use_gpu)
         os.system(train_command)
         self.statusBar.SetStatusText('Exporting model...')
-        export_command = 'python ./data/pix2pix.py --mode export --output_dir ' + self.path_to_model + '/export/ --checkpoint ./data/model/ --which_direction BtoA --use_gpu ' + str(self.use_gpu)
+        export_command = 'python ./data/pix2pix.py --mode export --output_dir ' + self.path_to_model + \
+            '/export/ --checkpoint ./data/model/ --which_direction BtoA --use_gpu ' + \
+            str(self.use_gpu)
         os.system(export_command)
         remove_dir_with_content('./data/model')
         if(self.check_model()):
             self.statusBar.SetStatusText('Model created successfully')
         else:
-            self.statusBar.SetStatusText('There was an error during model generation')
+            self.statusBar.SetStatusText(
+                'There was an error during model generation')
 
     def on_load_click(self, event):
         """
