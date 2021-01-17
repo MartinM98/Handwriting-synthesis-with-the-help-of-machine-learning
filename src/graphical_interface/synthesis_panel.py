@@ -190,9 +190,12 @@ class SynthesisPanel(wx.Panel):
         self.statusBar.SetStatusText('Clearing directories...')
         remove_dir_with_content('./data/synthesis/synthesized')
         remove_dir_with_content('./data/synthesis/skeletons')
-        print('')
+        print('Directories removed')
+        self.statusBar.SetStatusText('Directories removed')
         ensure_create_dir('./data/synthesis/skeletons')
         ensure_create_dir('./data/synthesis/synthesized')
+        print('Directories created')
+        self.statusBar.SetStatusText('Directories created')
 
     def check_model(self):
         if (os.path.isdir(combine_paths(self.path_to_model, 'letters_dataset')) and os.path.isdir(combine_paths(self.path_to_model, 'export'))):
