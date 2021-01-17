@@ -14,9 +14,10 @@ from src.file_handler.file_handler import combine_paths, get_absolute_path
 import wx
 import os
 import numpy as np
+import wx.lib.scrolledpanel as scrolled
 
 
-class SynthesisPanel(wx.Panel):
+class SynthesisPanel(scrolled.ScrolledPanel):
     def __init__(self, parent, statusBar, main_color, second_color, models, font):
         self.parent = parent
         self.use_synthesis = True
@@ -25,8 +26,7 @@ class SynthesisPanel(wx.Panel):
         self.k_advanced_options = 0
         self.filter_type = 'Original'
         self.match_with_other = False
-        wx.Panel.__init__(self, parent)
-        # self.Bind(wx.EVT_SIZE, self.on_resize)
+        scrolled.ScrolledPanel.__init__(self, parent)
         self.statusBar = statusBar
         self.SetBackgroundColour(main_color)
         self.use_gpu = False
@@ -40,7 +40,7 @@ class SynthesisPanel(wx.Panel):
 
         # ------------------ hSizer1 ------------------ #
 
-        self.upper_panel = wx.Panel(self, wx.ID_ANY)
+        self.upper_panel = scrolled.ScrolledPanel(self, wx.ID_ANY)
         self.upper_panel.SetBackgroundColour(second_color)
         self.hSizer1.Add(self.upper_panel, 1, wx.EXPAND, 0)
 
@@ -77,20 +77,6 @@ class SynthesisPanel(wx.Panel):
             self.upper_panel, choices=self.font_sizes, value='10', size=(80, -1))
         self.font_size_combobox.Bind(wx.EVT_COMBOBOX, self.on_combo)
         self.font_size_combobox.Hide()
-        # self.sizer_2.Add(self.font_size_combobox, 0,
-        #                  wx.CENTER | wx.LEFT | wx.ALL, border=5)
-
-        # self.image_sizes = ['Small', 'Medium', 'Large']
-        # self.image_size_combobox = wx.ComboBox(
-        #     self.upper_panel, choices=self.image_sizes, value='Large', size=(80, -1))
-        # self.image_size_combobox.Bind(
-        #     wx.EVT_COMBOBOX, self.on_image_size_combo)
-        # self.sizer_2.Add(self.image_size_combobox, 0,
-        #                  wx.CENTER | wx.LEFT | wx.ALL, border=5)
-
-        # self.checkbox = wx.CheckBox(self.upper_panel, label='use GPU')
-        # self.checkbox.SetForegroundColour("white")
-        # self.sizer_2.Add(self.checkbox, 0, wx.CENTER | wx.ALL, border=5)
 
         path = get_absolute_path(
             'resources/save_button.png')
@@ -152,6 +138,8 @@ class SynthesisPanel(wx.Panel):
         self.mainSizer.Add(self.hSizer4, 1, wx.EXPAND)
         self.SetSizerAndFit(self.mainSizer)
 
+        self.SetupScrolling()
+
     def on_combo(self, event):
         if(self.combobox.GetValue() != '*New font*'):
             self.path_to_model = combine_paths(
@@ -172,12 +160,6 @@ class SynthesisPanel(wx.Panel):
 
     def chane_image_size(self, size):
         self.resize_image(size)
-        # if size == self.image_sizes[0]:
-        #     self.resize_image(ImageSize.Small)
-        # elif size == self.image_sizes[1]:
-        #     self.resize_image(ImageSize.Medium)
-        # elif size == self.image_sizes[2]:
-        #     self.resize_image(ImageSize.Large)
 
     def change_match_flag(self):
         self.match_with_other = not self.match_with_other
