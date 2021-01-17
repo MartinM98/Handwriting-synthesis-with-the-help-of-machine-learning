@@ -14,9 +14,10 @@ from src.file_handler.file_handler import combine_paths, get_absolute_path
 import wx
 import os
 import numpy as np
+import wx.lib.scrolledpanel as scrolled
 
 
-class SynthesisPanel(wx.Panel):
+class SynthesisPanel(scrolled.ScrolledPanel):
     def __init__(self, parent, statusBar, main_color, second_color, models):
         self.parent = parent
         self.use_synthesis = True
@@ -25,7 +26,7 @@ class SynthesisPanel(wx.Panel):
         self.k_advanced_options = 0
         self.filter_type = 'Original'
         self.match_with_other = False
-        wx.Panel.__init__(self, parent)
+        scrolled.ScrolledPanel.__init__(self, parent)
         # self.Bind(wx.EVT_SIZE, self.on_resize)
         self.statusBar = statusBar
         self.SetBackgroundColour(main_color)
@@ -40,7 +41,7 @@ class SynthesisPanel(wx.Panel):
 
         # ------------------ hSizer1 ------------------ #
 
-        self.upper_panel = wx.Panel(self, wx.ID_ANY)
+        self.upper_panel = scrolled.ScrolledPanel(self, wx.ID_ANY)
         self.upper_panel.SetBackgroundColour(second_color)
         self.hSizer1.Add(self.upper_panel, 1, wx.EXPAND, 0)
 
@@ -150,6 +151,8 @@ class SynthesisPanel(wx.Panel):
         self.mainSizer.Add(self.hSizer2, 30, wx.EXPAND)
         self.mainSizer.Add(self.hSizer4, 1, wx.EXPAND)
         self.SetSizerAndFit(self.mainSizer)
+
+        self.SetupScrolling()
 
     def on_combo(self, event):
         if(self.combobox.GetValue() != '*New font*'):
