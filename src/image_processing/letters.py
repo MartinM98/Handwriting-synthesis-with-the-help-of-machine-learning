@@ -1,7 +1,6 @@
 """ Extraction letters from images """
 import os
 from PIL import Image
-import wx
 from src.image_processing.resize import crop_image
 
 
@@ -47,7 +46,8 @@ def extract(directory, path=None):
             im = Image.open(image)
             width, height = im.size
 
-            command = 'tesseract ' + image + ' ' + image[:-4] + ' -l engnew makebox quiet'
+            command = 'tesseract ' + image + ' ' + \
+                image[:-4] + ' -l engnew makebox quiet'
             os.system(command)
 
             boxfilename = image[:-3] + 'box'
@@ -67,31 +67,8 @@ def extract(directory, path=None):
                     os.mkdir(letterdir)
                     count = 0
                 im1.save(letterdir + str(count) + '.png')
-                crop_image(letterdir + str(count) + '.png', letterdir + str(count) + '.png')
+                crop_image(letterdir + str(count) + '.png',
+                           letterdir + str(count) + '.png')
 
             file1.close()
     return letters
-
-
-def correct(_self, path=None):
-    for r, d, f in os.walk(path):
-        for folder in d:
-            directory = os.path.join(r, folder)
-            with wx.FileDialog(_self, 'Choose a directory', defaultDir=directory, style=wx.TE_MULTILINE) as fd:
-                fd.ShowModal()
-                files = fd.GetPaths()
-            files = list(files)
-            for file in files:
-                os.remove(file)
-            if not os.listdir(directory):
-                os.rmdir(directory)
-            else:
-                i = 0
-                for filename in sorted(os.listdir(directory), key=lambda x: int(x[:-4])):
-                    os.rename(directory + '/' + filename, directory + '/' + str(i) + '.png')
-                    i += 1
-
-
-if __name__ == '__main__':
-    letters = extract()
-    correct(letters)

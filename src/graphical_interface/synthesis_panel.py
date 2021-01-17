@@ -6,7 +6,8 @@ from src.graphical_interface.model_dialog import ModelDialog
 from src.graphical_interface.options_dialog import OptionsDialog
 from src.graphical_interface.create_text import TextImageRenderAllDifferentWidths
 from src.graphical_interface.common import ChangePanelEvent, ImageSize, PIL2wx
-from src.image_processing.letters import extract, correct
+from src.image_processing.letters import extract
+from src.image_processing.correct_letters import correct
 from src.image_processing.resize import resize_directory, combine_directory, resize_skeletons_directory
 from src.synthesis.process import process_directory
 from src.image_processing.automated_functions import process_dataset
