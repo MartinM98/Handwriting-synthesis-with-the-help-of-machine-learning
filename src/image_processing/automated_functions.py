@@ -1,4 +1,5 @@
 import os
+from src.synthesis.control_points import produce_bspline
 import cv2
 import random
 import numpy as np
