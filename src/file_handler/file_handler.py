@@ -1,4 +1,5 @@
 import os
+import errno
 import shutil
 
 
@@ -41,6 +42,20 @@ def ensure_create_and_append_file(file_path: str, data: str):
         add_to_file(file_path, data)
     else:
         write_to_file(file_path, data)
+
+
+def ensure_remove_file(file_path: str):
+    """
+    Remove file f such exists
+
+    Args:
+        file_path (str): Path to the file.
+    """
+    try:
+        os.remove(file_path)
+    except OSError as e:  # this would be "except OSError, e:" before Python 2.6
+        if e.errno != errno.ENOENT:  # errno.ENOENT = no such file or directory
+            raise  # re-raise exception if a different error occurred
 
 
 def read_from_file(file_path: str):
