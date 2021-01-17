@@ -1,16 +1,8 @@
-import matplotlib.pyplot as plt
 import os
 import cv2
 import random
 import numpy as np
 import unidecode
-from src.file_handler.file_handler import combine_paths, ensure_create_dir
-from src.image_processing.skeletonize import skeletonize_image
-from src.file_handler.file_handler import get_filename_without_extention
-from src.image_processing.common_functions.common_functions import get_dir
-from src.image_processing.common_functions.common_functions import get_image
-from src.image_processing.gabor_filter import gabor_filter
-from src.synthesis.control_points import produce_imitation, produce_bspline
 from src.graphical_interface.model_dialog import ModelDialog
 from src.image_processing.consecutive_filter import consecutive
 from src.image_processing.random_filter import random_filter
@@ -18,183 +10,6 @@ from src.image_processing.binary_search_filter import binary_search_filter
 from src.image_processing.common_functions.common_functions import is_int
 from src.image_processing.resize import resize_image
 from src.image_processing.common_functions.common_functions import prepare_blank_image
-
-
-def gabor_filter_automated(directory: str = None):
-    """
-    Applies the gabor filter with given paramters to
-    all images with the extension png in the selected directory and
-    saves the results.
-
-    Args:
-       directory (str, optional): the path to the directory that should
-       be processed.
-
-    Returns:
-        list: The list of filtered images.
-    """
-    save = False
-    if directory is None:
-        directory = get_dir()
-        save = True
-
-    results = []
-
-    for entry in os.scandir(directory):
-        if (entry.path.endswith("_skel.png")):
-            path2 = get_filename_without_extention(entry.path)
-            path = entry.path
-            result = gabor_filter(get_image(path))
-            if save:
-                cv2.imwrite(directory + '/' + path2 + '_control_points.png',
-                            result)
-            results.append(result)
-
-    return results
-
-
-def skeletonize_automated(directory: str = None):
-    """
-    Skeletonizes all images with the extension png in the selected directory and
-    saves the results.
-
-    Args:
-       directory (str, optional): the path to the directory that should
-       be processed.
-
-    Returns:
-        list: The list of skeletonized images.
-    """
-    save = False
-    if directory is None:
-        directory = get_dir()
-        save = True
-
-    results = []
-
-    for entry in os.scandir(directory):
-        if (entry.path.endswith(".png")):
-            path2 = get_filename_without_extention(entry.path)
-            path = entry.path
-            img = skeletonize_image(path=path)
-            if save:
-                plt.imsave(directory + '/' + path2 + '_skel.png',
-                           img, cmap=plt.cm.gray)
-            results.append(img)
-
-    return results
-
-
-def create_skeletons_and_control_points(directory: str):
-    """
-    Applies skeletonization and gabor filter to the given dataset
-    with the standard structure.
-
-    Args:
-       directory (str): the path to the directory that should
-       be processed.
-    """
-    for dir in sorted(os.listdir(directory)):
-        if not dir.startswith('.'):
-            dir2 = directory + '/' + dir + '/'
-            dir3 = directory + '/' + dir + '/skel/'
-            dir4 = directory + '/' + dir + '/filtered/'
-            ensure_create_dir(dir3)
-            ensure_create_dir(dir4)
-            for file in sorted(os.listdir(dir2)):
-                if file.endswith('.png'):
-                    filename = get_filename_without_extention(file)
-                    path = combine_paths(dir2, file)
-                    img = cv2.imread(path)
-                    skeleton = skeletonize_image(img)
-                    cv2.imwrite(dir3 + filename + '.png', skeleton)
-                    gabor = gabor_filter(path=dir3 + filename + '.png')
-                    cv2.imwrite(dir4 + filename + '.png', gabor)
-
-
-def create_bsplines(directory: str, options: list = None):
-    """
-    Generates letters in the given dataset
-    with the standard structure.
-
-    Args:
-       directory (str): the path to the directory that should
-       be processed.
-    """
-    for dir in sorted(os.listdir(directory)):
-        if not dir.startswith('.'):
-            dir3 = directory + '/' + dir + '/skel/'
-            dir4 = directory + '/' + dir + '/filtered/'
-            length = len(
-                [filename for filename in os.listdir(directory + '/' + dir) if filename.endswith('.png')]) - 1
-            if length < 1 or dir == 'dot':
-                continue
-            ensure_create_dir(directory + '/' + dir + '/bspline/')
-            files = [filename for filename in os.listdir(
-                dir3)]
-            for i in range(len(files)):
-                idx = i
-                while idx == i:
-                    idx = random.randint(0, length)
-                produce_imitation(
-                    path_to_skeleton=dir3 + files[i], path_to_control_points=dir4 + files[i], path_to_control_points2=dir4 + files[idx], idx=idx)
-
-
-def try_filter_points_consecutive(gabor: np.ndarray, path: str, n: int, k: int):
-    """
-    Tries to apply consecutive filter on a image with control points.
-
-    Args:
-        gabor (np.ndarray): image with control points.
-        path (str): path to the destination of the images.
-        n (int,): a scalar determining number of
-        subparts of the image. The image is divided into
-        n x n subparts with equal sizes.
-        k (int): the number of points that should be selected.
-    """
-    try:
-        c = consecutive(gabor, n, k)
-        cv2.imwrite(path + '_c.png', c)
-    except ValueError:
-        print('Consecutive filter error (', path + '_c.png')
-
-
-def try_filter_points_random(gabor: np.ndarray, path: str, n: int, k: int):
-    """
-    Tries to apply random filter on a image with control points.
-
-    Args:
-        gabor (np.ndarray): image with control points.
-        path (str): path to the destination of the images.
-        n (int,): a scalar determining number of
-        subparts of the image. The image is divided into
-        n x n subparts with equal sizes.
-        k (int): the number of points that should be selected.
-    """
-    try:
-        r = random_filter(gabor, n, k)
-        cv2.imwrite(path + '_r.png', r)
-    except ValueError:
-        print('Random filter error (', path + '_r.png')
-
-
-def try_filter_points_bs(gabor: np.ndarray, path: str, n: int, k: int):
-    """
-    Tries to apply binary search filter on a image with control points.
-
-    Args:
-        gabor (np.ndarray): image with control points.
-        path (str): path to the destination of the images.
-        n (int,): a scalar determining number of
-        subparts of the image. The image is divided into
-        n x n subparts with equal sizes.
-        k (int): the number of points that should be selected.
-    """
-    try:
-        bs = binary_search_filter(gabor, n, k)
-        cv2.imwrite(path + '_bs.png', bs)
-    except ValueError:
-        print('BS error error (', path + '_bs.png')
 
 
 def prepare_images(path_skeleton: str, path_control_points: str, path_control_points2: str, n: int, k: int, option: str):
@@ -219,12 +34,15 @@ def prepare_images(path_skeleton: str, path_control_points: str, path_control_po
     image = cv2.imread(path_skeleton)
     image = cv2.rotate(image, cv2.cv2.ROTATE_90_CLOCKWISE)
     image_control_points = cv2.imread(path_control_points)
-    image_control_points = cv2.rotate(image_control_points, cv2.cv2.ROTATE_90_CLOCKWISE)
+    image_control_points = cv2.rotate(
+        image_control_points, cv2.cv2.ROTATE_90_CLOCKWISE)
     image_control_points2 = cv2.imread(path_control_points2)
-    image_control_points2 = cv2.rotate(image_control_points2, cv2.cv2.ROTATE_90_CLOCKWISE)
+    image_control_points2 = cv2.rotate(
+        image_control_points2, cv2.cv2.ROTATE_90_CLOCKWISE)
     if (n > 0) and (k > 0):
         image_control_points = filter_image(image_control_points, option, n, k)
-        image_control_points2 = filter_image(image_control_points2, option, n, k)
+        image_control_points2 = filter_image(
+            image_control_points2, option, n, k)
     return image, image_control_points, image_control_points2
 
 
@@ -274,7 +92,8 @@ def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_o
         letter = unidecode.unidecode(letter)
         if ord(letter) == 32:
             blank = prepare_blank_image((font_size, font_size * 3))
-            cv2.imwrite(f"{'./data/synthesis/synthesized/'}/{str(i)}.png", blank)
+            cv2.imwrite(
+                f"{'./data/synthesis/synthesized/'}/{str(i)}.png", blank)
             i += 1
             continue
         dir = letter
@@ -299,7 +118,8 @@ def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_o
             i += 1
             continue
         if length == 0:
-            image = resize_image('', 256, 256, image=cv2.imread(dir_skel + '0.png'))
+            image = resize_image(
+                '', 256, 256, image=cv2.imread(dir_skel + '0.png'))
             cv2.imwrite(f"{dir_destination}/{str(i)}.png", image)
             i += 1
             continue
@@ -308,8 +128,10 @@ def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_o
         idx2 = idx1
         while idx1 == idx2:
             idx2 = random.randint(0, length)
-        image, image_control_points, image_control_points2 = prepare_images(dir_skel + files[idx1], dir_filtered + files[idx1], dir_filtered + files[idx2], n_advanced_options, k_advanced_options, option)
-        produce_bspline(image=image, image_control_points=image_control_points, image_control_points2=image_control_points2, idx=i, match_with_other=match_with_other)
+        image, image_control_points, image_control_points2 = prepare_images(
+            dir_skel + files[idx1], dir_filtered + files[idx1], dir_filtered + files[idx2], n_advanced_options, k_advanced_options, option)
+        produce_bspline(image=image, image_control_points=image_control_points,
+                        image_control_points2=image_control_points2, idx=i, match_with_other=match_with_other)
         i += 1
 
 
@@ -340,22 +162,3 @@ def process_model_options(md: ModelDialog):
         options.append(None)
 
     return options
-
-
-def process_dataset(directory: str = None, options: list = None):
-    """
-    Invokes functions applying skeletonization, gabor filter
-    and generate letters to the given dataset with the standard structure.
-
-    Args:
-       directory (str, optional): the path to the directory that should
-       be processed.
-    """
-    if directory is None:
-        directory = get_dir()
-
-    create_skeletons_and_control_points(directory=directory)
-
-
-if __name__ == "__main__":
-    process_dataset()
