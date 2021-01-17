@@ -1,5 +1,5 @@
 import os
-from src.file_handler.file_handler import ensure_create_and_append_file, get_absolute_path, read_from_file
+from src.file_handler.file_handler import combine_paths, ensure_remove_file, get_absolute_path, read_from_file, write_to_file
 from src.graphical_interface.common import EVT_CHANGE_PANEL_EVENT, ImageSize
 import wx
 from src.graphical_interface.recognition_panel import RecognitionPanel
@@ -43,17 +43,17 @@ class Frame(wx.Frame):
 
         menuBar = wx.MenuBar()
         # ------------------ menu - File ------------------ #
+
         file_menu = wx.Menu()
         file_menu.Append(wx.ID_SAVE, "S&ave\tAlt-S", helpString="Save result")
-
         file_menu.Append(wx.ID_OPEN, "L&oad\tAlt-L", helpString="Load text")
-
         menuBar.Append(file_menu, "&File")
+
         # ------------------ menu - File ------------------ #
 
         # ------------------ menu - Options ------------------ #
-        self.option_menu = wx.Menu()
 
+        self.option_menu = wx.Menu()
         size_menu = wx.Menu()
         size_menu.Append(108, "Large",
                          "Large size of image", wx.ITEM_RADIO)
@@ -94,11 +94,9 @@ class Frame(wx.Frame):
 
         self.synthesize_menu = wx.Menu()
         self.match_with_other = False
-        # self.use_control_point_bar = self.synthesize_menu.Append(121, "Match",
-        #                                                          "Match with other instance of the letter in letter generation", wx.ITEM_CHECK)
 
         advanced_option_menu.Append(
-            121, "Use matching", "Match with other instance of the letter in letter generation", wx.ITEM_CHECK)
+            121, "Use matching", "Match with other instance of the letter in generation", wx.ITEM_CHECK)
 
         self.option_menu.Append(110, 'Advanced', advanced_option_menu)
         self.option_menu.Enable(110, False)
@@ -241,21 +239,26 @@ class Frame(wx.Frame):
                     if len(filename) > 0:
                         self.statusBar.SetStatusText('Saving...')
                         img.SaveFile(filename, wx.BITMAP_TYPE_PNG)
+                        print('Image is saved in file \'' + filename)
                         self.statusBar.SetStatusText('File saved')
                     txt = self.synthesis_panel.editname.GetValue()
                     if len(txt) > 0:
                         self.statusBar.SetStatusText('Saving...')
                         filename = str.replace(filename, '.png', '.txt')
-                        ensure_create_and_append_file(filename, txt)
+                        write_to_file(filename, txt)
+                        print('Text \'' + txt +
+                              '\' is written in file \'' + filename)
                         self.statusBar.SetStatusText('File saved')
         elif self.panel == "recognition":
             with wx.FileDialog(self, 'Save text', wildcard='text files (*.txt)|*.txt', style=wx.FD_SAVE) as fd:
                 if fd.ShowModal() == wx.ID_OK:
                     filename = fd.GetPath()
-                    txt = self.synthesis_panel.editname.GetValue()
+                    txt = self.recognition_panel.editname.GetValue()
                     if len(txt) > 0:
                         self.statusBar.SetStatusText('Saving...')
-                        ensure_create_and_append_file(filename, txt)
+                        write_to_file(filename, txt)
+                        print('Text \'' + txt +
+                              '\' is written in file \'' + filename)
                         self.statusBar.SetStatusText('File saved')
 
 
@@ -267,5 +270,9 @@ class Application(wx.App):
 
 
 if __name__ == '__main__':
-    app = Application(redirect=False)  # TODO change to True at the end
+    path_to_logs = get_absolute_path('.')
+    path_to_logs = combine_paths(path_to_logs, "application_logs.txt")
+    ensure_remove_file(path_to_logs)
+    print(path_to_logs)
+    app = Application(redirect=True, filename=path_to_logs)
     app.MainLoop()
