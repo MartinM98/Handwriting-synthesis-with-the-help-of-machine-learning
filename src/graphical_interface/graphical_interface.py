@@ -101,7 +101,7 @@ class Frame(wx.Frame):
 
         self.option_menu.AppendSeparator()
 
-        self.option_menu.Append(wx.ID_EXIT, "E&xit\tAlt-X",
+        self.option_menu.Append(98, "E&xit\tAlt-X",
                                 "Exit this simple sample")
 
         menuBar.Append(self.option_menu, "&Options")
@@ -109,7 +109,7 @@ class Frame(wx.Frame):
 
         # ------------------ menu - About ------------------ #
         about_menu = wx.Menu()
-        about_menu.Append(wx.ID_ABOUT, "A&bout the project\tAlt-A",
+        about_menu.Append(99, "A&bout the project\tAlt-A",
                           "Show informations about the application")
 
         about_menu.Append(100, "Au&thors\tAlt-U",
@@ -119,6 +119,7 @@ class Frame(wx.Frame):
         # ------------------ menu - About ------------------ #
         self.SetMenuBar(menuBar)
         self.Bind(wx.EVT_MENU, self.menuhandler)
+
         path = get_absolute_path("resources/Bachelor_Thesis.ico")
         icon = wx.Icon(path, wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon)
@@ -130,12 +131,10 @@ class Frame(wx.Frame):
 
     def menuhandler(self, event):  # noqa: C901
         id = event.GetId()
-        if id == wx.ID_ABOUT:
+        if id == 98:
+            self.menu_close(event)
+        elif id == 99:
             self.show_informations(event)
-        elif id == wx.ID_EXIT:
-            self.menu_close(event)
-        elif id == wx.ID_EXIT:
-            self.menu_close(event)
         elif id == wx.ID_SAVE:
             self.save(event)
         elif id == 100:
