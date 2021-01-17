@@ -94,7 +94,8 @@ class Frame(wx.Frame):
         # self.use_control_point_bar = self.synthesize_menu.Append(121, "Match",
         #                                                          "Match with other instance of the letter in letter generation", wx.ITEM_CHECK)
 
-        advanced_option_menu.Append(121, "Use matching", "Match with other instance of the letter in letter generation", wx.ITEM_CHECK)
+        advanced_option_menu.Append(
+            121, "Use matching", "Match with other instance of the letter in letter generation", wx.ITEM_CHECK)
 
         self.option_menu.Append(110, 'Advanced', advanced_option_menu)
         self.option_menu.Enable(110, False)
@@ -186,19 +187,19 @@ class Frame(wx.Frame):
 
     def show_authors(self, event):
         wx.MessageBox(
-            'The authors of the application are: \n - Martin Mrugała \n - Patryk Walczak \n - Bartłomiej Żyła \n with the supervision of Agnieszka Jastrzębska, Ph.D. Eng.', 'Authors', wx.OK)
+            'The authors of the application are: \n - Martin Mrugała \n - Patryk Walczak \n - Bartłomiej Żyła \n\n \
+             Thesis supervisor Agnieszka Jastrzębska, Ph.D. Eng', 'Authors', wx.OK)
 
     def menu_close(self, event):
         self.Close()
 
     def on_close(self, event):
-        event.Skip()
-        # dlg = wx.MessageDialog(
-        #     None, "Do you want to exit?", 'See you later?', wx.YES_NO | wx.ICON_QUESTION)
-        # result = dlg.ShowModal()
+        dlg = wx.MessageDialog(
+            None, "Do you want to exit?", 'See you later?', wx.YES_NO | wx.ICON_QUESTION)
+        result = dlg.ShowModal()
 
-        # if result == wx.ID_YES:
-        #     event.Skip()
+        if result == wx.ID_YES:
+            event.Skip()
 
     def on_switch_panels(self, event):
         if self.synthesis_panel.IsShown():
