@@ -260,6 +260,17 @@ class SynthesisPanel(wx.Panel):
         """
         Creates new model based on pictures from dataset
         """
+        r = wx.MessageDialog(
+            self,
+            ('This action will delete model for current font.' + '\n' +
+             'Do you want to continue?'),
+            ('Confirm'),
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION
+        ).ShowModal()
+        if r != wx.ID_YES:
+            self.statusBar.SetStatusText('Action cancelled')
+            return
+        self.statusBar.SetStatusText('Clearing model...')
         self.clear_directories_generate('./data')
         self.statusBar.SetStatusText('Resizing letters...')
         resize_directory(self.path_to_model + '/letters_dataset',
