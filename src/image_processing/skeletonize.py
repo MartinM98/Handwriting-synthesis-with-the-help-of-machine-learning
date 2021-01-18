@@ -35,6 +35,6 @@ def skeletonize_image(image: np.ndarray = None, path: str = None):
         image = cv2.cvtColor(skeleton, cv2.COLOR_BGR2GRAY)
         _, image = cv2.threshold(image, 127, 255, cv2.THRESH_BINARY)
     except ValueError:
-        print('Skeletonization failed!')
+        print('Skeletonization warning')
 
     return image

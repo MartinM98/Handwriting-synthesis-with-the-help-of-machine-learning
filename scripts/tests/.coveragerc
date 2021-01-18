@@ -20,6 +20,7 @@ omit =
     src\recognition\printed_text_recognition.py
     src\synthesis\process-local.py
     src\synthesis\process.py
+    src\image_processing\correct_letters.py
 
 [report]
 # Regexes for lines to exclude from consideration
