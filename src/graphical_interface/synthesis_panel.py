@@ -6,6 +6,7 @@ from src.graphical_interface.model_dialog import ModelDialog
 from src.graphical_interface.options_dialog import OptionsDialog
 from src.graphical_interface.create_text import TextImageRenderAllDifferentWidths
 from src.graphical_interface.common import ChangePanelEvent, ImageSize, PIL2wx
+from src.graphical_interface.bitmap_panel import BitmapPanel
 from src.image_processing.letters import extract
 from src.image_processing.correct_letters import correct
 from src.image_processing.resize import resize_directory, combine_directory, resize_skeletons_directory
@@ -122,9 +123,9 @@ class SynthesisPanel(wx.Panel):
 
         self.image_size = ImageSize.Large
         img = wx.Image(self.image_size.value[0], self.image_size.value[1])
-        self.imageCtrl = wx.StaticBitmap(self, wx.ID_ANY,
-                                         wx.Bitmap(img))
-        self.hSizer2.Add(self.imageCtrl, 50, wx.CENTER, border=10)
+        self.bitmap_panel = BitmapPanel(self, wx.Bitmap(img))
+        self.imageCtrl = self.bitmap_panel.imageCtrl
+        self.hSizer2.Add(self.bitmap_panel, 50, wx.CENTER, border=10)
 
         self.hSizer2.AddStretchSpacer(1)
         # ------------------ hSizer2 ------------------ #
@@ -220,11 +221,11 @@ class SynthesisPanel(wx.Panel):
                 process_directory(combine_paths(
                     self.path_to_model, 'export'), './data/synthesis/skeletons/', self.use_gpu)
                 text_renderer = TextImageRenderAllDifferentWidths(
-                    './data/synthesis/synthesized/', self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
+                    './data/synthesis/synthesized/', self.image_size.value[0], 50, self.editname.GetValue())
                 img = text_renderer.create_synth_image()
             else:
                 text_renderer = TextImageRenderAllDifferentWidths(
-                    combine_paths(self.path_to_model, 'letters_dataset'), self.image_size.value[0], self.image_size.value[1], 50, self.editname.GetValue())
+                    combine_paths(self.path_to_model, 'letters_dataset'), self.image_size.value[0], 50, self.editname.GetValue())
                 img = text_renderer.create_image()
 
             if np.mean(img) == 255:
