@@ -30,14 +30,16 @@ class FileHandlerUnitTests(unittest.TestCase):
     def test_get_relative_path(self):
         relative_path = '.\\tests\\smoefile.txt'
         abspath = os.path.abspath(relative_path)
-        result = '.\\' + fh.get_relative_path(abspath)
+        result = fh.get_relative_path(abspath)
+        if result[0] != '.':
+            result = '.\\' + result
         self.assertEqual(relative_path, result)
 
     def test_combine_paths(self):
         path1 = '.\\tests'
         path2 = 'smoefile.txt'
         result = fh.combine_paths(path1, path2)
-        self.assertEqual(path1 + '\\' + path2, result)
+        self.assertEqual(path1 + os.path.sep + path2, result)
         path3 = '.\\tests\\'
         result = fh.combine_paths(path3, path2)
         self.assertEqual(path3 + path2, result)
