@@ -121,7 +121,7 @@ class SynthesisPanel(wx.Panel):
 
         self.hSizer2.AddStretchSpacer(1)
 
-        self.image_size = ImageSize.Large
+        self.image_size = ImageSize.Medium
         img = wx.Image(self.image_size.value[0], self.image_size.value[1])
         self.bitmap_panel = BitmapPanel(self, wx.Bitmap(img))
         self.imageCtrl = self.bitmap_panel.imageCtrl
@@ -159,6 +159,7 @@ class SynthesisPanel(wx.Panel):
 
     def change_image_size(self, size):
         self.image_size = size
+        self.statusBar.SetStatusText('New size selected.')
 
     def change_match_flag(self):
         self.match_with_other = not self.match_with_other
@@ -203,20 +204,23 @@ class SynthesisPanel(wx.Panel):
         Creates a handwriting imitation image
         """
         if (self.check_model()):
+            self.SetEvtHandlerEnabled(False)
             self.clear_directories_render()
-            self.statusBar.SetStatusText('Preparing skeletons...')
-            print("Preparing skeletons")
-            prepare_letters(self.editname.GetValue(), combine_paths(self.path_to_model, 'letters_dataset'),
-                            self.n_advanced_options, self.k_advanced_options, self.filter_type, int(self.font_size_combobox.GetValue()), self.match_with_other)
-            self.statusBar.SetStatusText('Rendering text...')
-            print("Rendering text")
             if (self.use_synthesis):
+                self.statusBar.SetStatusText('Preparing skeletons...')
+                print("Preparing skeletons")
+                prepare_letters(self.editname.GetValue(), combine_paths(self.path_to_model, 'letters_dataset'),
+                                self.n_advanced_options, self.k_advanced_options, self.filter_type, int(self.font_size_combobox.GetValue()), self.match_with_other)
+                self.statusBar.SetStatusText('Rendering text...')
+                print("Rendering text")
                 process_directory(combine_paths(
                     self.path_to_model, 'export'), './data/synthesis/skeletons/', self.use_gpu)
                 text_renderer = TextImageRenderAllDifferentWidths(
                     './data/synthesis/synthesized/', self.image_size.value[0], 50, self.editname.GetValue())
                 img = text_renderer.create_synth_image()
             else:
+                self.statusBar.SetStatusText('Rendering text...')
+                print("Rendering text")
                 text_renderer = TextImageRenderAllDifferentWidths(
                     combine_paths(self.path_to_model, 'letters_dataset'), self.image_size.value[0], 50, self.editname.GetValue())
                 img = text_renderer.create_image()
@@ -229,6 +233,7 @@ class SynthesisPanel(wx.Panel):
                 self.statusBar.SetStatusText('Text rendered')
                 print("Text rendered")
             self.imageCtrl.SetBitmap(PIL2wx(img))
+            self.SetEvtHandlerEnabled(True)
             self.Layout()
         else:
             self.statusBar.SetStatusText('Model or dataset does not exist')
