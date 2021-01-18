@@ -19,15 +19,19 @@ def add_end_points(halves: list, img2: np.ndarray, parts2: list):
        parts2 (list): list of subparts of the initial image that
             that still contains control points.
     """
-    halves.append(0)
-    rand_index = random.randint(0, len(parts2[0]) - 1)
-    img2[parts2[0][rand_index][0], parts2[0][rand_index][1]] = 0
-    parts2[0].pop(rand_index)
-    halves.append(len(parts2) - 1)
-    rand_index = random.randint(0, len(parts2[len(parts2) - 1]) - 1)
-    img2[parts2[len(parts2) - 1][rand_index][0],
-         parts2[len(parts2) - 1][rand_index][1]] = 0
-    parts2[len(parts2) - 1].pop(rand_index)
+    if (len(parts2) == 1) and (len(parts2[0]) == 1):
+        halves.append(0)
+        img2[parts2[0][0][0], parts2[0][0][1]] = 0
+        parts2[0].pop(0)
+    else:
+        halves.append(0)
+        rand_index = random.randint(0, len(parts2[0]) - 1)
+        img2[parts2[0][rand_index][0], parts2[0][rand_index][1]] = 0
+        parts2[0].pop(rand_index)
+        halves.append(len(parts2) - 1)
+        rand_index = random.randint(0, len(parts2[len(parts2) - 1]) - 1)
+        img2[parts2[len(parts2) - 1][rand_index][0], parts2[len(parts2) - 1][rand_index][1]] = 0
+        parts2[len(parts2) - 1].pop(rand_index)
 
 
 def add_point(img2: np.ndarray, tmp: list, halves: list, i: int, parts2: list, offset: int):
@@ -63,6 +67,12 @@ def filter_points(img2: np.ndarray, parts: list, n: int):
        n (int): the number of subparts in each direction.
     """
     parts2 = [part for part in parts if len(part) > 0]
+    halves = []
+    if n == 1:
+        rand_index = random.randint(
+            0, len(parts2[0]) - 1)
+        img2[parts2[0][rand_index][0], parts2[0][rand_index][1]] = 0
+        return
     state = 2
     while(state < n):
         parts2 = [part for part in parts2 if len(part) > 0]
