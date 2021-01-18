@@ -15,7 +15,7 @@ def resize_image(image_path: str, width: int, height: int, image: np.ndarray = N
     Returns:
         (array): Resized image
     """
-    resized = np.zeros([width, height, 3], dtype=np.uint8)
+    resized = np.zeros([height, width, 3], dtype=np.uint8)
     resized.fill(255)
     if image is None:
         image = cv2.imread(image_path)

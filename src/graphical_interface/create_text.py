@@ -1,7 +1,7 @@
 # https://note.nkmk.me/en/python-pillow-concat-images/
 
 from src.file_handler.file_handler import combine_paths
-from src.image_processing.resize import crop_image_return
+from src.image_processing.resize import crop_image_return, resize_image
 from PIL import Image
 import math
 import random
@@ -69,7 +69,9 @@ class TextImageRenderAllDifferentWidths:
                 self.current_line += 1
             self.concatenate_vertical(result_image, img, letter_to_int)
             self.current_width = self.current_width + img.width
-        pil = Image.fromarray(crop_image_return(result_image))
+        result_image = crop_image_return(result_image)
+        result_image = resize_image('', result_image.shape[1] + 10, result_image.shape[0] + 10, result_image)
+        pil = Image.fromarray(result_image)
         result = Image.new('RGB', pil.size)
         result.paste(pil)
         return result
@@ -86,7 +88,9 @@ class TextImageRenderAllDifferentWidths:
             letter_to_int = ord(self.text_to_render[int(letter[:-4])])
             self.concatenate_vertical(result_image, img, letter_to_int)
             self.current_width = self.current_width + img.width
-        pil = Image.fromarray(crop_image_return(result_image))
+        result_image = crop_image_return(result_image)
+        result_image = resize_image('', result_image.shape[1] + 10, result_image.shape[0] + 10, result_image)
+        pil = Image.fromarray(result_image)
         result = Image.new('RGB', pil.size)
         result.paste(pil)
         return result
