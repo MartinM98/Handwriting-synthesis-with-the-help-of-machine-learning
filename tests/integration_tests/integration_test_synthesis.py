@@ -13,7 +13,7 @@ from src.synthesis.get_sequences2 import get_point_index
 from src.synthesis.get_sequences2 import decrement_point_occur
 from src.synthesis.get_sequences2 import init_append
 from src.synthesis.get_sequences2 import one_way_append
-from src.synthesis.get_sequences2 import get_sequences2
+from src.synthesis.get_sequences2 import get_sequences_extended
 
 
 class SynthesisIntegrationTests(unittest.TestCase):
@@ -156,8 +156,8 @@ class SynthesisIntegrationTests(unittest.TestCase):
         result = one_way_append(self.edges2, points, index, checked)
         self.assertEqual(len(result), len(points))
 
-    def test_get_sequences2(self):
-        result = get_sequences2(self.edges2)
+    def test_get_sequences_extended(self):
+        result = get_sequences_extended(self.edges2)
         self.assertIsNotNone(result)
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]), len(self.edges2) + 1)

@@ -1,7 +1,7 @@
 from src.synthesis.handwriting_reconstruction import draw_letter
 from src.file_handler.file_handler import combine_paths, ensure_create_dir, get_absolute_path, get_dir_path
 from src.synthesis.get_sequences import get_sequences
-from src.synthesis.get_sequences2 import get_sequences2
+from src.synthesis.get_sequences_extended import get_sequences_extended
 import cv2
 from matplotlib import pyplot as plt
 import numpy as np
@@ -383,7 +383,7 @@ def test():
     draw_graph(vertices, edges)
     remove_cycles(vertices, edges)
     draw_graph(vertices, edges)
-    result = get_sequences2(list(edges))
+    result = get_sequences_extended(list(edges))
     # res = [r for r in result if len(r) > 2]
     print("control points", control_points, '\n')
     print("res", result, '\n')
