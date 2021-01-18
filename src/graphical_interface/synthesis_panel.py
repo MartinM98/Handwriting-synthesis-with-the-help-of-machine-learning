@@ -143,6 +143,7 @@ class SynthesisPanel(wx.Panel):
         if(self.combobox.GetValue() != '*New font*'):
             self.path_to_model = combine_paths(
                 './data/synthesis_models', self.combobox.GetValue())
+            self.statusBar.SetStatusText('Font changed to ' + str(self.combobox.GetValue()))
         else:
             current = self.new_font()
             self.combobox.Clear()
@@ -155,26 +156,32 @@ class SynthesisPanel(wx.Panel):
         styles = self.parent.find_models()
         new = str(int(styles[-1]) + 1)
         ensure_create_dir('./data/synthesis_models/' + new)
+        self.statusBar.SetStatusText('New empty font created')
         return new
 
     def change_image_size(self, size):
         self.image_size = size
-        self.statusBar.SetStatusText('New size selected.')
+        self.statusBar.SetStatusText('Line width changed to ' + str(size.value[0]) + 'px')
 
     def change_match_flag(self):
         self.match_with_other = not self.match_with_other
+        self.statusBar.SetStatusText('Use matching set to ' + str(self.match_with_other))
 
     def change_filter_type(self, new_type):
         self.filter_type = new_type
+        self.statusBar.SetStatusText('Selected filter: ' + self.filter_type)
 
     def on_advanced_options(self):
         od = OptionsDialog(self, title='Advanced options', size=(250, 150))
         od.set_options(self.n_advanced_options, self.k_advanced_options)
         if od.ShowModal() == wx.ID_CANCEL:
+            self.statusBar.SetStatusText('Action cancelled')
             od.Destroy()
             return
         self.n_advanced_options = int(od.n.GetValue())
         self.k_advanced_options = int(od.k.GetValue())
+        self.statusBar.SetStatusText('Selected grid shape: ' + str(self.n_advanced_options) +
+                                     ' and no. of points: ' + str(self.k_advanced_options))
         od.Destroy()
 
     def on_change_panel(self, event):
@@ -257,6 +264,17 @@ class SynthesisPanel(wx.Panel):
         """
         Creates new model based on pictures from dataset
         """
+        r = wx.MessageDialog(
+            self,
+            ('This action will delete model for current font.' + '\n' +
+             'Do you want to continue?'),
+            ('Confirm'),
+            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION
+        ).ShowModal()
+        if r != wx.ID_YES:
+            self.statusBar.SetStatusText('Action cancelled')
+            return
+        self.statusBar.SetStatusText('Clearing model...')
         self.clear_directories_generate('./data')
         self.statusBar.SetStatusText('Resizing letters...')
         resize_directory(self.path_to_model + '/letters_dataset',

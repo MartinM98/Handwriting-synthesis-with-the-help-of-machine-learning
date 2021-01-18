@@ -155,11 +155,14 @@ class Frame(wx.Frame):
                 self.synthesis_panel.use_gpu = False
             else:
                 self.synthesis_panel.use_gpu = True
+            self.statusBar.SetStatusText('Use GPU set to ' + str(self.synthesis_panel.use_gpu))
         elif id == 103:
             if self.synthesis_panel.use_synthesis:
                 self.synthesis_panel.use_synthesis = False
+                self.statusBar.SetStatusText('Synthesis disabled')
             else:
                 self.synthesis_panel.use_synthesis = True
+                self.statusBar.SetStatusText('Synthesis enabled')
         elif id == 111:
             self.synthesis_panel.on_advanced_options()
         elif id == 113:
