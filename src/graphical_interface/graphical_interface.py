@@ -55,14 +55,14 @@ class Frame(wx.Frame):
 
         self.option_menu = wx.Menu()
         size_menu = wx.Menu()
-        size_menu.Append(108, "Large",
-                         "Large size of image", wx.ITEM_RADIO)
-        size_menu.Append(107, "Medium",
-                         "Medium size of image", wx.ITEM_RADIO)
-        size_menu.Append(106, "Small",
-                         "Small size of image", wx.ITEM_RADIO)
+        size_menu.Append(108, "900px",
+                         "900px line width", wx.ITEM_RADIO)
+        size_menu.Append(107, "675px",
+                         "675px line width", wx.ITEM_RADIO)
+        size_menu.Append(106, "450px",
+                         "450px line width", wx.ITEM_RADIO)
 
-        self.option_menu.Append(105, 'Image size', size_menu)
+        self.option_menu.Append(105, 'Line width', size_menu)
         self.option_menu.Enable(105, False)
 
         self.option_menu.Append(
@@ -144,11 +144,11 @@ class Frame(wx.Frame):
         elif id == wx.ID_OPEN:
             self.load_text(event)
         elif id == 106:
-            self.synthesis_panel.chane_image_size(ImageSize.Small)
+            self.synthesis_panel.change_image_size(ImageSize.Small)
         elif id == 107:
-            self.synthesis_panel.chane_image_size(ImageSize.Medium)
+            self.synthesis_panel.change_image_size(ImageSize.Medium)
         elif id == 108:
-            self.synthesis_panel.chane_image_size(ImageSize.Large)
+            self.synthesis_panel.change_image_size(ImageSize.Large)
         elif id == 104:
             if self.synthesis_panel.use_gpu:
                 self.synthesis_panel.use_gpu = False
