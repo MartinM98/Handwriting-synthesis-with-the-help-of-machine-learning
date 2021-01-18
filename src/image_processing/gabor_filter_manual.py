@@ -210,7 +210,6 @@ def gabor_filter():
     result = np.zeros(shape=img.shape)
     result = img_as_ubyte(result)
     result = invert(result)
-    # result = np.bitwise_and(result, img)
 
     cv2.createTrackbar('theta', 'trackbar', 25, 300, nothing)
     cv2.createTrackbar('lamda', 'trackbar', 16, 300, nothing)
@@ -222,7 +221,8 @@ def gabor_filter():
     cv2.createTrackbar('cval', 'trackbar', 0, 300, nothing)
     cv2.createTrackbar('cval', 'trackbar', 0, 300, nothing)
     cv2.createButton('save crl points', save, [''], cv2.QT_PUSH_BUTTON)
-    cv2.createButton('save crl points in skel', save_shifted, [''], cv2.QT_PUSH_BUTTON)
+    cv2.createButton('save crl points in skel',
+                     save_shifted, [''], cv2.QT_PUSH_BUTTON)
     cv2.createButton('reset', reset, [''], cv2.QT_PUSH_BUTTON)
     cv2.createButton('reset skel', reset_skel, [''], cv2.QT_PUSH_BUTTON)
     while(1):
