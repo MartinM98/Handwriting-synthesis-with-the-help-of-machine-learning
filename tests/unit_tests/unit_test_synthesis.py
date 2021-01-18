@@ -7,10 +7,10 @@ import unittest
 from unittest.mock import Mock
 
 # ------------ get_sequences2.py ------------
-from src.synthesis.get_sequences2 import compare_points
-from src.synthesis.get_sequences2 import get_points
-from src.synthesis.get_sequences2 import find_non_zero_occurence_point
-from src.synthesis.get_sequences2 import find_single_occurence_point
+from src.synthesis.get_sequences_extended import compare_points
+from src.synthesis.get_sequences_extended import get_points
+from src.synthesis.get_sequences_extended import find_non_zero_occurence_point
+from src.synthesis.get_sequences_extended import find_single_occurence_point
 
 
 class SynthesisUnitTests(unittest.TestCase):

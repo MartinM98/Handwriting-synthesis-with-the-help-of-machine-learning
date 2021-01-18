@@ -238,7 +238,7 @@ def find_single_occurence_point(points: list):
     return index
 
 
-def get_sequences2(edges):
+def get_sequences_extended(edges):
     """
    Creates the list of all unique points and their number of
    occurences. After that, the list of sequences that use all
