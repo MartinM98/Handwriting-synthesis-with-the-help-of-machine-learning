@@ -37,10 +37,10 @@ class FileHandlerUnitTests(unittest.TestCase):
 
     def test_combine_paths(self):
         path1 = '.\\tests'
-        path2 = 'smoefile.txt'
+        path2 = 'somofile.txt'
         result = fh.combine_paths(path1, path2)
         self.assertEqual(path1 + os.path.sep + path2, result)
-        path3 = '.\\tests\\'
+        path3 = './tests/'
         result = fh.combine_paths(path3, path2)
         self.assertEqual(path3 + path2, result)
 
