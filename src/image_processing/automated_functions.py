@@ -4,13 +4,42 @@ import cv2
 import random
 import numpy as np
 import unidecode
+from src.file_handler.file_handler import combine_paths, ensure_create_dir, get_filename_without_extention
+from src.image_processing.skeletonize import skeletonize_image
+from src.image_processing.gabor_filter import gabor_filter
 from src.graphical_interface.model_dialog import ModelDialog
 from src.image_processing.consecutive_filter import consecutive
 from src.image_processing.random_filter import random_filter
 from src.image_processing.binary_search_filter import binary_search_filter
 from src.image_processing.common_functions.common_functions import is_int
 from src.image_processing.resize import resize_image
-from src.image_processing.common_functions.common_functions import prepare_blank_image
+from src.image_processing.common_functions.common_functions import prepare_blank_image, get_dir
+
+
+def create_skeletons_and_control_points(directory: str):
+    """
+    Applies skeletonization and gabor filter to the given dataset
+    with the standard structure.
+    Args:
+       directory (str): the path to the directory that should
+       be processed.
+    """
+    for dir in sorted(os.listdir(directory)):
+        if not dir.startswith('.'):
+            dir2 = directory + '/' + dir + '/'
+            dir3 = directory + '/' + dir + '/skel/'
+            dir4 = directory + '/' + dir + '/filtered/'
+            ensure_create_dir(dir3)
+            ensure_create_dir(dir4)
+            for file in sorted(os.listdir(dir2)):
+                if file.endswith('.png'):
+                    filename = get_filename_without_extention(file)
+                    path = combine_paths(dir2, file)
+                    img = cv2.imread(path)
+                    skeleton = skeletonize_image(img)
+                    cv2.imwrite(dir3 + filename + '.png', skeleton)
+                    gabor = gabor_filter(path=dir3 + filename + '.png')
+                    cv2.imwrite(dir4 + filename + '.png', gabor)
 
 
 def prepare_images(path_skeleton: str, path_control_points: str, path_control_points2: str, n: int, k: int, option: str):
@@ -163,3 +192,17 @@ def process_model_options(md: ModelDialog):
         options.append(None)
 
     return options
+
+
+def process_dataset(directory: str = None, options: list = None):
+    """
+    Invokes functions applying skeletonization, gabor filter
+    and generate letters to the given dataset with the standard structure.
+    Args:
+       directory (str, optional): the path to the directory that should
+       be processed.
+    """
+    if directory is None:
+        directory = get_dir()
+
+    create_skeletons_and_control_points(directory=directory)
