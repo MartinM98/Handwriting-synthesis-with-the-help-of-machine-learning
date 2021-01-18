@@ -57,10 +57,10 @@ class Frame(wx.Frame):
         size_menu = wx.Menu()
         size_menu.Append(108, "900px",
                          "900px line width", wx.ITEM_RADIO)
-        size_menu.Append(107, "600px",
-                         "600px line width", wx.ITEM_RADIO)
-        size_menu.Append(106, "300px",
-                         "300px line width", wx.ITEM_RADIO)
+        size_menu.Append(107, "675px",
+                         "675px line width", wx.ITEM_RADIO)
+        size_menu.Append(106, "450px",
+                         "450px line width", wx.ITEM_RADIO)
 
         self.option_menu.Append(105, 'Line width', size_menu)
         self.option_menu.Enable(105, False)
