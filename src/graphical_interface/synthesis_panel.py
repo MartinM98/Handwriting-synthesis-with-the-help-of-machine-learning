@@ -314,21 +314,21 @@ class SynthesisPanel(wx.Panel):
         """
         Creates new dataset from pictures from selected directory
         """
-        # self.statusBar.SetStatusText('Choose a directory')
-        # dd = wx.DirDialog(self, 'Choose a directory')
-        # if dd.ShowModal() != wx.ID_OK:
-        #     dd.Destroy()
-        #     self.statusBar.SetStatusText('Action cancelled')
-        #     return
-        # directory = dd.GetPath()
-        # dd.Destroy()
-        # self.clear_directories_load(self.path_to_model)
-        # dir = extract(directory, self.path_to_model)
-        # if dir is None:
-        #     self.statusBar.SetStatusText('An error occured')
-        #     return
-        # self.statusBar.SetStatusText('Select incorrect letters')
-        # correct(self, dir)
-        # self.statusBar.SetStatusText('Processing dataset...')
+        self.statusBar.SetStatusText('Choose a directory')
+        dd = wx.DirDialog(self, 'Choose a directory')
+        if dd.ShowModal() != wx.ID_OK:
+            dd.Destroy()
+            self.statusBar.SetStatusText('Action cancelled')
+            return
+        directory = dd.GetPath()
+        dd.Destroy()
+        self.clear_directories_load(self.path_to_model)
+        dir = extract(directory, self.path_to_model)
+        if dir is None:
+            self.statusBar.SetStatusText('An error occured')
+            return
+        self.statusBar.SetStatusText('Select incorrect letters')
+        correct(self, dir)
+        self.statusBar.SetStatusText('Processing dataset...')
         process_dataset(self.path_to_model + '/letters_dataset')
         self.statusBar.SetStatusText('Dataset uploaded')
