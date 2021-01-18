@@ -21,7 +21,7 @@ class FileHandlerIntegrationTests(unittest.TestCase):
     def tearDownClass(cls):
         """ after all tests """
         print('\n[END]    File Handler Integration Tests')
-        os.removedirs(cls.directory)
+        fh.remove_dir_with_content(cls.directory)
 
     @classmethod
     def setUp(cls):
@@ -61,6 +61,51 @@ class FileHandlerIntegrationTests(unittest.TestCase):
         result_content = fh.read_from_file(file_path)
         self.assertMultiLineEqual(''.join(data), result_content)
         fh.delete_file(file_path)
+
+    def test_ensure_create_and_append_file(self):
+        file_path = os.path.join(
+            self.directory, 'test_ensure_create_and_append_file.txt')
+        data = ['content', 'content_2']
+        fh.ensure_create_and_append_file(file_path, data[0])
+        result_content = fh.read_from_file(file_path)
+        self.assertMultiLineEqual(''.join(data[0]), result_content)
+        fh.ensure_create_and_append_file(file_path, data[1])
+        result_content = fh.read_from_file(file_path)
+        self.assertMultiLineEqual(''.join(data), result_content)
+        fh.delete_file(file_path)
+
+    def test_ensure_remove_file(self):
+        file_path = os.path.join(
+            self.directory, 'test_ensure_remove_file.txt')
+        self.assertFalse(os.path.isfile(file_path))
+        fh.ensure_remove_file(file_path)
+        data = ['content']
+        fh.create_file(file_path, data[0])
+        self.assertTrue(os.path.isfile(file_path))
+        fh.ensure_remove_file(file_path)
+        self.assertFalse(os.path.isfile(file_path))
+
+    def test_read_from_file_lines(self):
+        file_path = os.path.join(
+            self.directory, 'test_read_from_file_lines.txt')
+        data = ['content\n', 'content_2']
+        fh.create_file(file_path, data[0])
+        fh.add_to_file(file_path, data[1])
+        result_content = fh.read_from_file_lines(file_path)
+        self.assertEqual(len(result_content), len(data))
+        self.assertEqual(result_content[0], data[0])
+        self.assertEqual(result_content[1], data[1])
+        fh.delete_file(file_path)
+
+    def test_ensure_create_dir(self):
+        dir_path = os.path.join(
+            self.directory, 'test_ensure_create_dir')
+        self.assertFalse(os.path.exists(dir_path))
+        fh.ensure_create_dir(dir_path)
+        self.assertTrue(os.path.exists(dir_path))
+        fh.ensure_create_dir(dir_path)
+        self.assertTrue(os.path.exists(dir_path))
+        fh.remove_dir_with_content(dir_path)
 
 
 if __name__ == '__main__':
