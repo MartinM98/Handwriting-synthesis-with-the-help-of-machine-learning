@@ -111,15 +111,15 @@ class SynthesisPanel(wx.Panel):
 
         # ------------------ hSizer2 ------------------ #
 
-        self.hSizer2.AddStretchSpacer(1)
+        self.hSizer2.AddStretchSpacer()
         self.editname = wx.TextCtrl(
-            self, value='Test', style=wx.TE_MULTILINE)
+            self, value='Scripturam', style=wx.TE_MULTILINE)
         self.editname.SetMinSize(
-            (300, 300))
+            (250, 250))
         self.editname.SetFont(font)
         self.hSizer2.Add(self.editname, 30, wx.EXPAND, border=10)
 
-        self.hSizer2.AddStretchSpacer(1)
+        self.hSizer2.AddStretchSpacer()
 
         self.image_size = ImageSize.Medium
         img = wx.Image(self.image_size.value[0], self.image_size.value[1])
@@ -127,11 +127,11 @@ class SynthesisPanel(wx.Panel):
         self.imageCtrl = self.bitmap_panel.imageCtrl
         self.hSizer2.Add(self.bitmap_panel, 50, wx.CENTER, border=10)
 
-        self.hSizer2.AddStretchSpacer(1)
+        self.hSizer2.AddStretchSpacer()
         # ------------------ hSizer2 ------------------ #
 
-        self.hSizer3.AddStretchSpacer(1)
-        self.hSizer4.AddStretchSpacer(1)
+        self.hSizer3.AddStretchSpacer()
+        self.hSizer4.AddStretchSpacer()
 
         self.mainSizer.Add(self.hSizer1, 0, wx.EXPAND)
         self.mainSizer.Add(self.hSizer3, 1, wx.EXPAND)

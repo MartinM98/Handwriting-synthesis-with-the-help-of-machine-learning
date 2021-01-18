@@ -35,7 +35,7 @@ class Frame(wx.Frame):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.synthesis_panel, 1, wx.EXPAND)
         self.sizer.Add(self.recognition_panel, 1, wx.EXPAND)
-        self.sizer.SetMinSize(1000, 500)
+        self.sizer.SetMinSize(1050, 550)
         self.SetSizerAndFit(self.sizer)
 
         self.Bind(wx.EVT_CLOSE, self.on_close)
