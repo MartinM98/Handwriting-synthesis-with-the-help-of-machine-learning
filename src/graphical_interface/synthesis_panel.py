@@ -157,8 +157,8 @@ class SynthesisPanel(wx.Panel):
         ensure_create_dir('./data/synthesis_models/' + new)
         return new
 
-    def chane_image_size(self, size):
-        self.resize_image(size)
+    def change_image_size(self, size):
+        self.image_size = size
 
     def change_match_flag(self):
         self.match_with_other = not self.match_with_other
@@ -180,13 +180,6 @@ class SynthesisPanel(wx.Panel):
         evt = ChangePanelEvent()
         wx.PostEvent(self.Parent, evt)
         event.Skip()
-
-    def resize_image(self, size):
-        self.image_size = size
-        img = self.imageCtrl.GetBitmap().ConvertToImage()
-        img = img.Scale(size.value[0], size.value[1])
-        self.imageCtrl.SetBitmap(wx.Bitmap(img))
-        self.Layout()
 
     def clear_directories_render(self):
         self.statusBar.SetStatusText('Clearing directories...')
