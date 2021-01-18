@@ -7,13 +7,13 @@ import random
 import numpy as np
 
 # ------------ get_sequences2.py ------------
-from src.synthesis.get_sequences2 import get_unique_points
-from src.synthesis.get_sequences2 import get_points
-from src.synthesis.get_sequences2 import get_point_index
-from src.synthesis.get_sequences2 import decrement_point_occur
-from src.synthesis.get_sequences2 import init_append
-from src.synthesis.get_sequences2 import one_way_append
-from src.synthesis.get_sequences2 import get_sequences_extended
+from src.synthesis.get_sequences_extended import get_unique_points
+from src.synthesis.get_sequences_extended import get_points
+from src.synthesis.get_sequences_extended import get_point_index
+from src.synthesis.get_sequences_extended import decrement_point_occur
+from src.synthesis.get_sequences_extended import init_append
+from src.synthesis.get_sequences_extended import one_way_append
+from src.synthesis.get_sequences_extended import get_sequences_extended
 
 
 class SynthesisIntegrationTests(unittest.TestCase):
