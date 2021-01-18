@@ -14,8 +14,6 @@ omit =
     src\image_processing\preproduce_dataset.py
     src\graphical_interface\*
     src\image_processing\consecutive_filter.py
-    src\image_processing\gabor_filter_manual.py
-    src\image_processing\skeletonize_manual.py
     src\image_processing\random_filter.py
     src\recognition\printed_text_recognition.py
     src\synthesis\process-local.py
