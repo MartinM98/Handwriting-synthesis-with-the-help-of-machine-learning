@@ -9,7 +9,7 @@ class OptionsDialog(sized_controls.SizedDialog):
         pane.SetSizerType("grid", {"cols": 2})
 
         wx.StaticText(pane, -1, "Grid shape").SetSizerProps()
-        wx.StaticText(pane, -1, "No of points").SetSizerProps()
+        wx.StaticText(pane, -1, "No. of points").SetSizerProps()
 
         self.n = wx.TextCtrl(pane, validator=Validator(self))
         self.n.SetSizerProps()
