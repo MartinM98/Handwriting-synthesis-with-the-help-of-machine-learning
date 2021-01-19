@@ -37,7 +37,7 @@ class TextImageRenderAllDifferentWidths:
         for letter in self.text_to_render:
             letter = unidecode.unidecode(letter)
             letter_to_int = ord(letter)
-            if letter_to_int != 32:
+            if letter_to_int != 32 and letter_to_int != 10:
                 if letter_to_int == 46:
                     letter_path = combine_paths(self.directory_path, 'dot/')
                 elif letter_to_int >= 97:
@@ -61,9 +61,12 @@ class TextImageRenderAllDifferentWidths:
                 else:
                     img = Image.new(
                         'RGB', (self.font_width, self.line_capacity), (255, 255, 255))
-            else:
+            elif letter_to_int == 32:
                 img = Image.new(
                     'RGB', (self.font_width, self.line_capacity), (255, 255, 255))
+            else:
+                img = Image.new('RGB', (1, 1), (255, 255, 255))
+                self.current_width = self.width
             if self.current_width + img.width >= self.width:
                 self.current_width = 0
                 self.current_line += 1
@@ -79,13 +82,12 @@ class TextImageRenderAllDifferentWidths:
     def create_synth_image(self):
         result_image = Image.new(
             'RGB', (self.width, 5000), (255, 255, 255))
-        # random.seed(datetime.now())
         for letter in sorted(os.listdir(self.directory_path), key=lambda x: int(os.path.splitext(x)[0])):
             img = Image.open(combine_paths(self.directory_path, letter))
-            if self.current_width + img.width >= self.width:
+            letter_to_int = ord(self.text_to_render[int(letter[:-4])])
+            if self.current_width + img.width >= self.width or letter_to_int == 10:
                 self.current_width = 0
                 self.current_line += 1
-            letter_to_int = ord(self.text_to_render[int(letter[:-4])])
             self.concatenate_vertical(result_image, img, letter_to_int)
             self.current_width = self.current_width + img.width
         result_image = crop_image_return(result_image)
