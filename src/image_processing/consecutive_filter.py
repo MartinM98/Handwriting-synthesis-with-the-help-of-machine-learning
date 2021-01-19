@@ -4,7 +4,6 @@ from src.image_processing.common_functions.common_functions import get_parts
 from src.image_processing.common_functions.common_functions import get_image
 from src.image_processing.common_functions.common_functions import prepare_blank_image
 from src.image_processing.common_functions.common_functions import resize_and_show_images
-import sys
 import numpy as np
 
 
@@ -46,10 +45,8 @@ def consecutive(img: np.ndarray = None, n: int = -1, k: int = -1):
     Returns:
         img2 (np.darray): The image with filtered control points.
     """
-    if n < 1:
-        if len(sys.argv) == 1:
-            exit()
-        n = int(sys.argv[1])
+    if (n < 1) or (k < 1):
+        return prepare_blank_image(img.shape)
 
     save = False
     if img is None:
@@ -59,11 +56,6 @@ def consecutive(img: np.ndarray = None, n: int = -1, k: int = -1):
 
     parts = []
     get_parts(img, n, parts)
-
-    if k < 1:
-        if len(sys.argv) == 2:
-            exit()
-        k = int(sys.argv[2])
 
     img2 = prepare_blank_image(img.shape)
     filter_points(img2, parts, k)

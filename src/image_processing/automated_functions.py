@@ -7,13 +7,11 @@ import unidecode
 from src.file_handler.file_handler import combine_paths, ensure_create_dir, get_filename_without_extention
 from src.image_processing.skeletonize import skeletonize_image
 from src.image_processing.gabor_filter import gabor_filter
-from src.graphical_interface.model_dialog import ModelDialog
 from src.image_processing.consecutive_filter import consecutive
 from src.image_processing.random_filter import random_filter
 from src.image_processing.binary_search_filter import binary_search_filter
-from src.image_processing.common_functions.common_functions import is_int
 from src.image_processing.resize import resize_image
-from src.image_processing.common_functions.common_functions import prepare_blank_image, get_dir
+from src.image_processing.common_functions.common_functions import prepare_blank_image
 
 
 def create_skeletons_and_control_points(directory: str):
@@ -168,35 +166,6 @@ def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_o
         i += 1
 
 
-def process_model_options(md: ModelDialog):
-    """
-    Creates a list of options for the model.
-
-    Args:
-       directory (ModelDialog): Instance of custom class ModelDialog.
-
-    Returns:
-        list : list of options retrieved from the ModelDialog class
-    """
-    options = []
-    if is_int(md.epochs.GetValue()):
-        options.append(int(md.epochs.GetValue()))
-    else:
-        options.append(None)
-
-    if is_int(md.ngf.GetValue()):
-        options.append(int(md.ngf.GetValue()))
-    else:
-        options.append(None)
-
-    if is_int(md.ndf.GetValue()):
-        options.append(int(md.ndf.GetValue()))
-    else:
-        options.append(None)
-
-    return options
-
-
 def process_dataset(directory: str = None, options: list = None):
     """
     Invokes functions applying skeletonization, gabor filter
@@ -205,7 +174,4 @@ def process_dataset(directory: str = None, options: list = None):
        directory (str, optional): the path to the directory that should
        be processed.
     """
-    if directory is None:
-        directory = get_dir()
-
     create_skeletons_and_control_points(directory=directory)
