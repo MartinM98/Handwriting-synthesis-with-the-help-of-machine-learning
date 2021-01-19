@@ -35,7 +35,7 @@ class Frame(wx.Frame):
         self.sizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer.Add(self.synthesis_panel, 1, wx.EXPAND)
         self.sizer.Add(self.recognition_panel, 1, wx.EXPAND)
-        self.sizer.SetMinSize(1000, 500)
+        self.sizer.SetMinSize(1050, 550)
         self.SetSizerAndFit(self.sizer)
 
         self.Bind(wx.EVT_CLOSE, self.on_close)
@@ -63,6 +63,7 @@ class Frame(wx.Frame):
                          "450px line width", wx.ITEM_RADIO)
 
         self.option_menu.Append(105, 'Line width', size_menu)
+        self.option_menu.Check(107, True)
         self.option_menu.Enable(105, False)
 
         self.option_menu.Append(
@@ -136,7 +137,7 @@ class Frame(wx.Frame):
         if id == 98:
             self.menu_close(event)
         elif id == 99:
-            self.show_informations(event)
+            self.show_information(event)
         elif id == wx.ID_SAVE:
             self.save(event)
         elif id == 100:
@@ -154,11 +155,14 @@ class Frame(wx.Frame):
                 self.synthesis_panel.use_gpu = False
             else:
                 self.synthesis_panel.use_gpu = True
+            self.statusBar.SetStatusText('Use GPU set to ' + str(self.synthesis_panel.use_gpu))
         elif id == 103:
             if self.synthesis_panel.use_synthesis:
                 self.synthesis_panel.use_synthesis = False
+                self.statusBar.SetStatusText('Synthesis disabled')
             else:
                 self.synthesis_panel.use_synthesis = True
+                self.statusBar.SetStatusText('Synthesis enabled')
         elif id == 111:
             self.synthesis_panel.on_advanced_options()
         elif id == 113:
@@ -182,8 +186,8 @@ class Frame(wx.Frame):
                 else:
                     self.recognition_panel.editname.SetValue(txt)
 
-    def show_informations(self, event):
-        wx.MessageBox('This is the application created for Bachelor Thesis at Warsaw University of Technology Faculty of Mathematics and Information Science.', 'Informations', wx.OK)
+    def show_information(self, event):
+        wx.MessageBox('This is the application created for Bachelor Thesis at Warsaw University of Technology Faculty of Mathematics and Information Science.', 'Information', wx.OK)
 
     def show_authors(self, event):
         wx.MessageBox(
@@ -263,7 +267,7 @@ class Frame(wx.Frame):
 
 class Application(wx.App):
     def OnInit(self):
-        frame = Frame(None, "Scripturam", (150, 150), (1280, 720))
+        frame = Frame(None, "Scripturam", (150, 150), (1100, 720))
         frame.Show()
         return True
 

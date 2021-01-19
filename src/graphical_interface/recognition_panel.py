@@ -1,6 +1,5 @@
 from src.graphical_interface.common import ChangePanelEvent
 from src.file_handler.file_handler import get_absolute_path
-# from src.graphical_interface.common import resource_path
 import wx
 import os
 
@@ -53,7 +52,7 @@ class RecognitionPanel(wx.Panel):
         hSizer2.AddStretchSpacer()
 
         self.editname = wx.TextCtrl(
-            self, value='Test', style=wx.TE_MULTILINE)
+            self, value='Scripturam', style=wx.TE_MULTILINE)
         self.editname.SetFont(font)
         self.editname.SetMinSize(
             (300, 300))
