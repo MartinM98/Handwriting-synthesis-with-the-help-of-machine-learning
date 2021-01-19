@@ -16,11 +16,6 @@ from src.image_processing.common_functions.common_functions import prepare_blank
 from src.image_processing.common_functions.common_functions import resize_and_show_images
 from src.image_processing.common_functions.common_functions import get_parts
 
-# ------------ automated_functions.py ------------
-# from src.image_processing.automated_functions import gabor_filter_automated
-# from src.image_processing.automated_functions import skeletonize_automated
-# from src.image_processing.automated_functions import process_dataset
-
 # ------------ binary_search_filter.py ------------
 from src.image_processing.binary_search_filter import binary_search_filter
 
@@ -29,6 +24,11 @@ from src.image_processing.gabor_filter import gabor_filter
 
 # ------------ skeletonize.py ------------
 from src.image_processing.skeletonize import skeletonize_image
+
+# ------------ automated_functions.py.py ------------
+from src.image_processing.automated_functions import filter_image
+from src.image_processing.automated_functions import prepare_images
+from src.image_processing.automated_functions import process_dataset
 
 
 class ImageProcessingIntegrationTests(unittest.TestCase):
@@ -124,35 +124,6 @@ class ImageProcessingIntegrationTests(unittest.TestCase):
         get_parts(self.test_control_points, 2, parts)
         self.assertEqual(len(parts), 4)
 
-    # ------------ automated_functions.py ------------
-
-    # def test_gabor_filter_automated(self):
-    #     results = gabor_filter_automated(
-    #         get_absolute_path('tests/data/gabor_filter'))
-    #     self.assertEqual(len(results), 2)
-    #     if results[0].shape == (62, 51):
-    #         self.assertTupleEqual(results[0].shape, (62, 51))
-    #         self.assertTupleEqual(results[1].shape, (29, 29))
-    #     else:
-    #         self.assertTupleEqual(results[1].shape, (62, 51))
-    #         self.assertTupleEqual(results[0].shape, (29, 29))
-
-    # def test_skeletonize_automated(self):
-    #     results = skeletonize_automated(
-    #         get_absolute_path('tests/data/skeletonization'))
-    #     self.assertEqual(len(results), 2)
-    #     # self.assertTupleEqual(results[1].shape, (62, 51))
-    #     # self.assertTupleEqual(results[0].shape, (29, 29))
-
-    # @unittest.skip("work in progress")
-    # def test_process_dataset(self):
-    #     cv2.imwrite = Mock()
-    #     try:
-    #         process_dataset(get_absolute_path(
-    #             'tests/data/skeletonization_gabor_filter'))
-    #     except Exception:
-    #         self.fail('process_dataset raised error unexpectedly')
-
     # ------------ binary_search_filter.py ------------
 
     def test_binary_search_filter(self):
@@ -175,6 +146,52 @@ class ImageProcessingIntegrationTests(unittest.TestCase):
             'tests/data/skeletonization/0.png'))
         result = skeletonize_image(image)
         self.assertIsNotNone(result)
+
+    # ------------ automated_functions.py.py ------------
+
+    def test_filter_image(self):
+        image = self.test_control_points.copy()
+        width, height = image.shape
+        size = width * height
+        self.assertTrue((filter_image(image, 'Original', 0, 0) == image).all())
+        image = self.test_control_points.copy()
+        self.assertEqual(len(np.nonzero(filter_image(image, 'Consecutive', 2, 3))[0]), size - 3)
+        image = self.test_control_points.copy()
+        self.assertEqual(len(np.nonzero(filter_image(image, 'Random', 2, 3))[0]), size - 3)
+        image = self.test_control_points.copy()
+        self.assertEqual(len(np.nonzero(filter_image(image, 'BS', 2, 3))[0]), size - 3)
+
+    def test_prepare_images(self):
+        skeleton_path = 'tests/data/gabor_filter/0_skel.png'
+        control_points_path = 'tests/data/filtering/0_skel_control_points.png'
+        skeleton_test = cv2.imread('tests/data/gabor_filter/0_skel_rotated.png')
+        control_points_test = cv2.imread(control_points_path)
+        control_points_test = cv2.rotate(control_points_test, cv2.cv2.ROTATE_90_CLOCKWISE)
+        result = prepare_images(skeleton_path, control_points_path, control_points_path, 0, 0, 'Original')
+        self.assertTrue((result[0] == skeleton_test).all())
+        self.assertTrue((result[1] == control_points_test).all())
+
+        control_points_test = cv2.cvtColor(control_points_test, cv2.COLOR_BGR2GRAY)
+        width, height = control_points_test.shape
+        size = width * height
+        skeleton_test = cv2.imread('tests/data/gabor_filter/0_skel_rotated.png')
+        result = prepare_images(skeleton_path, control_points_path, control_points_path, 10, 10, 'BS')
+        self.assertTrue((result[0] == skeleton_test).all())
+        self.assertEqual(len(np.nonzero(result[1])[0]), size - 10)
+
+        result = prepare_images(skeleton_path, control_points_path, control_points_path, 10, 7, 'Consecutive')
+        self.assertTrue((result[0] == skeleton_test).all())
+        self.assertEqual(len(np.nonzero(result[1])[0]), size - 7)
+
+        result = prepare_images(skeleton_path, control_points_path, control_points_path, 10, 1, 'Random')
+        self.assertTrue((result[0] == skeleton_test).all())
+        self.assertEqual(len(np.nonzero(result[1])[0]), size - 1)
+
+    def test_process_dataset(self):
+        try:
+            process_dataset('tests/data/process_dataset_test')
+        except Exception:
+            self.fail('process_dataset raised error unexpectedly')
 
 
 if __name__ == '__main__':

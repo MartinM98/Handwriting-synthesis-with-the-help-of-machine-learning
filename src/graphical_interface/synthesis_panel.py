@@ -1,7 +1,6 @@
 from src.image_processing.automated_functions import prepare_letters
 from src.file_handler.file_handler import ensure_create_dir
 from src.file_handler.file_handler import remove_dir_with_content
-from src.image_processing.automated_functions import process_model_options
 from src.graphical_interface.model_dialog import ModelDialog
 from src.graphical_interface.options_dialog import OptionsDialog
 from src.graphical_interface.create_text import TextImageRenderAllDifferentWidths
@@ -13,6 +12,7 @@ from src.image_processing.resize import resize_directory, combine_directory, res
 from src.synthesis.process import process_directory
 from src.image_processing.automated_functions import process_dataset
 from src.file_handler.file_handler import combine_paths, get_absolute_path
+from src.image_processing.common_functions.common_functions import is_int
 import wx
 import os
 import numpy as np
@@ -260,6 +260,34 @@ class SynthesisPanel(wx.Panel):
         remove_dir_with_content(path + '/letters_dataset')
         ensure_create_dir(path + '/letters_dataset')
 
+    def process_model_options(md: ModelDialog):
+        """
+        Creates a list of options for the model.
+
+        Args:
+        directory (ModelDialog): Instance of custom class ModelDialog.
+
+        Returns:
+            list : list of options retrieved from the ModelDialog class
+        """
+        options = []
+        if is_int(md.epochs.GetValue()):
+            options.append(int(md.epochs.GetValue()))
+        else:
+            options.append(None)
+
+        if is_int(md.ngf.GetValue()):
+            options.append(int(md.ngf.GetValue()))
+        else:
+            options.append(None)
+
+        if is_int(md.ndf.GetValue()):
+            options.append(int(md.ndf.GetValue()))
+        else:
+            options.append(None)
+
+        return options
+
     def on_generate(self, event):
         """
         Creates new model based on pictures from dataset
@@ -294,7 +322,7 @@ class SynthesisPanel(wx.Panel):
                 self.statusBar.SetStatusText('Action cancelled')
                 md.Destroy()
                 return
-            options = process_model_options(md)
+            options = self.process_model_options(md)
             md.Destroy()
             self.statusBar.SetStatusText('Training model... (It may take a while)')
             print('TEST ' + str(self.use_gpu))
@@ -309,7 +337,7 @@ class SynthesisPanel(wx.Panel):
                 str(self.use_gpu)
             os.system(export_command)
             remove_dir_with_content('./data/model')
-            if(self.check_model()):
+            if(self.check_dir('export')):
                 self.statusBar.SetStatusText('Model created successfully')
             else:
                 self.statusBar.SetStatusText(

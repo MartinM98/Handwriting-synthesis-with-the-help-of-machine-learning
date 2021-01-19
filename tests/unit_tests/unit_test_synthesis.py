@@ -6,11 +6,17 @@ import matplotlib.pyplot as plt
 import unittest
 from unittest.mock import Mock
 
-# ------------ get_sequences2.py ------------
+# ------------ get_sequences_extended.py ------------
 from src.synthesis.get_sequences_extended import compare_points
 from src.synthesis.get_sequences_extended import get_points
 from src.synthesis.get_sequences_extended import find_non_zero_occurence_point
 from src.synthesis.get_sequences_extended import find_single_occurence_point
+
+# ------------ generate_letter.py ------------
+from src.synthesis.generate_letter import dist
+from src.synthesis.generate_letter import mid_point
+from src.synthesis.generate_letter import get_shift
+from src.synthesis.generate_letter import shift_points
 
 
 class SynthesisUnitTests(unittest.TestCase):
@@ -92,7 +98,7 @@ class SynthesisUnitTests(unittest.TestCase):
                              skeleton_flag=False)
         self.assertIsNotNone(result)
 
-    # ------------ get_sequences2.py ------------
+    # ------------ get_sequences_extended.py ------------
 
     def test_compare_points(self):
         self.assertTrue(compare_points([14, 1], [14, 1]))
@@ -115,6 +121,101 @@ class SynthesisUnitTests(unittest.TestCase):
         points[index][1] = 1
 
         self.assertEqual(find_single_occurence_point(points), index)
+
+    # ------------ generate letters.py ------------
+
+    def test_dist(self):
+        a1 = 10
+        a2 = 20
+        b1 = 15
+        b2 = 6
+        tuple1 = (a1, b1)
+        tuple2 = (a2, b2)
+        result = 13
+        self.assertEqual(dist(tuple1, tuple2), result)
+
+        a1 = 0
+        a2 = 0
+        b1 = 0
+        b2 = 0
+        tuple1 = (a1, b1)
+        tuple2 = (a2, b2)
+        result = 0
+        self.assertEqual(dist(tuple1, tuple2), result)
+
+    def test_mid_point(self):
+        a1 = 10
+        a2 = 20
+        b1 = 15
+        b2 = 6
+        tuple1 = (a1, b1)
+        tuple2 = (a2, b2)
+        result = mid_point(tuple1, tuple2)
+        self.assertGreater(result[0], 13.5)
+        self.assertLess(result[0], 18)
+        self.assertGreater(result[1], 9)
+        self.assertLess(result[1], 12)
+
+        a1 = 0
+        a2 = 0
+        b1 = 0
+        b2 = 0
+        tuple1 = (a1, b1)
+        tuple2 = (a2, b2)
+        result = mid_point(tuple1, tuple2)
+        self.assertEqual(result[0], 0)
+        self.assertEqual(result[1], 0)
+
+    def test_get_shift(self):
+        l1 = []
+        l1.append((5, 0))
+        l1.append((120, 89))
+        l1.append((1, 14))
+        l1.append((12, -9))
+        l1.append((10, 4))
+        l1.append((5, 5))
+        l2 = []
+        l2.append((1, 1))
+        l2.append((-56, 22))
+        l2.append((13, 14))
+        l2.append((0, 7))
+        l2.append((-1, -3))
+        l2.append((13, 45))
+        result = (-30, -3)
+        self.assertEqual(get_shift(l1, l2), result)
+
+        l1 = []
+        l2 = []
+        result = (0, 0)
+        self.assertEqual(get_shift(l1, l2), result)
+
+    def test_shifts_points(self):
+        l1 = []
+        m = (5, 10)
+        l1.append((5, 0))
+        l1.append((120, 89))
+        l1.append((1, 14))
+        l1.append((12, -9))
+        l1.append((10, 4))
+        l1.append((5, 5))
+        l2 = []
+        l2.append((5 - m[0], 0 - m[1]))
+        l2.append((120 - m[0], 89 - m[1]))
+        l2.append((1 - m[0], 14 - m[1]))
+        l2.append((12 - m[0], -9 - m[1]))
+        l2.append((10 - m[0], 4 - m[1]))
+        l2.append((5 - m[0], 5 - m[1]))
+        result = shift_points(l1, m)
+        for i in range(len(l1)):
+            self.assertEqual(result[i], l2[i])
+
+        l1 = []
+        m = (0, 0)
+        l1.append((0, 0))
+        l1.append((0, 0))
+        result = shift_points(l1, m)
+        for i in range(len(l1)):
+            self.assertEqual(result[i], (0, 0))
 
 
 if __name__ == '__main__':

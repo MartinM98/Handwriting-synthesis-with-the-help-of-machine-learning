@@ -6,7 +6,7 @@ import unittest
 import random
 import numpy as np
 
-# ------------ get_sequences2.py ------------
+# ------------ get_sequences_extended.py ------------
 from src.synthesis.get_sequences_extended import get_unique_points
 from src.synthesis.get_sequences_extended import get_points
 from src.synthesis.get_sequences_extended import get_point_index
@@ -14,6 +14,9 @@ from src.synthesis.get_sequences_extended import decrement_point_occur
 from src.synthesis.get_sequences_extended import init_append
 from src.synthesis.get_sequences_extended import one_way_append
 from src.synthesis.get_sequences_extended import get_sequences_extended
+
+# ------------ generate_letter.py ------------
+from src.synthesis.generate_letter import generate_points
 
 
 class SynthesisIntegrationTests(unittest.TestCase):
@@ -161,6 +164,29 @@ class SynthesisIntegrationTests(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertEqual(len(result), 1)
         self.assertEqual(len(result[0]), len(self.edges2) + 1)
+
+# ------------ generate_letter.py ------------
+
+    def test_generate_points(self):
+        l1 = []
+        l2 = []
+        l3 = []
+        l1.append((3, 1))
+        l1.append((5, 2))
+        l1.append((10, 6))
+        l2.append((-1, 10))
+        l2.append((3, 0))
+        l2.append((4, 1))
+        l3.append((3, 0))
+        l3.append((4, 1))
+        l3.append((7, 3))
+        result = generate_points(l1, l2)
+        for i in range(len(l1)):
+            self.assertEqual(result[i][0], l1[i])
+            self.assertGreaterEqual(result[i][1][0], l3[i][0] * 0.99)
+            self.assertLessEqual(result[i][1][0], l3[i][0] * 1.02)
+            self.assertGreaterEqual(result[i][1][1], l3[i][1] * 0.99)
+            self.assertLessEqual(result[i][1][1], l3[i][1] * 1.02)
 
 
 if __name__ == '__main__':
