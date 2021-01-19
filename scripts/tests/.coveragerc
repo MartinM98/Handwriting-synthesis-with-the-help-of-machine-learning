@@ -7,18 +7,18 @@ omit =
     *__init__*
     src/synthesis/pix2pix.py
     src/image_processing/threshold.py
-    src\graphical_interface\create_text_with_font_static_different_widths.py
-    src\graphical_interface\create_text_with_font_static.py
-    src\graphical_interface\graphical-interface.py
-    src\recognition\postproduce_boxes.py
-    src\image_processing\preproduce_dataset.py
-    src\graphical_interface\*
-    src\image_processing\consecutive_filter.py
-    src\image_processing\random_filter.py
-    src\recognition\printed_text_recognition.py
-    src\synthesis\process-local.py
-    src\synthesis\process.py
-    src\image_processing\correct_letters.py
+    src/graphical_interface/create_text_with_font_static_different_widths.py
+    src/graphical_interface/create_text_with_font_static.py
+    src/graphical_interface/graphical-interface.py
+    src/recognition/postproduce_boxes.py
+    src/image_processing/preproduce_dataset.py
+    src/graphical_interface/*
+    src/image_processing/consecutive_filter.py
+    src/image_processing/random_filter.py
+    src/recognition/printed_text_recognition.py
+    src/synthesis/process-local.py
+    src/synthesis/process.py
+    src/image_processing/correct_letters.py
 
 [report]
 # Regexes for lines to exclude from consideration
@@ -37,7 +37,7 @@ exclude_lines =
 
     # Don't complain about missing debug-only code:
     def __repr__
-    if self\.debug
+    if self/.debug
 
     # Don't complain if tests don't hit defensive assertion code:
     raise AssertionError

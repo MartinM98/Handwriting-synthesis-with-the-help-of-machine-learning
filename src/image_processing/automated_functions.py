@@ -91,7 +91,10 @@ def filter_image(image: np.ndarray, option: str, n: int, k: int):
     Returns:
         (np.ndarray): Filtered image.
     """
-    image2 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    try:
+        image2 = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    except Exception:
+        image2 = image
     if option == 'Original':
         return image
     if option == 'Consecutive':
