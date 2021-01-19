@@ -155,7 +155,8 @@ class Frame(wx.Frame):
                 self.synthesis_panel.use_gpu = False
             else:
                 self.synthesis_panel.use_gpu = True
-            self.statusBar.SetStatusText('Use GPU set to ' + str(self.synthesis_panel.use_gpu))
+            self.statusBar.SetStatusText(
+                'Use GPU set to ' + str(self.synthesis_panel.use_gpu))
         elif id == 103:
             if self.synthesis_panel.use_synthesis:
                 self.synthesis_panel.use_synthesis = False
@@ -276,6 +277,5 @@ if __name__ == '__main__':
     path_to_logs = get_absolute_path('.')
     path_to_logs = combine_paths(path_to_logs, "application_logs.txt")
     ensure_remove_file(path_to_logs)
-    print(path_to_logs)
     app = Application(redirect=True, filename=path_to_logs)
     app.MainLoop()
