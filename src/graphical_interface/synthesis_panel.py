@@ -200,8 +200,8 @@ class SynthesisPanel(wx.Panel):
         print('Directories created')
         self.statusBar.SetStatusText('Directories created')
 
-    def check_model(self):
-        if (os.path.isdir(combine_paths(self.path_to_model, 'letters_dataset')) and os.path.isdir(combine_paths(self.path_to_model, 'export'))):
+    def check_dir(self, dir: str):
+        if (os.path.isdir(combine_paths(self.path_to_model, dir))):
             return True
         else:
             return False
@@ -210,7 +210,7 @@ class SynthesisPanel(wx.Panel):
         """
         Creates a handwriting imitation image
         """
-        if (self.check_model()):
+        if (self.check_dir('letters_dataset') and self.check_dir('export')):
             self.SetEvtHandlerEnabled(False)
             self.clear_directories_render()
             if (self.use_synthesis):
@@ -264,55 +264,58 @@ class SynthesisPanel(wx.Panel):
         """
         Creates new model based on pictures from dataset
         """
-        r = wx.MessageDialog(
-            self,
-            ('This action will delete model for current font.' + '\n' +
-             'Do you want to continue?'),
-            ('Confirm'),
-            wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION
-        ).ShowModal()
-        if r != wx.ID_YES:
-            self.statusBar.SetStatusText('Action cancelled')
-            return
-        self.statusBar.SetStatusText('Clearing model...')
-        self.clear_directories_generate('./data')
-        self.statusBar.SetStatusText('Resizing letters...')
-        resize_directory(self.path_to_model + '/letters_dataset',
-                         './data/training_dataset/letters')
-        self.statusBar.SetStatusText('Resizing skeletons...')
-        resize_skeletons_directory(
-            self.path_to_model + '/letters_dataset', './data/training_dataset/skeletons')
-        self.statusBar.SetStatusText('Combining images...')
-        combine_directory('./data/training_dataset/letters',
-                          './data/training_dataset/skeletons', './data/training_dataset/combined')
+        if(self.check_dir('letters_dataset')):
+            r = wx.MessageDialog(
+                self,
+                ('This action will delete model for current font.' + '\n' +
+                 'Do you want to continue?'),
+                ('Confirm'),
+                wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION
+            ).ShowModal()
+            if r != wx.ID_YES:
+                self.statusBar.SetStatusText('Action cancelled')
+                return
+            self.statusBar.SetStatusText('Clearing model...')
+            self.clear_directories_generate('./data')
+            self.statusBar.SetStatusText('Resizing letters...')
+            resize_directory(self.path_to_model + '/letters_dataset',
+                             './data/training_dataset/letters')
+            self.statusBar.SetStatusText('Resizing skeletons...')
+            resize_skeletons_directory(
+                self.path_to_model + '/letters_dataset', './data/training_dataset/skeletons')
+            self.statusBar.SetStatusText('Combining images...')
+            combine_directory('./data/training_dataset/letters',
+                              './data/training_dataset/skeletons', './data/training_dataset/combined')
 
-        self.statusBar.SetStatusText('Select options')
-        options = []
-        md = ModelDialog(self, title='Model settings', size=(300, 200))
-        if md.ShowModal() == wx.ID_CANCEL:
-            self.statusBar.SetStatusText('Action cancelled')
+            self.statusBar.SetStatusText('Select options')
+            options = []
+            md = ModelDialog(self, title='Model settings', size=(300, 200))
+            if md.ShowModal() == wx.ID_CANCEL:
+                self.statusBar.SetStatusText('Action cancelled')
+                md.Destroy()
+                return
+            options = process_model_options(md)
             md.Destroy()
-            return
-        options = process_model_options(md)
-        md.Destroy()
-        self.statusBar.SetStatusText('Training model... (It may take a while)')
-        print('TEST ' + str(self.use_gpu))
-        train_command = 'python ./data/pix2pix.py --mode train --output_dir ./data/model/ --max_epochs ' + \
-            str(options[0]) + ' --input_dir ./data/training_dataset/combined --which_direction BtoA --ngf ' + \
-            str(options[1]) + ' --ndf ' + str(options[2]) + \
-            ' --use_gpu ' + str(self.use_gpu)
-        os.system(train_command)
-        self.statusBar.SetStatusText('Exporting model...')
-        export_command = 'python ./data/pix2pix.py --mode export --output_dir ' + self.path_to_model + \
-            '/export/ --checkpoint ./data/model/ --which_direction BtoA --use_gpu ' + \
-            str(self.use_gpu)
-        os.system(export_command)
-        remove_dir_with_content('./data/model')
-        if(self.check_model()):
-            self.statusBar.SetStatusText('Model created successfully')
+            self.statusBar.SetStatusText('Training model... (It may take a while)')
+            print('TEST ' + str(self.use_gpu))
+            train_command = 'python ./data/pix2pix.py --mode train --output_dir ./data/model/ --max_epochs ' + \
+                str(options[0]) + ' --input_dir ./data/training_dataset/combined --which_direction BtoA --ngf ' + \
+                str(options[1]) + ' --ndf ' + str(options[2]) + \
+                ' --use_gpu ' + str(self.use_gpu)
+            os.system(train_command)
+            self.statusBar.SetStatusText('Exporting model...')
+            export_command = 'python ./data/pix2pix.py --mode export --output_dir ' + self.path_to_model + \
+                '/export/ --checkpoint ./data/model/ --which_direction BtoA --use_gpu ' + \
+                str(self.use_gpu)
+            os.system(export_command)
+            remove_dir_with_content('./data/model')
+            if(self.check_model()):
+                self.statusBar.SetStatusText('Model created successfully')
+            else:
+                self.statusBar.SetStatusText(
+                    'There was an error during model generation')
         else:
-            self.statusBar.SetStatusText(
-                'There was an error during model generation')
+            self.statusBar.SetStatusText('There is no dataset for currently selected style')
 
     def on_load_click(self, event):
         """
