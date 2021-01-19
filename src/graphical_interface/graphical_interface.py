@@ -105,7 +105,7 @@ class Frame(wx.Frame):
         self.option_menu.AppendSeparator()
 
         self.option_menu.Append(98, "E&xit\tAlt-X",
-                                "Exit this simple sample")
+                                "Exit the application")
 
         menuBar.Append(self.option_menu, "&Options")
         # ------------------ menu - Options ------------------ #
@@ -155,7 +155,8 @@ class Frame(wx.Frame):
                 self.synthesis_panel.use_gpu = False
             else:
                 self.synthesis_panel.use_gpu = True
-            self.statusBar.SetStatusText('Use GPU set to ' + str(self.synthesis_panel.use_gpu))
+            self.statusBar.SetStatusText(
+                'Use GPU set to ' + str(self.synthesis_panel.use_gpu))
         elif id == 103:
             if self.synthesis_panel.use_synthesis:
                 self.synthesis_panel.use_synthesis = False
@@ -191,8 +192,7 @@ class Frame(wx.Frame):
 
     def show_authors(self, event):
         wx.MessageBox(
-            'The authors of the application are: \n - Martin Mrugała \n - Patryk Walczak \n - Bartłomiej Żyła \n\n \
-             Thesis supervisor Agnieszka Jastrzębska, Ph.D. Eng', 'Authors', wx.OK)
+            'The authors of the application are: \n - Martin Mrugała \n - Patryk Walczak \n - Bartłomiej Żyła \n\n Thesis supervisor: \n - Agnieszka Jastrzębska, Ph.D. Eng', 'Authors', wx.OK)
 
     def menu_close(self, event):
         self.Close()
@@ -276,6 +276,5 @@ if __name__ == '__main__':
     path_to_logs = get_absolute_path('.')
     path_to_logs = combine_paths(path_to_logs, "application_logs.txt")
     ensure_remove_file(path_to_logs)
-    print(path_to_logs)
     app = Application(redirect=True, filename=path_to_logs)
     app.MainLoop()
