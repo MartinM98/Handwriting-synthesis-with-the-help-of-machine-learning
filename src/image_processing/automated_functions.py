@@ -127,6 +127,12 @@ def prepare_letters(input: str, path: str, n_advanced_options: int, k_advanced_o
                 f"{'./data/synthesis/synthesized/'}/{str(i)}.png", blank)
             i += 1
             continue
+        if ord(letter) == 10:
+            blank = prepare_blank_image((1, 1))
+            cv2.imwrite(
+                f"{'./data/synthesis/synthesized/'}/{str(i)}.png", blank)
+            i += 1
+            continue
         dir = letter
         if letter.islower():
             dir = letter + '2'
