@@ -192,8 +192,7 @@ class Frame(wx.Frame):
 
     def show_authors(self, event):
         wx.MessageBox(
-            'The authors of the application are: \n - Martin Mrugała \n - Patryk Walczak \n - Bartłomiej Żyła \n\n \
-             Thesis supervisor Agnieszka Jastrzębska, Ph.D. Eng', 'Authors', wx.OK)
+            'The authors of the application are: \n - Martin Mrugała \n - Patryk Walczak \n - Bartłomiej Żyła \n\n Thesis supervisor: \n - Agnieszka Jastrzębska, Ph.D. Eng', 'Authors', wx.OK)
 
     def menu_close(self, event):
         self.Close()
