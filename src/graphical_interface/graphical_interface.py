@@ -105,7 +105,7 @@ class Frame(wx.Frame):
         self.option_menu.AppendSeparator()
 
         self.option_menu.Append(98, "E&xit\tAlt-X",
-                                "Exit this simple sample")
+                                "Exit the application")
 
         menuBar.Append(self.option_menu, "&Options")
         # ------------------ menu - Options ------------------ #
