@@ -111,7 +111,10 @@ def binary_search_filter(img: np.ndarray = None, n: int = -1, k: int = -1):
         img2 (np.darray): The image with filtered control points.
     """
     if (n < 1) or (k < 1):
-        return prepare_blank_image(img.shape)
+        if img is None:
+            return
+        else:
+            return prepare_blank_image(img.shape)
 
     save = False
     if img is None:
@@ -129,7 +132,3 @@ def binary_search_filter(img: np.ndarray = None, n: int = -1, k: int = -1):
         cv2.imwrite(directory + '/' + path2 + '_bs.png', img2)
 
     return img2
-
-
-if __name__ == '__main__':
-    binary_search_filter()
