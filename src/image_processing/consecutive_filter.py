@@ -16,7 +16,8 @@ def filter_points(img2: np.ndarray, parts: list, n: int):
        parts (list): list of subparts of the initial image.
        n (int): the number of subparts in each direction.
     """
-    index = 0
+    index = parts.index(max(parts, key=lambda part: len(part)))
+
     while(n > 0):
         if len(parts[index]) != 0:
             img2[parts[index][0][0], parts[index][0][1]] = 0
@@ -46,7 +47,10 @@ def consecutive(img: np.ndarray = None, n: int = -1, k: int = -1):
         img2 (np.darray): The image with filtered control points.
     """
     if (n < 1) or (k < 1):
-        return prepare_blank_image(img.shape)
+        if img is None:
+            return
+        else:
+            return prepare_blank_image(img.shape)
 
     save = False
     if img is None:
@@ -64,7 +68,3 @@ def consecutive(img: np.ndarray = None, n: int = -1, k: int = -1):
         cv2.imwrite(directory + '/' + path2 + '_c.png', img2)
 
     return img2
-
-
-if __name__ == '__main__':
-    consecutive()
