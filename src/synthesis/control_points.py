@@ -269,6 +269,32 @@ def produce_imitation(path_to_skeleton: str, path_to_control_points: str, path_t
                 image_size=(width, height), skeleton_flag=True)
 
 
+def check_sequences(letter: list):
+    """
+    Removes direct repetition of a point
+    in sequence of sequences of points.
+
+    Args:
+        letter (list): Sequence of sequences of points
+
+    Returns:
+        (list): Filtered sequence of sequences of points
+    """
+    new_letter = list()
+    for line in letter:
+        new_line = list()
+        previous = None
+        for point in line:
+            if previous is not None:
+                if (point[0] != previous[0]) or (point[1] != previous[1]):
+                    new_line.append(point)
+            else:
+                new_line.append(point)
+            previous = point
+        new_letter.append(new_line)
+    return new_letter
+
+
 def produce_bspline(image: np.ndarray, image_control_points: np.ndarray, image_control_points2: np.ndarray, idx: int, match_with_other: bool, font_size: int = None):
     """
     Produce imitation of the letter form the skeleton.
@@ -306,6 +332,7 @@ def produce_bspline(image: np.ndarray, image_control_points: np.ndarray, image_c
         letter = letter3
     path_to_save = combine_paths(
         './data/synthesis/skeletons/', str(idx) + '.png')
+    letter = check_sequences(letter)
     bspline_image = draw_letter(letter, image_size=(
         width, height), skeleton_flag=True, show_flag=False)
     bspline_image = resize_image('', 256, 256, image=bspline_image)

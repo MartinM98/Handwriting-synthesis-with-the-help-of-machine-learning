@@ -18,6 +18,11 @@ from src.synthesis.generate_letter import mid_point
 from src.synthesis.generate_letter import get_shift
 from src.synthesis.generate_letter import shift_points
 
+# ------------ generate_letter.py ------------
+from src.synthesis.control_points import check_sequences
+from src.synthesis.control_points import left_only_control_points
+from src.synthesis.control_points import match_points
+
 
 class SynthesisUnitTests(unittest.TestCase):
     """
@@ -216,6 +221,38 @@ class SynthesisUnitTests(unittest.TestCase):
         result = shift_points(l1, m)
         for i in range(len(l1)):
             self.assertEqual(result[i], (0, 0))
+
+# ------------ generate_letter.py ------------
+
+    def test_check_sequences(self):
+        test_seq = [[(2, 1), (1, 2), (2, 1)], [(3, 2), (4, 2)]]
+        result = check_sequences(test_seq)
+        print('NOWEADSDSDAD')
+        print(result)
+        self.assertEqual(len(result[0]), len(test_seq[0]))
+        self.assertEqual(len(result[1]), len(test_seq[1]))
+
+        test_seq = [[(2, 1), (1, 2), (2, 1), (2, 1)], [(3, 2), (4, 2)]]
+        result = check_sequences(test_seq)
+        self.assertEqual(len(result[0]), len(test_seq[0]) - 1)
+        self.assertEqual(len(result[1]), len(test_seq[1]))
+
+    def test_left_only_control_points(self):
+        test_seq = [[(2, 1), (1, 2), (2, 1)], [(3, 2), (4, 2)]]
+        cp = []
+        result = left_only_control_points(test_seq, cp)
+        self.assertEqual(len(result), len(test_seq))
+
+        test_seq = [[(2, 1), (1, 2), (2, 1), (2, 1)], [(3, 2), (4, 2)]]
+        cp = [(2, 1)]
+        result = left_only_control_points(test_seq, cp)
+        self.assertEqual(len(result[0]), len(test_seq[0]))
+
+    def test_match_points(self):
+        test_seq = [[(2, 1), (1, 2), (2, 1)], [(3, 2), (4, 2)]]
+        new_letter = [[(1, 2), (3, 2)]]
+        result = match_points(test_seq, new_letter)
+        self.assertEqual(len(result[0]), 1)
 
 
 if __name__ == '__main__':
