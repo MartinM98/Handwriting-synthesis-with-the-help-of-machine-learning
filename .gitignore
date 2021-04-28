@@ -1,3 +1,14 @@
+dataset/*
+!data/download_database.sh
+*.box
+tests/report/*
+tests/logs/*
+tests/data/output/*
+src/graphical_interface/synthesis/synthesized/*
+data/synthesis/skeletons/*
+data/synthesis/synthesized/*
+application_logs.txt
+
 ### OpenCV ###
 #OpenCV for Mac and Linux
 #build and release folders
@@ -40,8 +51,9 @@ MANIFEST
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+# *.manifest
+# *.spec
+/*.spec
 
 # Installer logs
 pip-log.txt
@@ -152,3 +164,4 @@ dmypy.json
 ### VisualStudioCode Patch ###
 # Ignore all local history of files
 .history
+
