@@ -3,6 +3,6 @@ opencv-python==4.2.0.34
 coverage==5.3
 scikit-image==0.16.2
 pytest==6.1.2
-tensorflow==2.4.0
+tensorflow==2.5.2
 matplotlib==3.3.3
 Unidecode==1.1.2
